@@ -7,11 +7,13 @@ import { VaultTopGames } from "./_components/TopGames";
 import { usePublishedGames } from "@/features/game/hooks/usePublishedGames";
 import { useGetCategories } from "@/shared/hooks/useCategories";
 import { useBannerGames } from "@/features/game/hooks/useBannerGames";
+import { useTopGames } from "@/features/game/hooks/useTopGames";
 
 export default function Vault() {
   const { games: publishedGames } = usePublishedGames();
-  const { categories } = useGetCategories();
   const { games: bannerGames } = useBannerGames();
+  const { games: topGames } = useTopGames();
+  const { categories } = useGetCategories();
 
   return (
     <main className="flex flex-col items-center gap-16">
@@ -19,7 +21,7 @@ export default function Vault() {
       <VaultCarousel items={bannerGames} />
 
       {/* ✅ section 3  */}
-      <VaultTopGames />
+      <VaultTopGames games={topGames} />
 
       {/* ✅ section 3  */}
       <section className="flex justify-center w-full px-10">

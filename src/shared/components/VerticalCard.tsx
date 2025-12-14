@@ -1,6 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import { PriceCoin } from "./CoinWithAmmount";
+import { formatTitle } from "../utils/formatUrl";
 
 export const VerticalCard = ({
   gameId,
@@ -21,9 +22,6 @@ export const VerticalCard = ({
   tokenDecimals?: number;
   tokenLogo?: string | null;
 }) => {
-  const formatTitle = (title: string): string => {
-    return title.toLowerCase().replace(/\s+/g, "_");
-  };
   return (
     <Link
       href={`/${formatTitle(gameName)}/${gameId}`}

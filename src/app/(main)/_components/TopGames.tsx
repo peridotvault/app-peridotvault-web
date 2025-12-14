@@ -6,12 +6,17 @@ import {
   faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
 import { TypographyH2 } from "@/shared/components/ui/TypographyH2";
+import { GameCard } from "@/features/game/interfaces/published";
+import Link from "next/link";
+import { formatTitle } from "@/shared/utils/formatUrl";
+import Image from "next/image";
 
 type Props = {
   className?: string; // optional: untuk -mt overlap dari parent
+  games: GameCard[];
 };
 
-export const VaultTopGames: React.FC<Props> = ({ className = "" }) => {
+export const VaultTopGames: React.FC<Props> = ({ className = "", games }) => {
   const scrollerRef = React.useRef<HTMLDivElement | null>(null);
   const [canLeft, setCanLeft] = React.useState(false);
   const [canRight, setCanRight] = React.useState(true);
@@ -108,15 +113,26 @@ export const VaultTopGames: React.FC<Props> = ({ className = "" }) => {
             className="overflow-x-auto overflow-y-hidden scrollbar-hide scroll-smooth"
           >
             <div className="pv-topgames-row flex gap-2 w-max">
-              {Array.from({ length: 10 }).map((_, idx) => (
-                <div key={idx} className="w-72 h-80 relative flex justify-end">
-                  <span className="text-[12rem] font-bold absolute left-2 bottom-16">
+              {games.map((item, idx) => (
+                <Link
+                  key={idx}
+                  href={`/${formatTitle(item.name)}/${item.game_id}`}
+                  className="w-72 h-80 relative flex justify-end"
+                >
+                  <span className="text-[12rem] font-bold absolute left-2 bottom-16 z-5">
                     {idx + 1}
                   </span>
-                  <div className="h-80 w-60 bg-muted rounded-lg">
-                    {/* <img src="" alt="" /> */}
+                  <div className="h-80 w-60 bg-muted rounded-lg overflow-hidden relative">
+                    <Image
+                      src={item.cover_vertical_image}
+                      alt=""
+                      className="w-full h-full object-cover"
+                      width={720}
+                      height={1080}
+                    />
+                    <div className="bg-linear-to-tr from-black/20 absolute left-0 top-0 h-full w-full"></div>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           </div>
