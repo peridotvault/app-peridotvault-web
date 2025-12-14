@@ -22,19 +22,19 @@ jobs:
           password: ${{ secrets.VPS_PASSWORD }}
           script: |
             APP_DIR="/home/${{ secrets.VPS_USERNAME }}/app-peridotvault-web"
-            REPO_URL="https://github.com/${{ github.repository }}.git"
+            REPO_URL="https://${{ secrets.GH_TOKEN }}@github.com/${{ github.repository }}.git"
 
             if [ ! -d "$APP_DIR" ]; then
               git clone "$REPO_URL" "$APP_DIR"
             fi
 
-            cd "$APP_DIR"
+            cd "$APP_DIR" || exit 1
 
             git remote set-url origin "$REPO_URL"
             git pull origin main
 
             echo "Creating .env file..."
-            cat <<EOF > .env
+            cat <<'EOF' > .env
             ${{ secrets.ENV_FILE }}
             EOF
 
@@ -48,3 +48,4 @@ jobs:
 
             echo "Checking container status..."
             docker compose ps
+
