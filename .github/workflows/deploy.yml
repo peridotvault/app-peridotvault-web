@@ -7,22 +7,44 @@ on:
 
 jobs:
   deploy:
+    name: Deploy to VPS
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Deploy to VPS
+      - name: Deploy to VPS via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.SSH_PORT }}
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          password: ${{ secrets.VPS_PASSWORD }}
           script: |
-            cd /var/www/app-peridotvault-web
+            APP_DIR="/home/${{ secrets.VPS_USERNAME }}/app-peridotvault-web"
+            REPO_URL="https://github.com/${{ github.repository }}.git"
+
+            if [ ! -d "$APP_DIR" ]; then
+              git clone "$REPO_URL" "$APP_DIR"
+            fi
+
+            cd "$APP_DIR"
+
+            git remote set-url origin "$REPO_URL"
             git pull origin main
-            docker-compose down
-            docker-compose up -d --build
-            docker image prune -f
+
+            echo "Creating .env file..."
+            cat <<EOF > .env
+            ${{ secrets.ENV_FILE }}
+            EOF
+
+            echo "Deploying with Docker Compose..."
+            docker compose down
+            docker compose build --no-cache
+            docker compose up -d
+
+            echo "Cleaning up unused Docker images..."
+            docker image prune -af --filter "until=24h"
+
+            echo "Checking container status..."
+            docker compose ps
