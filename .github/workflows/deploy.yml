@@ -1,0 +1,52 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    name: Build and Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+        env:
+          VITE_ENCRYPTION_KEY: ${{ secrets.VITE_ENCRYPTION_KEY }}
+
+      - name: Deploy to VPS
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          RELEASE: /var/www/app.peridotvault.com/releases/${{ github.sha }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H $SSH_HOST >> ~/.ssh/known_hosts
+
+          ssh -i ~/.ssh/id_ed25519 $SSH_USER@$SSH_HOST "mkdir -p $RELEASE"
+
+          rsync -avz -e "ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no" \
+            --delete --chmod=D755,F644 \
+            dist/ $SSH_USER@$SSH_HOST:$RELEASE/
+
+          ssh -i ~/.ssh/id_ed25519 $SSH_USER@$SSH_HOST "\
+            ln -sfn $RELEASE /var/www/app.peridotvault.com/current && \
+            sudo systemctl reload nginx && \
+            cd /var/www/app.peridotvault.com/releases && ls -t | tail -n +6 | xargs -r rm -rf"
