@@ -21,7 +21,6 @@ export function useBannerGames(): UseBannerGamesState {
                 setError(null);
 
                 const resAllGames = await getBannerGames();
-                console.log(resAllGames);
 
                 setGames(resAllGames.data.data);
             } catch {
