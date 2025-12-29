@@ -21,6 +21,9 @@ export interface GameFormData {
   // Distribution
   distributions: GameDistributionInput[];
 
+  // Builds
+  builds: GameBuildInput[];
+
   // Pricing
   price: number;
   tokenSymbol: string;
@@ -47,6 +50,17 @@ export interface GameDistributionInput {
     additionalNotes?: string;
   };
   native?: Record<string, any>;
+}
+
+export interface GameBuildInput {
+  id: string;
+  platform: "windows" | "mac" | "linux" | "android" | "web";
+  file?: File;
+  fileUrl?: string;
+  version: string;
+  architecture?: string;
+  minRequirements?: string;
+  recommendedRequirements?: string;
 }
 
 export interface GameDraft extends GameFormData {

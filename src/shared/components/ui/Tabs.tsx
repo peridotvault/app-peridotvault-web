@@ -4,7 +4,7 @@ import React, { useState } from "react";
 
 export interface Tab {
   id: string;
-  label: string;
+  label: string | React.ReactNode;
   content: React.ReactNode;
   disabled?: boolean;
   icon?: React.ReactNode;
@@ -61,7 +61,7 @@ export const Tabs: React.FC<TabsProps> = ({
             </button>
           ))}
         </div>
-        <div className="mt-4">{activeTabContent}</div>
+        <div className="p-6">{activeTabContent}</div>
       </div>
     );
   }
@@ -97,7 +97,7 @@ export const Tabs: React.FC<TabsProps> = ({
           ))}
         </nav>
       </div>
-      <div className="mt-4">{activeTabContent}</div>
+      <div className="p-6">{activeTabContent}</div>
     </div>
   );
 };
