@@ -274,26 +274,6 @@ export function ReviewPublishTabContent({
           </p>
         </div>
       )}
-
-      {/* Action Buttons */}
-      <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t border-border">
-        <button
-          type="button"
-          onClick={onSaveDraft}
-          disabled={isPublishing}
-          className="flex-1 px-6 py-3 rounded-md bg-muted text-foreground hover:bg-muted/80 transition font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          Save as Draft
-        </button>
-        <button
-          type="button"
-          onClick={onPublish}
-          disabled={!allRequiredValid || isPublishing}
-          className="flex-1 px-6 py-3 rounded-md bg-accent text-white hover:bg-accent/90 transition font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {isPublishing ? "Publishing..." : "Publish Game"}
-        </button>
-      </div>
     </div>
   );
 }

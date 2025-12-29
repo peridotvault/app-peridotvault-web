@@ -7,22 +7,15 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useCreateGame } from "@/features/studio/hooks/useCreateGame";
 import { GameFormData, GameBuildInput } from "@/features/studio/interfaces/gameForm";
-import { Tabs } from "@/shared/components/ui/Tabs";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faArrowLeft,
-  faSave,
-  faInfoCircle,
-  faImage,
-  faCloudUploadAlt,
-  faCheck,
-} from "@fortawesome/free-solid-svg-icons";
+import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
 import { BasicInfoTabContent } from "./_components/BasicInfoTabContent";
 import { MediaUploadTabContent } from "./_components/MediaUploadTabContent";
 import { BuildsTabContent, BuildConfig } from "./_components/BuildsTabContent";
 import { ReviewPublishTabContent } from "./_components/ReviewPublishTabContent";
-import { Button } from "@/shared/components/ui/Button";
+import { WizardProgress, WIZARD_STEPS } from "./_components/WizardProgress";
+import { WizardActions } from "./_components/WizardActions";
 
 // Validation schema
 const gameFormSchema = z.object({
@@ -38,19 +31,13 @@ const gameFormSchema = z.object({
 
 type GameFormInput = z.infer<typeof gameFormSchema>;
 
-const TAB_STEPS = [
-  { id: "basic-info", label: "Basic Info", icon: faInfoCircle, step: 1 },
-  { id: "media-upload", label: "Media", icon: faImage, step: 2 },
-  { id: "builds", label: "Builds", icon: faCloudUploadAlt, step: 3 },
-  { id: "review-publish", label: "Review", icon: faSave, step: 4 },
-] as const;
-
 export default function CreateNewGamePage() {
   const router = useRouter();
   const { createNewGame, isLoading } = useCreateGame();
 
-  // Tab state
-  const [activeTab, setActiveTab] = useState("basic-info");
+  // Wizard state
+  const [currentStep, setCurrentStep] = useState(1);
+  const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());
 
   // Form state
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
@@ -68,6 +55,7 @@ export default function CreateNewGamePage() {
     formState: { errors },
     setValue,
     watch,
+    trigger,
   } = useForm<GameFormInput>({
     resolver: zodResolver(gameFormSchema),
     defaultValues: {
@@ -147,111 +135,87 @@ export default function CreateNewGamePage() {
     }
   };
 
-  // Calculate completion for each tab
-  const getTabCompletion = (tabId: string) => {
-    switch (tabId) {
-      case "basic-info":
+  // Step validation
+  const validateStep = async (step: number): Promise<boolean> => {
+    switch (step) {
+      case 1: // Basic Info
+        const isValid = await trigger([
+          "name",
+          "shortDescription",
+          "description",
+          "categories"
+        ]);
+        return isValid && selectedCategories.length > 0;
+      case 2: // Media
+        return true; // Optional, always valid
+      case 3: // Builds
+        return true; // Optional, always valid
+      default:
+        return true;
+    }
+  };
+
+  // Navigation handlers
+  const handleNext = async () => {
+    const isValid = await validateStep(currentStep);
+    if (!isValid) return;
+
+    // Mark current step as completed
+    setCompletedSteps(prev => new Set([...prev, currentStep]));
+
+    // Move to next step
+    if (currentStep < WIZARD_STEPS.length) {
+      setCurrentStep(currentStep + 1);
+    }
+  };
+
+  const handleBack = () => {
+    if (currentStep > 1) {
+      setCurrentStep(currentStep - 1);
+    }
+  };
+
+  const handleSkip = () => {
+    // Mark as completed even if skipped
+    setCompletedSteps(prev => new Set([...prev, currentStep]));
+
+    if (currentStep < WIZARD_STEPS.length) {
+      setCurrentStep(currentStep + 1);
+    }
+  };
+
+  const handleStepClick = async (stepIndex: number) => {
+    // Only allow navigation to completed or previous steps
+    if (completedSteps.has(stepIndex + 1) || stepIndex < currentStep - 1) {
+      setCurrentStep(stepIndex + 1);
+    }
+  };
+
+  // Check if can proceed to next step
+  const canGoNext = async () => {
+    switch (currentStep) {
+      case 1:
         return !!(
           formValues.name &&
           formValues.shortDescription &&
           formValues.description &&
           selectedCategories.length > 0
         );
-      case "media-upload":
-        return !!(coverVertical && coverHorizontal);
-      case "builds":
-        return builds.length > 0;
-      case "review-publish":
-        return false;
+      case 2:
+        return true; // Optional
+      case 3:
+        return true; // Optional
       default:
-        return false;
+        return true;
     }
   };
 
-  const currentStep = TAB_STEPS.findIndex((t) => t.id === activeTab) + 1;
-
-  // Enhanced tab definitions with icons and completion status
-  const tabs = TAB_STEPS.map((tab) => {
-    let content;
-    switch (tab.id) {
-      case "basic-info":
-        content = (
-          <BasicInfoTabContent
-            register={register}
-            errors={errors}
-            selectedCategories={selectedCategories}
-            tags={tags}
-            tagInput={tagInput}
-            onCategoryToggle={handleCategoryToggle}
-            onAddTag={handleAddTag}
-            onRemoveTag={handleRemoveTag}
-            onTagInputChange={setTagInput}
-          />
-        );
-        break;
-      case "media-upload":
-        content = (
-          <MediaUploadTabContent
-            coverVertical={coverVertical}
-            onCoverVerticalChange={setCoverVertical}
-            coverHorizontal={coverHorizontal}
-            onCoverHorizontalChange={setCoverHorizontal}
-            bannerImage={bannerImage}
-            onBannerImageChange={setBannerImage}
-          />
-        );
-        break;
-      case "builds":
-        content = (
-          <BuildsTabContent
-            builds={builds}
-            onBuildsChange={setBuilds}
-          />
-        );
-        break;
-      case "review-publish":
-        content = (
-          <ReviewPublishTabContent
-            formData={{
-              name: formValues.name || "",
-              shortDescription: formValues.shortDescription || "",
-              description: formValues.description || "",
-              requiredAge: formValues.requiredAge || 0,
-              categories: selectedCategories,
-              tags: tags,
-            }}
-            mediaData={{
-              coverVertical,
-              coverHorizontal,
-              bannerImage,
-              previews,
-            }}
-            buildsData={builds}
-            pricingData={{
-              price: formValues.price || 0,
-              releaseDate: formValues.releaseDate,
-            }}
-            register={register}
-            errors={errors}
-            onPublish={() => handleSaveDraft(true)}
-            onSaveDraft={() => handleSaveDraft(false)}
-            isPublishing={isLoading}
-          />
-        );
-        break;
-    }
-
-    return {
-      id: tab.id,
-      label: tab.label,
-      content,
-    };
-  });
+  const canSkip = currentStep === 2 || currentStep === 3; // Media and Builds are optional
 
   return (
-    <div className="max-w-7xl mx-auto">
-      {/* Header with Progress */}
-      <div className="mb-10">
+    <div className="w-full">
+      {/* Header */}
+      <div className="mb-8 px-8">
         <Link
           href="/studio/games"
           className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-accent mb-4 transition-colors"
@@ -260,81 +224,171 @@ export default function CreateNewGamePage() {
           Back to My Games
         </Link>
 
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-4xl font-bold text-foreground">
-              Create New{" "}
-              <span className="bg-gradient-to-r from-accent to-accent/70 bg-clip-text text-transparent">
-                Game
-              </span>
-            </h1>
-            {/* <p className="text-muted-foreground mt-2 text-lg"> */}
-            {/*   Step {currentStep} of 4: {TAB_STEPS[currentStep - 1]?.label} */}
-            {/* </p> */}
+        <h1 className="text-4xl font-bold text-foreground">
+          Create New{" "}
+          <span className="bg-gradient-to-r from-accent to-accent/70 bg-clip-text text-transparent">
+            Game
+          </span>
+        </h1>
+        <p className="text-muted-foreground mt-2 text-lg">
+          Follow the steps to create and publish your game
+        </p>
+      </div>
+
+      {/* Two Column Layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 px-8">
+        {/* Left Column: Progress Tracker */}
+        <div className="lg:col-span-1">
+          <div className="sticky top-8">
+            <WizardProgress
+              currentStep={currentStep}
+              completedSteps={completedSteps}
+              onStepClick={handleStepClick}
+            />
           </div>
+        </div>
 
-          {/* Progress Indicator */}
-          <div className="hidden md:flex items-center gap-2">
-            {TAB_STEPS.map((step, index) => {
-              const isCompleted = getTabCompletion(step.id);
-              const isActive = activeTab === step.id;
-              const isPast = index < currentStep - 1;
-
-              return (
-                <div key={step.id} className="flex items-center">
-                  <div
-                    className={`w-10 h-10 rounded-xl flex items-center justify-center font-semibold text-sm transition-all ${isActive
-                      ? "bg-accent text-white shadow-lg scale-110"
-                      : isCompleted
-                        ? "bg-success text-white"
-                        : isPast
-                          ? "bg-success/20 text-success"
-                          : "bg-muted text-muted-foreground"
-                      }`}
-                  >
-                    {isCompleted ? (
-                      <FontAwesomeIcon icon={faCheck} size="sm" />
-                    ) : (
-                      step.step
-                    )}
-                  </div>
-                  {index < TAB_STEPS.length - 1 && (
-                    <div
-                      className={`w-12 h-0.5 ${isPast ? "bg-success" : "bg-border"
-                        }`}
-                    />
-                  )}
+        {/* Right Column: Form Content */}
+        <div className="lg:col-span-3">
+          <div className="bg-card rounded-xl border border-border shadow-md p-8">
+            {currentStep === 1 && (
+              <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
+                <div className="mb-6 pb-6 border-b border-border">
+                  <h2 className="text-2xl font-bold text-foreground mb-2">Basic Information</h2>
+                  <p className="text-muted-foreground">
+                    Tell us about your game. All fields are required.
+                  </p>
                 </div>
-              );
-            })}
+                <BasicInfoTabContent
+                  register={register}
+                  errors={errors}
+                  selectedCategories={selectedCategories}
+                  tags={tags}
+                  tagInput={tagInput}
+                  onCategoryToggle={handleCategoryToggle}
+                  onAddTag={handleAddTag}
+                  onRemoveTag={handleRemoveTag}
+                  onTagInputChange={setTagInput}
+                />
+                <WizardActions
+                  currentStep={currentStep}
+                  totalSteps={WIZARD_STEPS.length}
+                  canGoNext={!!(formValues.name && formValues.shortDescription && formValues.description && selectedCategories.length > 0)}
+                  canSkip={false}
+                  isSubmitting={isLoading}
+                  onBack={handleBack}
+                  onNext={handleNext}
+                  onSaveDraft={() => handleSaveDraft(false)}
+                />
+              </div>
+            )}
+
+            {currentStep === 2 && (
+              <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
+                <div className="mb-6 pb-6 border-b border-border">
+                  <h2 className="text-2xl font-bold text-foreground mb-2">Media Upload</h2>
+                  <p className="text-muted-foreground">
+                    Add cover images and screenshots. You can skip this step and add media later.
+                  </p>
+                </div>
+                <MediaUploadTabContent
+                  coverVertical={coverVertical}
+                  onCoverVerticalChange={setCoverVertical}
+                  coverHorizontal={coverHorizontal}
+                  onCoverHorizontalChange={setCoverHorizontal}
+                  bannerImage={bannerImage}
+                  onBannerImageChange={setBannerImage}
+                />
+                <WizardActions
+                  currentStep={currentStep}
+                  totalSteps={WIZARD_STEPS.length}
+                  canGoNext={true}
+                  canSkip={true}
+                  isSubmitting={isLoading}
+                  onBack={handleBack}
+                  onNext={handleNext}
+                  onSkip={handleSkip}
+                  onSaveDraft={() => handleSaveDraft(false)}
+                />
+              </div>
+            )}
+
+            {currentStep === 3 && (
+              <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
+                <div className="mb-6 pb-6 border-b border-border">
+                  <h2 className="text-2xl font-bold text-foreground mb-2">Game Builds</h2>
+                  <p className="text-muted-foreground">
+                    Upload game files for different platforms. You can skip this step and add builds later.
+                  </p>
+                </div>
+                <BuildsTabContent
+                  builds={builds}
+                  onBuildsChange={setBuilds}
+                />
+                <WizardActions
+                  currentStep={currentStep}
+                  totalSteps={WIZARD_STEPS.length}
+                  canGoNext={true}
+                  canSkip={true}
+                  isSubmitting={isLoading}
+                  onBack={handleBack}
+                  onNext={handleNext}
+                  onSkip={handleSkip}
+                  onSaveDraft={() => handleSaveDraft(false)}
+                />
+              </div>
+            )}
+
+            {currentStep === 4 && (
+              <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
+                <div className="mb-6 pb-6 border-b border-border">
+                  <h2 className="text-2xl font-bold text-foreground mb-2">Review & Publish</h2>
+                  <p className="text-muted-foreground">
+                    Review your game information and publish when ready.
+                  </p>
+                </div>
+                <ReviewPublishTabContent
+                  formData={{
+                    name: formValues.name || "",
+                    shortDescription: formValues.shortDescription || "",
+                    description: formValues.description || "",
+                    requiredAge: formValues.requiredAge || 0,
+                    categories: selectedCategories,
+                    tags: tags,
+                  }}
+                  mediaData={{
+                    coverVertical,
+                    coverHorizontal,
+                    bannerImage,
+                    previews,
+                  }}
+                  buildsData={builds}
+                  pricingData={{
+                    price: formValues.price || 0,
+                    releaseDate: formValues.releaseDate,
+                  }}
+                  register={register}
+                  errors={errors}
+                  onPublish={() => handleSaveDraft(true)}
+                  onSaveDraft={() => handleSaveDraft(false)}
+                  isPublishing={isLoading}
+                />
+                <WizardActions
+                  currentStep={currentStep}
+                  totalSteps={WIZARD_STEPS.length}
+                  canGoNext={false}
+                  canSkip={false}
+                  isSubmitting={isLoading}
+                  onBack={handleBack}
+                  onNext={handleNext}
+                  onSaveDraft={() => handleSaveDraft(false)}
+                  onPublish={() => handleSaveDraft(true)}
+                />
+              </div>
+            )}
           </div>
         </div>
       </div>
-
-      {/* Tabbed Form with Enhanced Styling */}
-      <div className="bg-card rounded-xl border border-border shadow-md overflow-hidden">
-        <Tabs
-          tabs={tabs}
-          defaultTab="basic-info"
-          variant="underline"
-          onTabChange={(tabId) => setActiveTab(tabId)}
-        />
-      </div>
-
-      {/* Floating Save Draft Button for Tabs 1-3 */}
-      {activeTab !== "review-publish" && (
-        <div className="fixed bottom-8 right-8 z-50">
-          <Button
-            onClick={() => handleSaveDraft(false)}
-            isLoading={isLoading}
-            size="lg"
-            className="gap-3 shadow-xl hover:shadow-2xl transition-shadow rounded-full px-8 py-6"
-          >
-            <FontAwesomeIcon icon={faSave} />
-            Save as Draft
-          </Button>
-        </div>
-      )}
     </div>
   );
 }
