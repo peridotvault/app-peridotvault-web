@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHome, faGamepad, faPlusCircle, faCog } from "@fortawesome/free-solid-svg-icons";
+import { faHome, faGamepad, faCog } from "@fortawesome/free-solid-svg-icons";
 
 export function StudioSidebar({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -11,7 +11,6 @@ export function StudioSidebar({ children }: { children: React.ReactNode }) {
   const navItems = [
     { href: "/studio", label: "Dashboard", icon: faHome },
     { href: "/studio/games", label: "My Games", icon: faGamepad },
-    { href: "/studio/games/new", label: "Create New", icon: faPlusCircle },
     { href: "/studio/settings", label: "Settings", icon: faCog },
   ];
 
@@ -70,26 +69,6 @@ export function StudioSidebar({ children }: { children: React.ReactNode }) {
 
       {/* Main Content */}
       <main className="flex-1 ml-64">
-        {/* Header */}
-        <header className="bg-card border-b border-border px-8 py-4 sticky top-0 z-10">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-lg font-semibold text-foreground">
-                {navItems.find((item) => pathname === item.href || pathname.startsWith(item.href))?.label ||
-                  "Studio"}
-              </h2>
-            </div>
-            <div className="flex items-center gap-4">
-              <Link
-                href="/"
-                className="text-sm text-muted-foreground hover:text-accent transition"
-              >
-                View Store →
-              </Link>
-            </div>
-          </div>
-        </header>
-
         {/* Page Content */}
         <div className="p-8">{children}</div>
       </main>

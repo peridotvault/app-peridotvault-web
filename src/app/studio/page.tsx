@@ -51,7 +51,7 @@ export default function StudioDashboardPage() {
   return (
     <div className="flex flex-col gap-6">
       {/* Header */}
-      <div className="flex items-center justify-between bg-gradient-to-r from-accent/10 to-transparent p-6 -mx-6 px-6 rounded-lg">
+      <div className="flex items-center justify-between bg-gradient-to-r from-accent/10 to-transparent p-6 rounded-lg">
         <div>
           <h1 className="text-4xl font-bold text-foreground">
             Welcome to{" "}

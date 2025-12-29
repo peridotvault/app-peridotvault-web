@@ -81,36 +81,44 @@ export default function EditGamePage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="flex flex-col gap-6">
       {/* Header */}
-      <div className="mb-8 flex items-center justify-between">
+      <div className="flex items-center justify-between bg-gradient-to-r from-accent/10 to-transparent p-6 rounded-lg">
         <div>
-          <Link href="/studio/games" className="text-sm text-muted-foreground hover:text-accent mb-4 inline-block">
-            <FontAwesomeIcon icon={faArrowLeft} className="mr-2" />
+          <Link
+            href="/studio/games"
+            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-accent mb-4 transition-colors"
+          >
+            <FontAwesomeIcon icon={faArrowLeft} size="sm" />
             Back to My Games
           </Link>
           <div className="flex items-center gap-3">
-            <h1 className="text-3xl font-bold text-foreground">Edit Game</h1>
+            <h1 className="text-4xl font-bold text-foreground">
+              Edit{" "}
+              <span className="bg-gradient-to-r from-accent to-accent/70 bg-clip-text text-transparent">
+                Game
+              </span>
+            </h1>
             <span
-              className={`px-3 py-1 rounded-full text-sm font-medium ${
+              className={`px-3 py-1.5 rounded-full text-sm font-semibold backdrop-blur-sm shadow-lg ${
                 game.status === "published"
-                  ? "bg-success/20 text-success"
-                  : "bg-warning/20 text-warning"
+                  ? "bg-success/90 text-white"
+                  : "bg-warning/90 text-white"
               }`}
             >
               {game.status === "published" ? "Published" : "Draft"}
             </span>
           </div>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-3">
           <Link href={`/`} target="_blank">
-            <Button variant="outline" className="gap-2">
+            <Button variant="outline" size="md" className="gap-2">
               <FontAwesomeIcon icon={faEye} />
               Preview
             </Button>
           </Link>
           {game.status === "draft" && (
-            <Button onClick={handlePublish} className="gap-2" isLoading={isUpdating}>
+            <Button onClick={handlePublish} size="md" className="gap-2 shadow-md hover:shadow-lg transition-shadow" isLoading={isUpdating}>
               Publish
             </Button>
           )}
@@ -118,10 +126,10 @@ export default function EditGamePage() {
       </div>
 
       {/* Game Info Card */}
-      <div className="bg-card rounded-lg border border-border p-6 mb-6">
+      <div className="bg-card rounded-xl border border-border p-6 hover:shadow-lg transition-all duration-300">
         <div className="flex items-start gap-6">
           {/* Cover Image */}
-          <div className="w-48 aspect-[3/4] rounded-lg overflow-hidden bg-muted flex-shrink-0">
+          <div className="w-48 aspect-[3/4] rounded-xl overflow-hidden bg-muted flex-shrink-0 shadow-md">
             {game.coverVerticalImage ? (
               <img
                 src={game.coverVerticalImage as string}
@@ -157,13 +165,14 @@ export default function EditGamePage() {
                     className="w-full mt-1 px-4 py-2 rounded-md border border-border bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-accent/50 resize-y"
                   />
                 </div>
-                <div className="flex gap-2">
-                  <Button onClick={handleSave} isLoading={isUpdating} className="gap-2">
+                <div className="flex gap-3">
+                  <Button onClick={handleSave} isLoading={isUpdating} size="md" className="gap-2 shadow-md hover:shadow-lg transition-shadow">
                     <FontAwesomeIcon icon={faSave} />
                     Save Changes
                   </Button>
                   <Button
                     variant="outline"
+                    size="md"
                     onClick={() => {
                       setIsEditing(false);
                       setEditedName(game.name);
@@ -176,14 +185,14 @@ export default function EditGamePage() {
               </div>
             ) : (
               <div>
-                <h2 className="text-2xl font-bold text-foreground mb-2">{game.name}</h2>
-                <p className="text-muted-foreground mb-4">{game.description}</p>
-                <div className="flex gap-2">
-                  <Button onClick={() => setIsEditing(true)} className="gap-2">
+                <h2 className="text-2xl font-bold text-foreground mb-3">{game.name}</h2>
+                <p className="text-muted-foreground mb-6 text-lg leading-relaxed">{game.description}</p>
+                <div className="flex gap-3">
+                  <Button onClick={() => setIsEditing(true)} size="md" className="gap-2 shadow-md hover:shadow-lg transition-shadow">
                     <FontAwesomeIcon icon={faEdit} />
                     Edit Info
                   </Button>
-                  <Button variant="danger" className="gap-2">
+                  <Button variant="danger" size="md" className="gap-2">
                     <FontAwesomeIcon icon={faTrash} />
                     Delete
                   </Button>
@@ -195,7 +204,7 @@ export default function EditGamePage() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <StatCard title="Views" value={game.views || 0} />
         <StatCard title="Purchases" value={game.purchases || 0} />
         <StatCard
@@ -205,8 +214,8 @@ export default function EditGamePage() {
       </div>
 
       {/* Details */}
-      <div className="bg-card rounded-lg border border-border p-6">
-        <h3 className="text-xl font-semibold text-foreground mb-4">Game Details</h3>
+      <div className="bg-card rounded-xl border border-border p-6 hover:shadow-lg transition-all duration-300">
+        <h3 className="text-2xl font-semibold text-foreground mb-6">Game Details</h3>
         <div className="space-y-3 text-sm">
           <DetailRow label="Price" value={`$${game.price.toFixed(2)}`} />
           <DetailRow label="Required Age" value={game.requiredAge ? String(game.requiredAge) : "All ages"} />
@@ -233,9 +242,9 @@ export default function EditGamePage() {
       </div>
 
       {/* Note */}
-      <div className="mt-6 p-4 bg-info/10 border border-info/30 rounded-lg">
-        <p className="text-sm text-info">
-          <strong>Note:</strong> This is a simplified edit page. Full editing capabilities for all
+      <div className="p-6 bg-info/10 border border-info/30 rounded-xl">
+        <p className="text-sm text-info leading-relaxed">
+          <strong className="font-semibold">Note:</strong> This is a simplified edit page. Full editing capabilities for all
           fields (media, distribution, etc.) will be available in the complete tabbed form
           interface.
         </p>
@@ -246,9 +255,9 @@ export default function EditGamePage() {
 
 function StatCard({ title, value }: { title: string; value: string | number }) {
   return (
-    <div className="bg-card rounded-lg border border-border p-4">
-      <p className="text-sm text-muted-foreground">{title}</p>
-      <p className="text-2xl font-bold text-foreground mt-1">{value}</p>
+    <div className="bg-card rounded-xl border border-border p-6 hover:shadow-lg transition-all duration-300">
+      <p className="text-sm text-muted-foreground font-medium">{title}</p>
+      <p className="text-3xl font-bold text-foreground mt-2">{value}</p>
     </div>
   );
 }
