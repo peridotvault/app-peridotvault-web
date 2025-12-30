@@ -11,7 +11,7 @@ export function StudioSidebar({ children }: { children: React.ReactNode }) {
   const navItems = [
     { href: "/studio", label: "Dashboard", icon: faHome },
     { href: "/studio/games", label: "My Games", icon: faGamepad },
-    { href: "/studio/settings", label: "Team", icon: faUsers },
+    { href: "/studio/team", label: "Team", icon: faUsers },
   ];
 
   return (
