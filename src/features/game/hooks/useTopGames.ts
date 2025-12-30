@@ -21,7 +21,6 @@ export function useTopGames(): UseTopGamesState {
                 setError(null);
 
                 const resAllGames = await getTopGames();
-                console.log(resAllGames);
 
                 setGames(resAllGames.data.data);
             } catch {
