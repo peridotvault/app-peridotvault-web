@@ -6,7 +6,7 @@ interface DropdownMenuProps {
   trigger: React.ReactNode;
   children: React.ReactNode;
   align?: "start" | "end" | "center";
-  side?: "top" | "bottom";
+  side?: "top" | "bottom" | "left" | "right";
   className?: string;
 }
 
@@ -85,6 +85,11 @@ export function DropdownMenu({
       case "top":
         return "bottom-full mb-2";
       case "bottom":
+        return "top-full mt-2";
+      case "left":
+        return "right-full mr-2 top-0";
+      case "right":
+        return "left-full ml-2 bottom-full";
       default:
         return "top-full mt-2";
     }
