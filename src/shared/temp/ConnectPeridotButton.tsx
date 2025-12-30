@@ -109,11 +109,11 @@ export function ConnectPeridotButton() {
     <button
       onClick={signMaster}
       disabled={busy}
-      className={[
-        "inline-flex items-center justify-center rounded px-4 py-2.5 text-sm font-medium",
-        "bg-white text-background hover:bg-white/15",
-        "disabled:cursor-not-allowed disabled:opacity-60",
-      ].join(" ")}
+      className={
+        busy
+          ? "rounded px-8 py-2 bg-white text-background cursor-not-allowed opacity-60"
+          : "rounded px-8 py-2 bg-white text-background hover:scale-105 cursor-pointer duration-300"
+      }
     >
       {state.publicKey
         ? short(state.publicKey)
