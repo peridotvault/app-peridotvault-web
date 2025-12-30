@@ -1,7 +1,13 @@
 "use client";
 
+import { useMemo } from "react";
 import { useUserGames } from "@/features/studio/hooks/useUserGames";
 import { Button } from "@/shared/components/ui/Button";
+import { LoadingState } from "@/shared/components/ui/LoadingState";
+import { ErrorMessage } from "@/shared/components/ui/ErrorMessage";
+import { StudioGameCard } from "@/shared/components/studio/StudioGameCard";
+import { StatCard } from "@/shared/components/studio/StatCard";
+import { RECENT_GAMES_COUNT } from "@/features/studio/constants";
 import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -22,29 +28,21 @@ export default function StudioDashboardPage() {
   const totalViews = games.reduce((sum, g) => sum + (g.views || 0), 0);
   const totalPurchases = games.reduce((sum, g) => sum + (g.purchases || 0), 0);
 
-  // Recent games (last 6)
-  const recentGames = [...games]
-    .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
-    .slice(0, 6);
+  // Recent games (last 6) - memoized
+  const recentGames = useMemo(
+    () =>
+      [...games]
+        .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
+        .slice(0, RECENT_GAMES_COUNT),
+    [games]
+  );
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-96">
-        <div className="text-center">
-          <div className="animate-spin w-16 h-16 border-4 border-accent border-t-transparent rounded-full mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading dashboard...</p>
-        </div>
-      </div>
-    );
+    return <LoadingState message="Loading dashboard..." />;
   }
 
   if (error) {
-    return (
-      <div className="bg-destructive/10 border border-destructive rounded-lg p-8 text-center">
-        <p className="text-destructive font-semibold text-lg">Error loading dashboard</p>
-        <p className="text-sm text-muted-foreground mt-2">{error}</p>
-      </div>
-    );
+    return <ErrorMessage title="Error loading dashboard" message={error} />;
   }
 
   return (
@@ -102,7 +100,9 @@ export default function StudioDashboardPage() {
             <p className="text-sm text-muted-foreground mt-1">Your recently updated games</p>
           </div>
           <Link href="/studio/games">
-            <Button variant="outline" size="sm">View All</Button>
+            <Button variant="outline" size="sm">
+              View All
+            </Button>
           </Link>
         </div>
 
@@ -118,7 +118,7 @@ export default function StudioDashboardPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {recentGames.map((game) => (
-              <GameCard key={game.id} game={game} />
+              <StudioGameCard key={game.id} game={game} variant="vertical" />
             ))}
           </div>
         )}
@@ -155,98 +155,14 @@ export default function StudioDashboardPage() {
   );
 }
 
-function StatCard({
-  title,
-  value,
-  icon,
-  trend,
-}: {
-  title: string;
-  value: number;
-  icon: any;
-  trend?: string;
-}) {
-  return (
-    <div className="bg-card rounded-xl border border-border p-6 shadow-md">
-      <div className="flex items-start justify-between mb-4">
-        <div className="w-12 h-12 rounded-lg bg-accent/10 text-accent flex items-center justify-center">
-          <FontAwesomeIcon icon={icon} className="text-xl" />
-        </div>
-        {trend && (
-          <span className="text-xs text-muted-foreground bg-muted/50 px-2 py-1 rounded-md">
-            {trend}
-          </span>
-        )}
-      </div>
-      <p className="text-3xl font-bold text-foreground mb-1">{value}</p>
-      <p className="text-sm text-muted-foreground font-medium">{title}</p>
-    </div>
-  );
-}
-
-function GameCard({ game }: { game: any }) {
-  return (
-    <Link
-      href={`/studio/games/${game.id}`}
-      className="block rounded-xl border border-border bg-card overflow-hidden hover:border-accent transition-all"
-    >
-      {/* Cover Image */}
-      <div className="aspect-[3/4] bg-muted relative overflow-hidden">
-        {game.coverVerticalImage ? (
-          <img
-            src={game.coverVerticalImage as string}
-            alt={game.name}
-            className="w-full h-full object-cover"
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center">
-            <FontAwesomeIcon icon={faGamepad} className="text-5xl text-muted-foreground/30" />
-          </div>
-        )}
-
-        {/* Status Badge */}
-        <div className="absolute top-3 right-3">
-          <span
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${
-              game.status === "published"
-                ? "bg-success/90 text-white"
-                : "bg-warning/90 text-white"
-            }`}
-          >
-            {game.status === "published" ? "Published" : "Draft"}
-          </span>
-        </div>
-      </div>
-
-      {/* Game Info */}
-      <div className="p-5">
-        <h3 className="font-semibold text-foreground text-lg mb-3 line-clamp-1">{game.name}</h3>
-        <div className="flex items-center gap-4 text-sm text-muted-foreground">
-          <div className="flex items-center gap-1.5">
-            <FontAwesomeIcon icon={faEye} className="text-xs" />
-            <span>{game.views || 0}</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <FontAwesomeIcon icon={faShoppingCart} className="text-xs" />
-            <span>{game.purchases || 0}</span>
-          </div>
-        </div>
-      </div>
-    </Link>
-  );
-}
-
-function QuickActionCard({
-  title,
-  description,
-  icon,
-  href,
-}: {
+interface QuickActionCardProps {
   title: string;
   description: string;
   icon: any;
   href: string;
-}) {
+}
+
+function QuickActionCard({ title, description, icon, href }: QuickActionCardProps) {
   return (
     <Link
       href={href}

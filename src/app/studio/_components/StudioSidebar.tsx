@@ -37,10 +37,9 @@ export function StudioSidebar({ children }: { children: React.ReactNode }) {
                     className={`
                       flex items-center gap-3 px-4 py-2.5 rounded-lg
                       transition-colors duration-200
-                      ${
-                        isActive
-                          ? "bg-accent text-white shadow-flat-sm border-l-4 border-accent"
-                          : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                      ${isActive
+                        ? "bg-accent text-white shadow-flat-sm border-l-4 border-accent"
+                        : "text-muted-foreground hover:bg-muted hover:text-foreground"
                       }
                     `}
                   >

@@ -1,14 +1,15 @@
 import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faDesktop, faMobile, faGlobe, faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { CompactFileInput } from "@/shared/components/ui/CompactFileInput";
+import { PLATFORMS, PLATFORM_EXTENSIONS, DEFAULT_VERSION, type PlatformId } from "@/features/studio/constants/builds";
 
 export interface BuildConfig {
   id: string;
-  platform: "windows" | "mac" | "linux" | "android" | "web";
+  platform: PlatformId;
   file: File | null;
   version: string;
-  architecture?: "32-bit" | "64-bit" | "arm" | "universal";
+  architecture?: string;
   minRequirements?: string;
   recommendedRequirements?: string;
 }
@@ -18,23 +19,15 @@ interface BuildsTabContentProps {
   onBuildsChange: (builds: BuildConfig[]) => void;
 }
 
-const PLATFORMS = [
-  { id: "windows", name: "Windows", icon: faDesktop, architectures: ["32-bit", "64-bit"] },
-  { id: "mac", name: "macOS", icon: faDesktop, architectures: ["64-bit", "arm", "universal"] },
-  { id: "linux", name: "Linux", icon: faDesktop, architectures: ["32-bit", "64-bit", "arm"] },
-  { id: "android", name: "Android", icon: faMobile, architectures: ["armeabi-v7a", "arm64-v8a", "x86", "x86_64"] },
-  { id: "web", name: "Web", icon: faGlobe, architectures: [] },
-] as const;
-
 export function BuildsTabContent({ builds, onBuildsChange }: BuildsTabContentProps) {
   const [expandedBuilds, setExpandedBuilds] = useState<Set<string>>(new Set());
 
-  const handleAddBuild = (platform: "windows" | "mac" | "linux" | "android" | "web") => {
+  const handleAddBuild = (platform: PlatformId) => {
     const newBuild: BuildConfig = {
       id: Math.random().toString(36).substring(7),
       platform,
       file: null,
-      version: "1.0.0",
+      version: DEFAULT_VERSION,
       architecture: PLATFORMS.find((p) => p.id === platform)?.architectures[0] as any,
     };
     onBuildsChange([...builds, newBuild]);
@@ -84,7 +77,7 @@ export function BuildsTabContent({ builds, onBuildsChange }: BuildsTabContentPro
               <button
                 key={platform.id}
                 type="button"
-                onClick={() => !hasBuild && handleAddBuild(platform.id as any)}
+                onClick={() => !hasBuild && handleAddBuild(platform.id)}
                 disabled={hasBuild}
                 className={`p-6 rounded-lg border-2 transition flex flex-col items-center gap-4 ${
                   hasBuild
@@ -209,17 +202,7 @@ export function BuildsTabContent({ builds, onBuildsChange }: BuildsTabContentPro
                       {/* File Upload */}
                       <CompactFileInput
                         label="Build File"
-                        accept={
-                          build.platform === "windows"
-                            ? ".exe"
-                            : build.platform === "android"
-                            ? ".apk"
-                            : build.platform === "mac"
-                            ? ".dmg"
-                            : build.platform === "linux"
-                            ? ".AppImage"
-                            : ".zip"
-                        }
+                        accept={PLATFORM_EXTENSIONS[build.platform]}
                         file={build.file || null}
                         onFileSelect={(file) => handleUpdateBuild(build.id, { file })}
                         helperText={

@@ -3,14 +3,17 @@
 import { useState } from "react";
 import { useUserGames } from "@/features/studio/hooks/useUserGames";
 import { Button } from "@/shared/components/ui/Button";
+import { LoadingState } from "@/shared/components/ui/LoadingState";
+import { ErrorMessage } from "@/shared/components/ui/ErrorMessage";
+import { StudioGameCard } from "@/shared/components/studio/StudioGameCard";
 import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faGamepad,
   faEdit,
   faTrash,
-  faEye,
   faPlus,
+  faEye,
   faFileAlt,
 } from "@fortawesome/free-solid-svg-icons";
 
@@ -29,26 +32,11 @@ export default function MyGamesPage() {
   });
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-96">
-        <div className="text-center">
-          <div className="animate-spin w-16 h-16 border-4 border-accent border-t-transparent rounded-full mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading games...</p>
-        </div>
-      </div>
-    );
+    return <LoadingState message="Loading games..." />;
   }
 
   if (error) {
-    return (
-      <div className="bg-destructive/10 border border-destructive rounded-lg p-8 text-center">
-        <p className="text-destructive font-semibold text-lg">Error loading games</p>
-        <p className="text-sm text-muted-foreground mt-2">{error}</p>
-        <Button onClick={() => refetch()} className="mt-4">
-          Retry
-        </Button>
-      </div>
-    );
+    return <ErrorMessage title="Error loading games" message={error} onRetry={() => refetch()} />;
   }
 
   return (
@@ -109,7 +97,15 @@ export default function MyGamesPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredGames.map((game) => (
-            <GameCard key={game.id} game={game} />
+            <GameCardWithActions
+              key={game.id}
+              game={game}
+              onEdit={(gameId) => (window.location.href = `/studio/games/${gameId}`)}
+              onDelete={(gameId) => {
+                // TODO: Implement delete functionality
+                console.log("Delete game:", gameId);
+              }}
+            />
           ))}
         </div>
       )}
@@ -117,15 +113,13 @@ export default function MyGamesPage() {
   );
 }
 
-function FilterButton({
-  active,
-  onClick,
-  children,
-}: {
+interface FilterButtonProps {
   active: boolean;
   onClick: () => void;
   children: React.ReactNode;
-}) {
+}
+
+function FilterButton({ active, onClick, children }: FilterButtonProps) {
   return (
     <button
       onClick={onClick}
@@ -140,45 +134,59 @@ function FilterButton({
   );
 }
 
-function GameCard({ game }: { game: any }) {
+interface GameCardWithActionsProps {
+  game: {
+    id: string;
+    name: string;
+    shortDescription?: string;
+    coverHorizontalImage?: string | File | null;
+    coverVerticalImage?: string | File | null;
+    status: "published" | "draft";
+    views: number;
+    purchases: number;
+    updatedAt: string;
+  };
+  onEdit: (gameId: string) => void;
+  onDelete: (gameId: string) => void;
+}
+
+function GameCardWithActions({ game, onEdit, onDelete }: GameCardWithActionsProps) {
   return (
     <div className="bg-card rounded-xl border border-border overflow-hidden hover:border-accent transition-all group">
       {/* Cover Image */}
-      <Link href={`/studio/games/${game.id}`}>
-        <div className="aspect-video bg-muted relative overflow-hidden">
-          {game.coverHorizontalImage ? (
-            <img
-              src={game.coverHorizontalImage as string}
-              alt={game.name}
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center">
-              <FontAwesomeIcon icon={faFileAlt} className="text-5xl text-muted-foreground/30" />
-            </div>
-          )}
-
-          {/* Status Badge */}
-          <div className="absolute top-3 right-3">
-            <span
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${
-                game.status === "published"
-                  ? "bg-success/90 text-white"
-                  : "bg-warning/90 text-white"
-              }`}
-            >
-              {game.status === "published" ? "Published" : "Draft"}
-            </span>
+      <div className="aspect-video bg-muted relative overflow-hidden">
+        {game.coverHorizontalImage ? (
+          <img
+            src={game.coverHorizontalImage as string}
+            alt={game.name}
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center">
+            <FontAwesomeIcon icon={faGamepad} className="text-5xl text-muted-foreground/30" />
           </div>
+        )}
+
+        {/* Status Badge */}
+        <div className="absolute top-3 right-3">
+          <span
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${
+              game.status === "published"
+                ? "bg-success/90 text-white"
+                : "bg-warning/90 text-white"
+            }`}
+          >
+            {game.status === "published" ? "Published" : "Draft"}
+          </span>
         </div>
-      </Link>
+      </div>
 
       {/* Info */}
       <div className="p-5">
-        <Link href={`/studio/games/${game.id}`}>
-          <h3 className="font-semibold text-foreground text-lg mb-2 line-clamp-1">{game.name}</h3>
-        </Link>
-        <p className="text-sm text-muted-foreground line-clamp-2 mb-4">{game.shortDescription}</p>
+        <h3 className="font-semibold text-foreground text-lg mb-2 line-clamp-1">{game.name}</h3>
+        {game.shortDescription && (
+          <p className="text-sm text-muted-foreground line-clamp-2 mb-4">{game.shortDescription}</p>
+        )}
 
         {/* Stats */}
         <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
@@ -194,15 +202,19 @@ function GameCard({ game }: { game: any }) {
 
         {/* Actions */}
         <div className="flex gap-3">
-          <Link href={`/studio/games/${game.id}`} className="flex-1">
-            <Button variant="secondary" size="md" className="w-full gap-2">
-              <FontAwesomeIcon icon={faEdit} />
-              Edit
-            </Button>
-          </Link>
-          <Button variant="outline" size="md">
+          <button
+            onClick={() => onEdit(game.id)}
+            className="flex-1 px-4 py-2 rounded-lg bg-muted hover:bg-muted/80 text-foreground font-medium text-sm transition-colors flex items-center justify-center gap-2"
+          >
+            <FontAwesomeIcon icon={faEdit} />
+            Edit
+          </button>
+          <button
+            onClick={() => onDelete(game.id)}
+            className="px-4 py-2 rounded-lg border border-border hover:border-destructive text-muted-foreground hover:text-destructive transition-colors"
+          >
             <FontAwesomeIcon icon={faTrash} />
-          </Button>
+          </button>
         </div>
       </div>
     </div>

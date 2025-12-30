@@ -5,8 +5,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useCreateGame } from "@/features/studio/hooks/useCreateGame";
-import { GameFormData, GameBuildInput } from "@/features/studio/interfaces/gameForm";
+import { GameFormData } from "@/features/studio/interfaces/gameForm";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
@@ -17,6 +16,11 @@ import { BuildsTabContent, BuildConfig } from "./_components/BuildsTabContent";
 import { ReviewPublishTabContent } from "./_components/ReviewPublishTabContent";
 import { WizardProgress, WIZARD_STEPS } from "./_components/WizardProgress";
 import { WizardActions } from "./_components/WizardActions";
+import { useGameFormWizard } from "@/features/studio/hooks/useGameFormWizard";
+import { useGameFormState } from "@/features/studio/hooks/useGameFormState";
+import { useGameFormSubmission } from "@/features/studio/hooks/useGameFormSubmission";
+import { transformToGameFormData } from "@/features/studio/utils/gameFormTransformer";
+import { WIZARD_STEPS as CONST_WIZARD_STEPS } from "@/features/studio/constants/steps";
 
 // Validation schema
 const gameFormSchema = z.object({
@@ -36,24 +40,42 @@ type GameFormInput = z.infer<typeof gameFormSchema>;
 
 export default function CreateNewGamePage() {
   const router = useRouter();
-  const { createNewGame, isLoading } = useCreateGame();
-
-  // Wizard state
-  const [currentStep, setCurrentStep] = useState(1);
-  const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());
 
   // Generate unique game ID on mount
   const [gameId] = useState(() => generateGameId());
 
-  // Form state
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [tags, setTags] = useState<string[]>([]);
-  const [tagInput, setTagInput] = useState("");
-  const [coverVertical, setCoverVertical] = useState<File | null>(null);
-  const [coverHorizontal, setCoverHorizontal] = useState<File | null>(null);
-  const [bannerImage, setBannerImage] = useState<File | null>(null);
-  const [previews, setPreviews] = useState<Array<{ id: string; file: File; preview: string; type: "image" | "video" }>>([]);
-  const [builds, setBuilds] = useState<BuildConfig[]>([]);
+  // Use custom hooks
+  const {
+    currentStep,
+    completedSteps,
+    handleNext,
+    handleBack,
+    handleSkip,
+    handleStepClick,
+    canGoNext,
+    canSkip,
+  } = useGameFormWizard(CONST_WIZARD_STEPS.length);
+
+  const {
+    selectedCategories,
+    handleCategoryToggle,
+    tags,
+    tagInput,
+    handleAddTag,
+    handleRemoveTag,
+    setTagInput,
+    coverVertical,
+    setCoverVertical,
+    coverHorizontal,
+    setCoverHorizontal,
+    bannerImage,
+    setBannerImage,
+    previews,
+    builds,
+    setBuilds,
+  } = useGameFormState();
+
+  const { handleSubmit: submitForm, isSubmitting, error, clearError } = useGameFormSubmission();
 
   const {
     register,
@@ -80,68 +102,44 @@ export default function CreateNewGamePage() {
 
   const formValues = watch();
 
-  const handleCategoryToggle = (categoryId: string) => {
-    const updated = selectedCategories.includes(categoryId)
-      ? selectedCategories.filter((c) => c !== categoryId)
-      : [...selectedCategories, categoryId];
-    setSelectedCategories(updated);
-    setValue("categories", updated);
-  };
+  // Sync categories and tags with React Hook Form
+  useEffect(() => {
+    setValue("categories", selectedCategories);
+  }, [selectedCategories, setValue]);
 
-  const handleAddTag = () => {
-    if (tagInput.trim() && !tags.includes(tagInput.trim())) {
-      const updated = [...tags, tagInput.trim()];
-      setTags(updated);
-      setValue("tags", updated);
-      setTagInput("");
-    }
-  };
-
-  const handleRemoveTag = (tag: string) => {
-    const updated = tags.filter((t) => t !== tag);
-    setTags(updated);
-    setValue("tags", updated);
-  };
+  useEffect(() => {
+    setValue("tags", tags);
+  }, [tags, setValue]);
 
   const handleSaveDraft = async (publish: boolean = false) => {
-    const formData: GameFormData = {
-      gameId: gameId,
-      name: formValues.name,
-      shortDescription: formValues.shortDescription,
-      description: formValues.description,
-      websiteUrl: formValues.websiteUrl || null,
-      categories: selectedCategories,
-      tags: tags,
-      requiredAge: formValues.requiredAge,
-      price: formValues.price,
-      releaseDate: formValues.releaseDate,
+    const mediaState = {
       coverVerticalImage: coverVertical,
       coverHorizontalImage: coverHorizontal,
-      bannerImage: bannerImage || null,
-      previews: previews.map((preview) => ({
-        id: preview.id,
-        kind: preview.type,
-        src: preview.file,
-        order: 0,
-      })),
-      distributions: [],
-      builds: builds.map((build) => ({
-        id: build.id,
-        platform: build.platform,
-        file: build.file || undefined,
-        version: build.version,
-        architecture: build.architecture,
-        minRequirements: build.minRequirements,
-        recommendedRequirements: build.recommendedRequirements,
-      })),
-      status: publish ? "published" : "draft",
-      tokenSymbol: "ICP",
+      bannerImage: bannerImage,
+      previews,
     };
 
-    const result = await createNewGame(formData);
+    const buildState = { builds };
+
+    const formData = transformToGameFormData(
+      {
+        ...formValues,
+        gameId,
+        categories: selectedCategories,
+        tags,
+      },
+      mediaState,
+      buildState,
+      publish
+    );
+
+    const result = await submitForm(formData);
 
     if (result.success) {
       router.push("/studio/games");
+    } else if (result.error) {
+      // Error is already set in the hook
+      console.error("Failed to save game:", result.error);
     }
   };
 
@@ -165,44 +163,15 @@ export default function CreateNewGamePage() {
     }
   };
 
-  // Navigation handlers
-  const handleNext = async () => {
+  const handleNextWithValidation = async () => {
     const isValid = await validateStep(currentStep);
     if (!isValid) return;
 
-    // Mark current step as completed
-    setCompletedSteps(prev => new Set([...prev, currentStep]));
-
-    // Move to next step
-    if (currentStep < WIZARD_STEPS.length) {
-      setCurrentStep(currentStep + 1);
-    }
-  };
-
-  const handleBack = () => {
-    if (currentStep > 1) {
-      setCurrentStep(currentStep - 1);
-    }
-  };
-
-  const handleSkip = () => {
-    // Mark as completed even if skipped
-    setCompletedSteps(prev => new Set([...prev, currentStep]));
-
-    if (currentStep < WIZARD_STEPS.length) {
-      setCurrentStep(currentStep + 1);
-    }
-  };
-
-  const handleStepClick = async (stepIndex: number) => {
-    // Only allow navigation to completed or previous steps
-    if (completedSteps.has(stepIndex + 1) || stepIndex < currentStep - 1) {
-      setCurrentStep(stepIndex + 1);
-    }
+    await handleNext();
   };
 
   // Check if can proceed to next step
-  const canGoNext = async () => {
+  const checkCanGoNext = () => {
     switch (currentStep) {
       case 1:
         return !!(
@@ -219,8 +188,6 @@ export default function CreateNewGamePage() {
         return true;
     }
   };
-
-  const canSkip = currentStep === 2 || currentStep === 3; // Media and Builds are optional
 
   return (
     <div className="w-full">
@@ -284,11 +251,11 @@ export default function CreateNewGamePage() {
                 <WizardActions
                   currentStep={currentStep}
                   totalSteps={WIZARD_STEPS.length}
-                  canGoNext={!!(formValues.name && formValues.shortDescription && formValues.description && selectedCategories.length > 0)}
+                  canGoNext={checkCanGoNext()}
                   canSkip={false}
-                  isSubmitting={isLoading}
+                  isSubmitting={isSubmitting}
                   onBack={handleBack}
-                  onNext={handleNext}
+                  onNext={handleNextWithValidation}
                   onSaveDraft={() => handleSaveDraft(false)}
                 />
               </div>
@@ -315,9 +282,9 @@ export default function CreateNewGamePage() {
                   totalSteps={WIZARD_STEPS.length}
                   canGoNext={true}
                   canSkip={true}
-                  isSubmitting={isLoading}
+                  isSubmitting={isSubmitting}
                   onBack={handleBack}
-                  onNext={handleNext}
+                  onNext={handleNextWithValidation}
                   onSkip={handleSkip}
                   onSaveDraft={() => handleSaveDraft(false)}
                 />
@@ -341,9 +308,9 @@ export default function CreateNewGamePage() {
                   totalSteps={WIZARD_STEPS.length}
                   canGoNext={true}
                   canSkip={true}
-                  isSubmitting={isLoading}
+                  isSubmitting={isSubmitting}
                   onBack={handleBack}
-                  onNext={handleNext}
+                  onNext={handleNextWithValidation}
                   onSkip={handleSkip}
                   onSaveDraft={() => handleSaveDraft(false)}
                 />
@@ -384,16 +351,16 @@ export default function CreateNewGamePage() {
                   errors={errors}
                   onPublish={() => handleSaveDraft(true)}
                   onSaveDraft={() => handleSaveDraft(false)}
-                  isPublishing={isLoading}
+                  isPublishing={isSubmitting}
                 />
                 <WizardActions
                   currentStep={currentStep}
                   totalSteps={WIZARD_STEPS.length}
                   canGoNext={false}
                   canSkip={false}
-                  isSubmitting={isLoading}
+                  isSubmitting={isSubmitting}
                   onBack={handleBack}
-                  onNext={handleNext}
+                  onNext={handleNextWithValidation}
                   onSaveDraft={() => handleSaveDraft(false)}
                   onPublish={() => handleSaveDraft(true)}
                 />
