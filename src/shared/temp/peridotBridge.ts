@@ -54,3 +54,34 @@ export function peridotRequest<T = any>(
         window.postMessage(payload, "*");
     });
 }
+
+export interface SignatureResponse {
+    signature: string;
+    publicKey: string;
+}
+
+export async function signMessage(message: string): Promise<SignatureResponse> {
+    const peridot = (window as any).peridotwallet;
+
+    if (!peridot?.master?.isPeridotWallet) {
+        throw new Error("PeridotWallet extension not detected");
+    }
+
+    const bytes = new TextEncoder().encode(message);
+    const res = await peridot.master.signMessage(bytes);
+
+    const signature =
+        res?.signature ?? res?.signatureBase64 ?? res?.signatureHex;
+    const publicKey =
+        res?.publicKey ?? res?.publicKeyBase64 ?? res?.publicKeyBase58;
+
+    if (!signature) {
+        throw new Error("signMessage did not return a signature");
+    }
+
+    return {
+        signature,
+        publicKey: publicKey || "",
+    };
+}
+
