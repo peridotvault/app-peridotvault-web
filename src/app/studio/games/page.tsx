@@ -154,7 +154,7 @@ function FilterButton({
 
 function GameCard({ game }: { game: any }) {
   return (
-    <div className="bg-card rounded-xl border border-border overflow-hidden hover:shadow-lg transition-all duration-300 group">
+    <div className="bg-card rounded-xl border border-border overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 group">
       {/* Cover Image */}
       <Link href={`/studio/games/${game.id}`}>
         <div className="aspect-video bg-muted relative overflow-hidden">

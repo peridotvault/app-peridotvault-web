@@ -109,7 +109,7 @@ export default function StudioDashboardPage() {
       </div>
 
       {/* Recent Games - Card Grid */}
-      <div className="bg-card rounded-lg border border-border p-6">
+      <div className="bg-card rounded-lg border border-border p-6 shadow-lg">
         <div className="flex items-center justify-between mb-6">
           <div>
             <h2 className="text-2xl font-bold text-foreground">Recent Games</h2>
@@ -149,7 +149,7 @@ export default function StudioDashboardPage() {
       </div>
 
       {/* Quick Actions - Enhanced */}
-      <div className="bg-card rounded-lg border border-border p-6">
+      <div className="bg-card rounded-lg border border-border p-6 shadow-lg">
         <div className="mb-6">
           <h2 className="text-2xl font-bold text-foreground">Quick Actions</h2>
           <p className="text-sm text-muted-foreground mt-1">
@@ -208,7 +208,7 @@ function StatCard({
 
   return (
     <div
-      className={`relative bg-card rounded-xl border p-5 hover:shadow-lg transition-all duration-300 ${highlight ? "border-accent/30 shadow-md" : "border-border"
+      className={`relative bg-card rounded-xl border p-5 shadow-lg hover:shadow-xl transition-all duration-300 ${highlight ? "border-accent/30 shadow-lg" : "border-border shadow-lg"
         }`}
     >
       <div className="flex items-start justify-between mb-3">
@@ -233,7 +233,7 @@ function GameCard({ game }: { game: any }) {
   return (
     <Link
       href={`/studio/games/${game.id}`}
-      className="group block bg-muted/20 hover:bg-muted/40 rounded-xl border border-border hover:border-accent/30 transition-all duration-300 overflow-hidden"
+      className="group block bg-muted/20 hover:bg-muted/40 rounded-xl border border-border hover:border-accent/30 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden"
     >
       {/* Cover Image */}
       <div className="aspect-[3/4] bg-muted relative overflow-hidden">
@@ -318,7 +318,7 @@ function QuickActionCard({
   return (
     <Link
       href={href}
-      className={`group relative p-5 rounded-xl border-2 border-border transition-all duration-300 hover:shadow-lg ${colorClasses[color as keyof typeof colorClasses]}`}
+      className={`group relative p-5 rounded-xl border-2 border-border shadow-lg hover:shadow-xl transition-all duration-300 ${colorClasses[color as keyof typeof colorClasses]}`}
     >
       <div className="flex items-start gap-4">
         <div
