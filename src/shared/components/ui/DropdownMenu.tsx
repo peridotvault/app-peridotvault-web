@@ -6,6 +6,7 @@ interface DropdownMenuProps {
   trigger: React.ReactNode;
   children: React.ReactNode;
   align?: "start" | "end" | "center";
+  side?: "top" | "bottom";
   className?: string;
 }
 
@@ -13,6 +14,7 @@ export function DropdownMenu({
   trigger,
   children,
   align = "end",
+  side = "bottom",
   className = "",
 }: DropdownMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
@@ -77,6 +79,17 @@ export function DropdownMenu({
     }
   };
 
+  // Get side/position classes
+  const getSideClasses = () => {
+    switch (side) {
+      case "top":
+        return "bottom-full mb-2";
+      case "bottom":
+      default:
+        return "top-full mt-2";
+    }
+  };
+
   return (
     <div className={`relative ${className}`}>
       <div
@@ -102,7 +115,7 @@ export function DropdownMenu({
           ref={menuRef}
           role="menu"
           aria-orientation="vertical"
-          className={`absolute top-full mt-2 z-50 min-w-[200px] rounded-xl border border-white/10 bg-card shadow-arise-sm ${getAlignmentClasses()}`}
+          className={`absolute ${getSideClasses()} z-50 min-w-[200px] rounded-xl border border-white/10 bg-card shadow-arise-sm ${getAlignmentClasses()}`}
         >
           {children}
         </div>
