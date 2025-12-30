@@ -3,69 +3,65 @@
 
 import { useState } from "react";
 
-type ConnectState = {
-  evmAddress?: string;
-  solanaPublicKey?: string;
+type SignState = {
+  signature?: string;
+  publicKey?: string;
+  message?: string;
 };
 
-function shortAddr(v?: string, head = 6, tail = 4) {
+function short(v?: string, head = 10, tail = 10) {
   if (!v) return "-";
   if (v.length <= head + tail + 3) return v;
   return `${v.slice(0, head)}...${v.slice(-tail)}`;
 }
 
-export function ConnectPeridotButton() {
-  const [state, setState] = useState<ConnectState>({});
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string>("");
+function toU8Message(input: string): Uint8Array {
+  return new TextEncoder().encode(input);
+}
 
-  async function connectAll() {
+export function ConnectPeridotButton() {
+  const [state, setState] = useState<SignState>({
+    message: "halo tolong sign message ini",
+  });
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+
+  async function signMaster() {
     setBusy(true);
     setError("");
 
     try {
       const peridot = (window as any).peridotwallet;
 
-      if (
-        !peridot?.ethereum?.isPeridotWallet &&
-        !peridot?.solana?.isPeridotWallet
-      ) {
+      if (!peridot?.master?.isPeridotWallet) {
         throw new Error(
-          "PeridotWallet extension not detected (window.peridotwallet missing)."
+          "PeridotWallet extension not detected (window.peridotwallet.master missing)."
         );
       }
 
-      const ethereum = peridot?.ethereum;
-      const solana = peridot?.solana;
+      const msg = state.message ?? "";
+      if (!msg.trim()) throw new Error("Message cannot be empty.");
 
-      // ===== EVM =====
-      let evmAddress: string | undefined;
-      try {
-        const accounts = await ethereum.request({
-          method: "eth_requestAccounts",
-        });
-        evmAddress = accounts?.[0];
-      } catch (e: any) {
-        console.warn("EVM connect failed:", e?.message);
+      // IMPORTANT:
+      // Runtime kamu expect params: { message: number[] }
+      // Jadi kita kirim Uint8Array (kebanyakan provider akan serialize ke number[])
+      const bytes = toU8Message(msg);
+
+      // ✅ master API: signMessage(messageBytes)
+      const res = await peridot.master.signMessage(bytes);
+      console.log(res);
+
+      // Asumsi hasilnya { signature, publicKey } (sesuai ConnectPage kamu)
+      const signature =
+        res?.signature ?? res?.signatureBase64 ?? res?.signatureHex;
+      const publicKey =
+        res?.publicKey ?? res?.publicKeyBase64 ?? res?.publicKeyBase58;
+
+      if (!signature) {
+        throw new Error("signMessage did not return a signature.");
       }
 
-      // ===== Solana =====
-      let solanaPublicKey: string | undefined;
-      try {
-        const res = await solana.connect();
-        // kamu return string publicKey di inpage.ts (OK)
-        solanaPublicKey = res?.publicKey;
-      } catch (e: any) {
-        console.warn("Solana connect failed:", e?.message);
-      }
-
-      if (!evmAddress && !solanaPublicKey) {
-        throw new Error(
-          "PeridotWallet not responding (both EVM & Solana failed)."
-        );
-      }
-
-      setState({ evmAddress, solanaPublicKey });
+      setState((s) => ({ ...s, signature, publicKey }));
     } catch (e: any) {
       setError(e?.message ?? "Unknown error");
       console.error(e);
@@ -75,43 +71,24 @@ export function ConnectPeridotButton() {
   }
 
   return (
-    <div className="rounded-2xl">
-      {state.evmAddress || state.solanaPublicKey ? (
-        <div className="grid gap-2 rounded-xl border border-white/10 bg-white/5 p-3">
-          {state.evmAddress && (
-            <div className="flex items-center justify-between">
-              <div className="font-mono text-xs">
-                {shortAddr(state.evmAddress)}
-              </div>
-              <div className="text-xs opacity-70">EVM</div>
-            </div>
-          )}
-          {state.solanaPublicKey && (
-            <div className="flex items-center justify-between">
-              <div className="font-mono text-xs">
-                {shortAddr(state.solanaPublicKey, 6, 6)}
-              </div>
-              <div className="text-xs opacity-70">Solana</div>
-            </div>
-          )}
-        </div>
-      ) : (
-        <div className="grid gap-2">
-          <button
-            onClick={connectAll}
-            disabled={busy}
-            className={[
-              "inline-flex items-center justify-center rounded-xl px-4 py-2.5 text-sm font-medium",
-              "bg-white text-black hover:bg-white/90",
-              "disabled:cursor-not-allowed disabled:opacity-60",
-            ].join(" ")}
-          >
-            {busy ? "Connecting..." : "Connect PeridotWallet"}
-          </button>
+    <div className="grid gap-3 rounded-2xl border border-white/10 bg-white/5 p-4">
+      <button
+        onClick={signMaster}
+        disabled={busy}
+        className={[
+          "inline-flex items-center justify-center rounded-xl px-4 py-2.5 text-sm font-medium",
+          "bg-white text-black hover:bg-white/90",
+          "disabled:cursor-not-allowed disabled:opacity-60",
+        ].join(" ")}
+      >
+        {state.signature
+          ? short(state.publicKey)
+          : busy
+          ? "Connecting..."
+          : "Connect"}
+      </button>
 
-          {error && <div className="text-xs text-red-400">{error}</div>}
-        </div>
-      )}
+      {error && <div className="text-xs text-red-400">{error}</div>}
     </div>
   );
 }
