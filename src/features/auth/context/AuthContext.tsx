@@ -4,6 +4,25 @@ import React, { createContext, useContext, useState, useEffect, useCallback } fr
 import type { AuthContextValue, AuthCredentials, WalletInfo } from "../interfaces";
 import { signMessage } from "@/shared/temp/peridotBridge";
 
+// Extend Window interface for peridotwallet
+declare global {
+  interface Window {
+    peridotwallet?: {
+      master?: {
+        isPeridotWallet?: boolean;
+        signMessage?: (message: Uint8Array) => Promise<{
+          signature?: string;
+          signatureBase64?: string;
+          signatureHex?: string;
+          publicKey?: string;
+          publicKeyBase64?: string;
+          publicKeyBase58?: string;
+        }>;
+      };
+    };
+  }
+}
+
 const STORAGE_KEY = "peridot_auth_credentials";
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
