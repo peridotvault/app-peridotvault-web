@@ -4,8 +4,9 @@
 import { useState } from "react";
 
 type SignState = {
-  signature?: string;
   publicKey?: string;
+  signature?: string;
+  signedMessage?: string;
   message?: string;
 };
 
@@ -19,51 +20,85 @@ function toU8Message(input: string): Uint8Array {
   return new TextEncoder().encode(input);
 }
 
+// Challenge builder demo (production: ambil dari server)
+function buildMasterChallenge(domain: string) {
+  const issuedAt = new Date().toISOString();
+  const expirationTime = new Date(Date.now() + 5 * 60_000).toISOString();
+
+  const nonce = crypto.getRandomValues(new Uint8Array(16));
+  const nonceHex = Array.from(nonce)
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+
+  return {
+    domain,
+    uri: `https://${domain}`,
+    nonce: nonceHex,
+    issuedAt,
+    expirationTime,
+    version: "1" as const, // penting: match type "1"
+    // statement?: "..."
+  };
+}
+
 export function ConnectPeridotButton() {
   const [state, setState] = useState<SignState>({
-    message: "halo tolong sign message ini",
+    message: "Login from app.peridotvault.com",
   });
   const [busy, setBusy] = useState(false);
-  const [error, setError] = useState("");
+  // const [error, setError] = useState("");
+
+  function getPeridot() {
+    if (typeof window === "undefined") return null;
+    return (window as any).peridotwallet;
+  }
+
+  function assertPeridot() {
+    if (!getPeridot().master.isPeridotWallet) {
+      throw new Error(
+        "PeridotWallet extension not detected (window.peridotwallet.master missing)."
+      );
+    }
+  }
 
   async function signMaster() {
     setBusy(true);
-    setError("");
-
+    // setError("");
     try {
-      const peridot = (window as any).peridotwallet;
+      assertPeridot();
 
-      if (!peridot?.master?.isPeridotWallet) {
-        throw new Error(
-          "PeridotWallet extension not detected (window.peridotwallet.master missing)."
-        );
-      }
+      const domain = window.location.host;
+      const challenge = buildMasterChallenge(domain);
 
-      const msg = state.message ?? "";
-      if (!msg.trim()) throw new Error("Message cannot be empty.");
+      const msgText = state.message ?? "";
+      if (!msgText.trim()) throw new Error("Message cannot be empty.");
 
-      // IMPORTANT:
-      // Runtime kamu expect params: { message: number[] }
-      // Jadi kita kirim Uint8Array (kebanyakan provider akan serialize ke number[])
-      const bytes = toU8Message(msg);
+      // IMPORTANT: runtime terbaru expect { message: Uint8Array, challenge }
+      const res = await getPeridot().master.signMessage(
+        toU8Message(msgText),
+        challenge
+      );
 
-      // ✅ master API: signMessage(messageBytes)
-      const res = await peridot.master.signMessage(bytes);
       console.log(res);
 
-      // Asumsi hasilnya { signature, publicKey } (sesuai ConnectPage kamu)
+      // support new nested results OR legacy flat results
       const signature =
-        res?.signature ?? res?.signatureBase64 ?? res?.signatureHex;
+        res?.signature?.data ?? res?.signature ?? res?.signatureBase64;
       const publicKey =
-        res?.publicKey ?? res?.publicKeyBase64 ?? res?.publicKeyBase58;
+        res?.publicKey?.data ?? res?.publicKey ?? res?.publicKeyBase64;
+      const signedMessage =
+        res?.signedMessage?.data ?? res?.signedMessage ?? undefined;
 
-      if (!signature) {
-        throw new Error("signMessage did not return a signature.");
-      }
+      if (!signature) throw new Error("signMessage did not return signature.");
 
-      setState((s) => ({ ...s, signature, publicKey }));
+      setState((s) => ({
+        ...s,
+        signature,
+        publicKey: publicKey ?? s.publicKey,
+        signedMessage,
+      }));
     } catch (e: any) {
-      setError(e?.message ?? "Unknown error");
+      // setError(e?.message ?? "Unknown error");
       console.error(e);
     } finally {
       setBusy(false);
@@ -71,24 +106,20 @@ export function ConnectPeridotButton() {
   }
 
   return (
-    <div className="grid gap-3 rounded-2xl border border-white/10 bg-white/5 p-4">
-      <button
-        onClick={signMaster}
-        disabled={busy}
-        className={[
-          "inline-flex items-center justify-center rounded-xl px-4 py-2.5 text-sm font-medium",
-          "bg-white text-black hover:bg-white/90",
-          "disabled:cursor-not-allowed disabled:opacity-60",
-        ].join(" ")}
-      >
-        {state.signature
-          ? short(state.publicKey)
-          : busy
-          ? "Connecting..."
-          : "Connect"}
-      </button>
-
-      {error && <div className="text-xs text-red-400">{error}</div>}
-    </div>
+    <button
+      onClick={signMaster}
+      disabled={busy}
+      className={[
+        "inline-flex items-center justify-center rounded px-4 py-2.5 text-sm font-medium",
+        "bg-white text-background hover:bg-white/15",
+        "disabled:cursor-not-allowed disabled:opacity-60",
+      ].join(" ")}
+    >
+      {state.publicKey
+        ? short(state.publicKey)
+        : busy
+        ? "Connecting..."
+        : "Connect"}
+    </button>
   );
 }
