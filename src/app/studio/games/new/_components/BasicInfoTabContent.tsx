@@ -8,6 +8,7 @@ interface BasicInfoTabContentProps {
   selectedCategories: string[];
   tags: string[];
   tagInput: string;
+  gameId: string;
   onCategoryToggle: (categoryId: string) => void;
   onAddTag: () => void;
   onRemoveTag: (tag: string) => void;
@@ -20,6 +21,7 @@ export function BasicInfoTabContent({
   selectedCategories,
   tags,
   tagInput,
+  gameId,
   onCategoryToggle,
   onAddTag,
   onRemoveTag,
@@ -32,6 +34,13 @@ export function BasicInfoTabContent({
       {/* Basic Information */}
       <section className="space-y-6">
         <h2 className="text-xl font-semibold text-foreground">Basic Information</h2>
+
+        <Input
+          label="Game ID"
+          value={gameId}
+          disabled
+          helperText="Auto-generated unique identifier for your game"
+        />
 
         <Input
           label="Game Name"
@@ -65,6 +74,15 @@ export function BasicInfoTabContent({
           error={errors.requiredAge?.message}
           {...register("requiredAge", { valueAsNumber: true })}
           helperText="Enter 0 if suitable for all ages"
+        />
+
+        <Input
+          label="Website URL"
+          type="url"
+          placeholder="https://example.com"
+          error={errors.websiteUrl?.message}
+          {...register("websiteUrl")}
+          helperText="Optional: Link to your game's official website"
         />
       </section>
 

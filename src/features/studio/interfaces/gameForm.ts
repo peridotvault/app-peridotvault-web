@@ -5,9 +5,11 @@ import { GameDistribution } from "@/features/game/interfaces/distribution";
 // Game form interfaces for Studio
 export interface GameFormData {
   // Basic Info
+  gameId: string;
   name: string;
   shortDescription: string;
   description: string;
+  websiteUrl: string | null;
   categories: string[];
   tags: string[];
   requiredAge: number;

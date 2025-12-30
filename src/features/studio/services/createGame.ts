@@ -44,7 +44,7 @@ export async function createGame(formData: GameFormData): Promise<ApiResponse<St
     // Create new game object
     const newGame: StudioGame = {
       ...formData,
-      id: generateId(),
+      id: formData.gameId, // Use the game ID from form instead of generating new one
       coverVerticalImage,
       coverHorizontalImage,
       bannerImage,

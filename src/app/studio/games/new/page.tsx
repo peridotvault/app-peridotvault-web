@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -10,6 +10,7 @@ import { GameFormData, GameBuildInput } from "@/features/studio/interfaces/gameF
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
+import { generateGameId } from "@/shared/utils/generateGameId";
 import { BasicInfoTabContent } from "./_components/BasicInfoTabContent";
 import { MediaUploadTabContent } from "./_components/MediaUploadTabContent";
 import { BuildsTabContent, BuildConfig } from "./_components/BuildsTabContent";
@@ -19,9 +20,11 @@ import { WizardActions } from "./_components/WizardActions";
 
 // Validation schema
 const gameFormSchema = z.object({
+  gameId: z.string().min(8, "Game ID must be 8 characters"),
   name: z.string().min(1, "Game name is required").min(3, "Game name must be at least 3 characters"),
   shortDescription: z.string().min(1, "Short description is required"),
   description: z.string().min(1, "Full description is required"),
+  websiteUrl: z.string().url().nullable().optional(),
   categories: z.array(z.string()).min(1, "At least one category is required"),
   tags: z.array(z.string()),
   requiredAge: z.number().min(0).max(18),
@@ -38,6 +41,9 @@ export default function CreateNewGamePage() {
   // Wizard state
   const [currentStep, setCurrentStep] = useState(1);
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());
+
+  // Generate unique game ID on mount
+  const [gameId] = useState(() => generateGameId());
 
   // Form state
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
@@ -59,9 +65,11 @@ export default function CreateNewGamePage() {
   } = useForm<GameFormInput>({
     resolver: zodResolver(gameFormSchema),
     defaultValues: {
+      gameId: gameId,
       name: "",
       shortDescription: "",
       description: "",
+      websiteUrl: null,
       categories: [],
       tags: [],
       requiredAge: 0,
@@ -97,9 +105,11 @@ export default function CreateNewGamePage() {
 
   const handleSaveDraft = async (publish: boolean = false) => {
     const formData: GameFormData = {
+      gameId: gameId,
       name: formValues.name,
       shortDescription: formValues.shortDescription,
       description: formValues.description,
+      websiteUrl: formValues.websiteUrl || null,
       categories: selectedCategories,
       tags: tags,
       requiredAge: formValues.requiredAge,
@@ -265,6 +275,7 @@ export default function CreateNewGamePage() {
                   selectedCategories={selectedCategories}
                   tags={tags}
                   tagInput={tagInput}
+                  gameId={gameId}
                   onCategoryToggle={handleCategoryToggle}
                   onAddTag={handleAddTag}
                   onRemoveTag={handleRemoveTag}
@@ -349,9 +360,11 @@ export default function CreateNewGamePage() {
                 </div>
                 <ReviewPublishTabContent
                   formData={{
+                    gameId: gameId,
                     name: formValues.name || "",
                     shortDescription: formValues.shortDescription || "",
                     description: formValues.description || "",
+                    websiteUrl: formValues.websiteUrl || null,
                     requiredAge: formValues.requiredAge || 0,
                     categories: selectedCategories,
                     tags: tags,

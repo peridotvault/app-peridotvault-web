@@ -208,9 +208,8 @@ function StatCard({
 
   return (
     <div
-      className={`relative bg-card rounded-xl border p-5 hover:shadow-lg transition-all duration-300 ${
-        highlight ? "border-accent/30 shadow-md" : "border-border"
-      }`}
+      className={`relative bg-card rounded-xl border p-5 hover:shadow-lg transition-all duration-300 ${highlight ? "border-accent/30 shadow-md" : "border-border"
+        }`}
     >
       <div className="flex items-start justify-between mb-3">
         <div
@@ -253,11 +252,10 @@ function GameCard({ game }: { game: any }) {
         {/* Status Badge */}
         <div className="absolute top-3 right-3">
           <span
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold backdrop-blur-sm ${
-              game.status === "published"
-                ? "bg-success/90 text-white shadow-lg"
-                : "bg-warning/90 text-white shadow-lg"
-            }`}
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold backdrop-blur-sm ${game.status === "published"
+              ? "bg-success/90 text-white shadow-lg"
+              : "bg-warning/90 text-white shadow-lg"
+              }`}
           >
             {game.status === "published" ? "Published" : "Draft"}
           </span>

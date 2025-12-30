@@ -5,9 +5,11 @@ import { BuildConfig } from "./BuildsTabContent";
 
 interface ReviewPublishTabContentProps {
   formData: {
+    gameId: string;
     name: string;
     shortDescription: string;
     description: string;
+    websiteUrl: string | null;
     requiredAge: number;
     categories: string[];
     tags: string[];
@@ -125,8 +127,27 @@ export function ReviewPublishTabContent({
           <h3 className="font-semibold text-foreground mb-4">Basic Information</h3>
           <div className="space-y-2 text-sm">
             <div className="flex justify-between py-2 border-b border-border/50">
+              <span className="text-muted-foreground">Game ID</span>
+              <span className="text-foreground font-medium font-mono">{formData.gameId || "-"}</span>
+            </div>
+            <div className="flex justify-between py-2 border-b border-border/50">
               <span className="text-muted-foreground">Name</span>
               <span className="text-foreground font-medium">{formData.name || "-"}</span>
+            </div>
+            <div className="flex justify-between py-2 border-b border-border/50">
+              <span className="text-muted-foreground">Website URL</span>
+              {formData.websiteUrl ? (
+                <a
+                  href={formData.websiteUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-accent hover:underline font-medium"
+                >
+                  {formData.websiteUrl}
+                </a>
+              ) : (
+                <span className="text-muted-foreground">-</span>
+              )}
             </div>
             <div className="flex justify-between py-2 border-b border-border/50">
               <span className="text-muted-foreground">Required Age</span>
