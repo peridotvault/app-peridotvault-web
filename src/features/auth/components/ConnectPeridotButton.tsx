@@ -6,6 +6,19 @@ import { useAuth } from "@/features/auth/hooks/useAuth";
 import { DropdownMenu } from "@/shared/components/ui/DropdownMenu";
 import { DropdownMenuItem, DropdownMenuHeader } from "@/shared/components/ui/DropdownMenuItem";
 
+/**
+ * ConnectPeridotButton Component
+ *
+ * A button that allows users to connect their Peridot Wallet.
+ * When authenticated, shows a dropdown with wallet info and actions.
+ *
+ * Features:
+ * - Connect/disconnect wallet
+ * - Display wallet address (shortened)
+ * - Navigate to studio
+ * - Error handling and display
+ */
+
 function short(v?: string, head = 6, tail = 4) {
   if (!v) return "-";
   if (v.length <= head + tail + 3) return v;

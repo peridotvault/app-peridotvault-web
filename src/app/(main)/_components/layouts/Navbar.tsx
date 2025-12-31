@@ -1,4 +1,4 @@
-import { ConnectPeridotButton } from "@/shared/temp/ConnectPeridotButton";
+import { ConnectPeridotButton } from "@/features/auth/components";
 
 export default function Navbar() {
   return (
