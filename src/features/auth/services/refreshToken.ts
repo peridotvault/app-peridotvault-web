@@ -8,7 +8,7 @@
 import { http } from "@/shared/lib/http";
 import type { RefreshTokenResponse } from "../interfaces";
 
-const REFRESH_ENDPOINT = "/auth/refresh";
+const REFRESH_ENDPOINT = "/api/auth/refresh";
 
 /**
  * Refreshes the authentication token

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { DropdownMenu } from "@/shared/components/ui/DropdownMenu";
 import { DropdownMenuItem, DropdownMenuHeader } from "@/shared/components/ui/DropdownMenuItem";
+import { useToast } from "@/shared/components/ui";
 
 /**
  * ConnectPeridotButton Component
@@ -16,7 +17,7 @@ import { DropdownMenuItem, DropdownMenuHeader } from "@/shared/components/ui/Dro
  * - Connect/disconnect wallet
  * - Display wallet address (shortened)
  * - Navigate to studio
- * - Error handling and display
+ * - Error handling with toast notifications
  */
 
 function short(v?: string, head = 6, tail = 4) {
@@ -51,14 +52,17 @@ const WalletIcon = () => (
 
 export function ConnectPeridotButton() {
   const router = useRouter();
+  const { showSuccess, showError } = useToast();
   const { isAuthenticated, isLoading, credentials, error, connect, disconnect } = useAuth();
 
   async function handleConnect() {
     try {
       await connect();
+      showSuccess("Wallet connected successfully!");
     } catch (err) {
-      // Error is already handled in AuthContext
-      console.error("Connection failed:", err);
+      // Error is already handled in AuthContext, but we can show additional feedback
+      const errorMessage = err instanceof Error ? err.message : "Failed to connect wallet";
+      showError(errorMessage);
     }
   }
 
@@ -68,6 +72,7 @@ export function ConnectPeridotButton() {
 
   function handleDisconnect() {
     disconnect();
+    showSuccess("Wallet disconnected");
   }
 
   // Not authenticated - show connect button

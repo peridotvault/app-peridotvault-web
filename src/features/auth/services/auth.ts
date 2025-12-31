@@ -9,7 +9,7 @@ import { http } from "@/shared/lib/http";
 import type { AuthResponse, AuthCredentials } from "../interfaces";
 
 // Set this to false when backend API is ready
-const USE_MOCK_API = true;
+const USE_MOCK_API = false;
 
 /**
  * Verify wallet signature with backend
@@ -26,7 +26,7 @@ export async function verifySignature(credentials: AuthCredentials): Promise<Aut
   }
 
   try {
-    const response = await http.post<AuthResponse>("/auth/verify", {
+    const response = await http.post<AuthResponse>("/api/auth/verify", {
       signature: credentials.signature,
       message: credentials.message,
       publicKey: credentials.wallet.publicKey,
@@ -57,7 +57,7 @@ export async function getUserProfile(): Promise<AuthResponse> {
   }
 
   try {
-    const response = await http.get<AuthResponse>("/auth/profile");
+    const response = await http.get<AuthResponse>("/api/auth/profile");
     return response.data;
   } catch (error) {
     return {
@@ -82,7 +82,7 @@ export async function logout(): Promise<{ success: boolean; message: string }> {
   }
 
   try {
-    await http.post("/auth/logout");
+    await http.post("/api/auth/logout");
     return {
       success: true,
       message: "Logged out successfully",

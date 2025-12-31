@@ -158,7 +158,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       // Extract address from public key (simplified - adjust based on actual wallet implementation)
-      const address = response.publicKey;
+      const address = response.publicKey as `0x${string}`;
 
       // Call backend API to verify signature and get token
       const authResponse = await verifySignature({

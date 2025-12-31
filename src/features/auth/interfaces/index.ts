@@ -1,5 +1,16 @@
+/**
+ * Template literal type for Ethereum addresses
+ * Matches format: 0x followed by 40 hexadecimal characters
+ */
+export type EthereumAddress = `0x${string}`;
+
+/**
+ * Template literal type for shortened addresses (for display)
+ */
+export type ShortenedAddress = `${string}...${string}`;
+
 export interface WalletInfo {
-  address: string;
+  address: EthereumAddress;
   publicKey: string;
 }
 
@@ -64,4 +75,17 @@ export enum AuthErrorType {
 
 export interface AuthError extends Error {
   type: AuthErrorType;
+}
+
+/**
+ * Guard function to check if an error is an AuthError
+ */
+export function isAuthError(error: unknown): error is AuthError {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "type" in error &&
+    typeof (error as AuthError).type === "string" &&
+    Object.values(AuthErrorType).includes((error as AuthError).type)
+  );
 }

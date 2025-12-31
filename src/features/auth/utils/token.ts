@@ -1,11 +1,29 @@
 /**
  * Token management utilities
+ *
+ * This module provides utilities for managing JWT tokens,
+ * checking expiration, and formatting token-related data.
+ *
+ * @module features/auth/utils/token
  */
 
 import type { AuthCredentials } from "../interfaces";
 
 /**
- * Checks if a token is expired or will expire soon (within 5 minutes)
+ * Checks if a token is expired or will expire soon
+ *
+ * A token is considered "expiring soon" if it will expire within 5 minutes.
+ * This allows for proactive token refresh before the token actually expires.
+ *
+ * @param credentials - The credentials containing the token and expiration
+ * @returns `true` if the token is expired or will expire within 5 minutes, `false` otherwise
+ *
+ * @example
+ * ```ts
+ * if (isTokenExpired(credentials)) {
+ *   await refreshAuthToken();
+ * }
+ * ```
  */
 export function isTokenExpired(credentials: AuthCredentials | null): boolean {
   if (!credentials?.token || !credentials?.expiresAt) {
@@ -28,6 +46,17 @@ export function isTokenExpired(credentials: AuthCredentials | null): boolean {
 
 /**
  * Gets the access token from credentials
+ *
+ * @param credentials - The credentials containing the token
+ * @returns The access token string or `null` if not authenticated
+ *
+ * @example
+ * ```ts
+ * const token = getAccessToken(credentials);
+ * if (token) {
+ *   axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+ * }
+ * ```
  */
 export function getAccessToken(credentials: AuthCredentials | null): string | null {
   return credentials?.token ?? null;

@@ -2,7 +2,17 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   images: {
-    remotePatterns: [new URL('https://api.peridotvault.com/**')],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'api.peridotvault.com',
+      },
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+        port: '4000',
+      },
+    ],
   },
   output: 'standalone',
 };
