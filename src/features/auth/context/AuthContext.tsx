@@ -318,10 +318,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 }
 
 export function useAuth() {
+  // Check if we're in a browser environment (client-side)
+  const isClient = typeof window !== 'undefined';
+
   try {
     const context = useContext(AuthContext);
-    if (context === undefined) {
-      // Return default values when context is not available (SSR, outside provider)
+
+    // During SSR or when context is not available, return safe defaults
+    if (!context || !isClient) {
       return {
         isAuthenticated: false,
         isLoading: false,
@@ -334,9 +338,10 @@ export function useAuth() {
         disconnect: async () => ({ success: false, message: 'Not available' }),
       };
     }
+
     return context;
-  } catch (e) {
-    // If useContext fails (during SSR), return default values
+  } catch (error) {
+    // If useContext throws an error (SSR, outside provider), return safe defaults
     return {
       isAuthenticated: false,
       isLoading: false,

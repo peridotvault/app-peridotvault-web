@@ -18,7 +18,7 @@
     "axios": "^1.13.2",
     "date-fns": "^4.1.0",
     "lucide-react": "^0.562.0",
-    "next": "16.0.8",
+    "next": "16.1.1",
     "react": "19.2.1",
     "react-dom": "19.2.1",
     "react-dropzone": "^14.3.8",
@@ -31,7 +31,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
-    "eslint-config-next": "16.0.8",
+    "eslint-config-next": "16.1.1",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
