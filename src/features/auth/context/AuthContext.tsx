@@ -38,9 +38,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [credentials, setCredentials] = useState<AuthCredentials | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
-  // Load credentials from localStorage on mount
+  // Mark when component is mounted on client
   useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Load credentials from localStorage on mount (client-side only)
+  useEffect(() => {
+    if (!mounted) return; // Wait until client-side mounting is complete
+
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored) {
       try {
@@ -61,7 +69,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     }
     setIsLoading(false);
-  }, []);
+  }, [mounted]);
 
   // Auto-refresh token periodically
   useEffect(() => {
@@ -314,44 +322,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     isTokenExpired: isTokenExpiredCallback,
   };
 
+  // During SSR, render with current state to avoid hydration mismatch
+  // Client will hydrate with same state, then update after localStorage is read
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth() {
-  // Check if we're in a browser environment (client-side)
-  const isClient = typeof window !== 'undefined';
+  const context = useContext(AuthContext);
 
-  try {
-    const context = useContext(AuthContext);
-
-    // During SSR or when context is not available, return safe defaults
-    if (!context || !isClient) {
-      return {
-        isAuthenticated: false,
-        isLoading: false,
-        credentials: null,
-        error: null,
-        login: async () => ({ success: false, data: null, message: 'Not available', error: 'Not available' }),
-        logout: async () => ({ success: false, message: 'Not available' }),
-        refreshUserProfile: async () => {},
-        connect: async () => ({ success: false, data: null, message: 'Not available', error: 'Not available' }),
-        disconnect: async () => ({ success: false, message: 'Not available' }),
-      };
-    }
-
-    return context;
-  } catch (error) {
-    // If useContext throws an error (SSR, outside provider), return safe defaults
-    return {
-      isAuthenticated: false,
-      isLoading: false,
-      credentials: null,
-      error: null,
-      login: async () => ({ success: false, data: null, message: 'Not available', error: 'Not available' }),
-      logout: async () => ({ success: false, message: 'Not available' }),
-      refreshUserProfile: async () => {},
-      connect: async () => ({ success: false, data: null, message: 'Not available', error: 'Not available' }),
-      disconnect: async () => ({ success: false, message: 'Not available' }),
-    };
+  if (context === undefined) {
+    // Should not happen if used within AuthProvider
+    throw new Error("useAuth must be used within an AuthProvider");
   }
+
+  return context;
 }
