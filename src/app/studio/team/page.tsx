@@ -17,7 +17,7 @@ export default function TeamPage() {
         <FontAwesomeIcon icon={faUsers} className="text-6xl text-muted-foreground mb-6" />
         <h2 className="text-2xl font-bold text-foreground mb-3">Coming Soon</h2>
         <p className="text-muted-foreground max-w-md mx-auto mb-8">
-          Team management features are under development. Soon you'll be able to invite collaborators,
+          Team management features are under development. Soon you&apos;ll be able to invite collaborators,
           manage permissions, and work together on your games.
         </p>
 

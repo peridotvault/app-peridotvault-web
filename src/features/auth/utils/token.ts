@@ -66,7 +66,7 @@ export function getAccessToken(credentials: AuthCredentials | null): string | nu
  * Parses JWT token (without verification - for client-side use only)
  * Returns the payload or null if invalid
  */
-export function parseJwtToken(token: string): Record<string, any> | null {
+export function parseJwtToken(token: string): Record<string, unknown> | null {
   try {
     const parts = token.split(".");
     if (parts.length !== 3) {
@@ -88,7 +88,16 @@ export function parseJwtToken(token: string): Record<string, any> | null {
 export function getWalletAddressFromToken(token: string): string | null {
   try {
     const payload = parseJwtToken(token);
-    return payload?.address ?? payload?.sub ?? null;
+    const address = payload?.address;
+    const sub = payload?.sub;
+
+    if (typeof address === 'string') {
+      return address;
+    }
+    if (typeof sub === 'string') {
+      return sub;
+    }
+    return null;
   } catch (error) {
     console.error("Failed to extract wallet address from token:", error);
     return null;

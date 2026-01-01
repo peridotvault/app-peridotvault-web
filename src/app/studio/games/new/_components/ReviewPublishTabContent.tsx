@@ -2,6 +2,8 @@ import { Input } from "@/shared/components/ui/Input";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheckCircle, faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
 import { BuildConfig } from "./BuildsTabContent";
+import type { FieldErrors, UseFormRegister } from "react-hook-form";
+import type { GameFormInput } from "../page";
 
 interface ReviewPublishTabContentProps {
   formData: {
@@ -21,27 +23,16 @@ interface ReviewPublishTabContentProps {
     previews: Array<{ file: File }>;
   };
   buildsData: BuildConfig[];
-  pricingData: {
-    price: number;
-    releaseDate: Date | null;
-  };
-  register: any;
-  errors: any;
-  onPublish: () => void;
-  onSaveDraft: () => void;
-  isPublishing: boolean;
+  register: UseFormRegister<GameFormInput>;
+  errors: FieldErrors<GameFormInput>;
 }
 
 export function ReviewPublishTabContent({
   formData,
   mediaData,
   buildsData,
-  pricingData,
   register,
   errors,
-  onPublish,
-  onSaveDraft,
-  isPublishing,
 }: ReviewPublishTabContentProps) {
   // Validation checks
   const checks = {

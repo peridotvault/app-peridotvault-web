@@ -96,7 +96,7 @@ function sleep(ms: number): Promise<void> {
  * const result = await fetchWithRetry('/api/data');
  * ```
  */
-export function retryWrapper<T extends (...args: any[]) => Promise<any>>(
+export function retryWrapper<T extends (...args: unknown[]) => Promise<unknown>>(
   fn: T,
   options: RetryOptions = {}
 ): T {

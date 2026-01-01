@@ -29,9 +29,9 @@ export async function updateGame(
       return {
         success: false,
         message: "Game not found",
-        data: null as any,
+        data: null as StudioGame | null,
         error: "Game with the given ID does not exist",
-      };
+      } as ApiResponse<StudioGame>;
     }
 
     // Upload new images if they are File objects
@@ -81,8 +81,8 @@ export async function updateGame(
     return {
       success: false,
       message: "Failed to update game",
-      data: null as any,
+      data: null as StudioGame | null,
       error: error instanceof Error ? error.message : "Unknown error",
-    };
+    } as ApiResponse<StudioGame>;
   }
 }

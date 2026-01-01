@@ -1,4 +1,4 @@
-import { createMockResponse, mockDelay, mockFileUpload, generateId, storage } from "@/shared/lib/mockApi";
+import { createMockResponse, mockDelay, mockFileUpload, storage } from "@/shared/lib/mockApi";
 import { GameFormData, StudioGame } from "../interfaces/gameForm";
 import { ApiResponse } from "@/shared/interfaces/api";
 
@@ -66,8 +66,8 @@ export async function createGame(formData: GameFormData): Promise<ApiResponse<St
     return {
       success: false,
       message: "Failed to create game",
-      data: null as any,
+      data: null as StudioGame | null,
       error: error instanceof Error ? error.message : "Unknown error",
-    };
+    } as ApiResponse<StudioGame>;
   }
 }

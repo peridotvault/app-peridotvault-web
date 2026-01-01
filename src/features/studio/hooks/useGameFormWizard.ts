@@ -39,14 +39,21 @@ export function useGameFormWizard(totalSteps: number = 4) {
   };
 
   // Check if can proceed to next step
-  const canGoNext = (step: number, formData: any) => {
+  const canGoNext = (step: number, formData: Record<string, unknown>) => {
     switch (step) {
       case 1:
+        const name = formData.name;
+        const shortDescription = formData.shortDescription;
+        const description = formData.description;
+        const categories = formData.categories;
+
         return !!(
-          formData.name &&
-          formData.shortDescription &&
-          formData.description &&
-          formData.categories.length > 0
+          name &&
+          shortDescription &&
+          description &&
+          categories &&
+          Array.isArray(categories) &&
+          categories.length > 0
         );
       case 2:
         return true; // Media optional

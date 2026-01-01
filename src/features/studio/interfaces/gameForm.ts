@@ -1,6 +1,4 @@
 import { Category } from "@/shared/interfaces/category";
-import { GamePriview } from "@/features/game/interfaces/media";
-import { GameDistribution } from "@/features/game/interfaces/distribution";
 
 // Game form interfaces for Studio
 export interface GameFormData {
@@ -51,7 +49,7 @@ export interface GameDistributionInput {
     storage: number;
     additionalNotes?: string;
   };
-  native?: Record<string, any>;
+  native?: Record<string, unknown>;
 }
 
 export interface GameBuildInput {

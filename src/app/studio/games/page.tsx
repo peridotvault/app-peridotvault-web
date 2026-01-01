@@ -5,14 +5,12 @@ import { useUserGames } from "@/features/studio/hooks/useUserGames";
 import { Button } from "@/shared/components/ui/Button";
 import { LoadingState } from "@/shared/components/ui/LoadingState";
 import { ErrorMessage } from "@/shared/components/ui/ErrorMessage";
-import { StudioGameCard } from "@/shared/components/studio/StudioGameCard";
 import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faGamepad,
   faEdit,
   faTrash,
-  faPlus,
   faEye,
   faFileAlt,
 } from "@fortawesome/free-solid-svg-icons";

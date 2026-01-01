@@ -1,4 +1,5 @@
 import { GameFormData } from "../interfaces/gameForm";
+import type { PlatformId } from "../constants/builds";
 
 interface FormValues {
   gameId: string;
@@ -61,7 +62,7 @@ export function transformToGameFormData(
     distributions: [],
     builds: buildState.builds.map((build) => ({
       id: build.id,
-      platform: build.platform as any,
+      platform: build.platform as PlatformId,
       file: build.file || undefined,
       version: build.version,
       architecture: build.architecture,

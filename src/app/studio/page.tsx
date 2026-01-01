@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 import { useUserGames } from "@/features/studio/hooks/useUserGames";
 import { Button } from "@/shared/components/ui/Button";
+import type { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 import { LoadingState } from "@/shared/components/ui/LoadingState";
 import { ErrorMessage } from "@/shared/components/ui/ErrorMessage";
 import { StudioGameCard } from "@/shared/components/studio/StudioGameCard";
@@ -158,7 +159,7 @@ export default function StudioDashboardPage() {
 interface QuickActionCardProps {
   title: string;
   description: string;
-  icon: any;
+  icon: IconDefinition;
   href: string;
 }
 

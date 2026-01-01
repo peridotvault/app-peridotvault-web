@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useCallback, useState } from "react";
-import { useDropzone } from "react-dropzone";
+import { useDropzone, FileRejection } from "react-dropzone";
 
 export interface FileUploadProps {
   onFileSelect: (file: File) => void;
@@ -39,7 +39,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
   };
 
   const onDrop = useCallback(
-    (acceptedFiles: File[], rejectedFiles: any[]) => {
+    (acceptedFiles: File[], rejectedFiles: FileRejection[]) => {
       setDragError("");
 
       if (rejectedFiles.length > 0) {

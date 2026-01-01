@@ -21,7 +21,7 @@ export function useUserGames() {
       const response = await getUserGames();
 
       if (response.success) {
-        setGames(response.data);
+        setGames(response.data || []);
       } else {
         setError(response.error || "Failed to fetch games");
       }
@@ -52,7 +52,7 @@ export function useUserDrafts() {
       const response = await getUserDrafts();
 
       if (response.success) {
-        setDrafts(response.data);
+        setDrafts(response.data || []);
       } else {
         setError(response.error || "Failed to fetch drafts");
       }
@@ -88,7 +88,7 @@ export function useGameById(gameId: string) {
       const response = await getGameById(gameId);
 
       if (response.success) {
-        setGame(response.data);
+        setGame(response.data); // data can be null, which is fine for StudioGame | null
       } else {
         setError(response.error || "Failed to fetch game");
       }

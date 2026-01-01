@@ -1,10 +1,11 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { memo } from "react";
+import type { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 
 interface StatCardProps {
   title: string;
   value: number;
-  icon: any;
+  icon: IconDefinition;
   trend?: string;
 }
 

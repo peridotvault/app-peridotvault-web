@@ -48,9 +48,9 @@ export async function getGameById(gameId: string): Promise<ApiResponse<StudioGam
     return {
       success: false,
       message: "Game not found",
-      data: null as any,
+      data: null as StudioGame | null,
       error: "Game with the given ID does not exist",
-    };
+    } as ApiResponse<StudioGame>;
   }
 
   return createMockResponse(game, "Game retrieved successfully");
@@ -79,9 +79,9 @@ export async function publishGame(gameId: string): Promise<ApiResponse<StudioGam
     return {
       success: false,
       message: "Game not found",
-      data: null as any,
+      data: null as StudioGame | null,
       error: "Game with the given ID does not exist",
-    };
+    } as ApiResponse<StudioGame>;
   }
 
   games[gameIndex].status = "published";

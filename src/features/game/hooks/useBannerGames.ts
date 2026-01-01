@@ -22,7 +22,7 @@ export function useBannerGames(): UseBannerGamesState {
 
                 const resAllGames = await getBannerGames();
 
-                setGames(resAllGames.data.data);
+                setGames(resAllGames.data?.data || []);
             } catch {
                 setError("Failed to fetch games");
                 // setError(err?.message ?? "Failed to fetch games");

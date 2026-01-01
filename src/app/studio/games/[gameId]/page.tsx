@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter, useParams } from "next/navigation";
+import { useState } from "react";
+import { useParams } from "next/navigation";
 import { useGameById } from "@/features/studio/hooks/useUserGames";
 import { useUpdateGame } from "@/features/studio/hooks/useUpdateGame";
 import { Button } from "@/shared/components/ui/Button";
@@ -17,7 +17,6 @@ import {
 import Link from "next/link";
 
 export default function EditGamePage() {
-  const router = useRouter();
   const params = useParams();
   const gameId = params.gameId as string;
 
@@ -28,12 +27,13 @@ export default function EditGamePage() {
   const [editedName, setEditedName] = useState("");
   const [editedDescription, setEditedDescription] = useState("");
 
-  useEffect(() => {
+  const startEditing = () => {
     if (game) {
       setEditedName(game.name);
       setEditedDescription(game.description);
+      setIsEditing(true);
     }
-  }, [game]);
+  };
 
   const handleSave = async () => {
     if (!game) return;
@@ -188,7 +188,7 @@ export default function EditGamePage() {
                 <h2 className="text-2xl font-bold text-foreground mb-3">{game.name}</h2>
                 <p className="text-muted-foreground mb-6 text-lg leading-relaxed">{game.description}</p>
                 <div className="flex gap-3">
-                  <Button onClick={() => setIsEditing(true)} size="md" className="gap-2 shadow-md hover:shadow-lg transition-shadow">
+                  <Button onClick={startEditing} size="md" className="gap-2 shadow-md hover:shadow-lg transition-shadow">
                     <FontAwesomeIcon icon={faEdit} />
                     Edit Info
                   </Button>

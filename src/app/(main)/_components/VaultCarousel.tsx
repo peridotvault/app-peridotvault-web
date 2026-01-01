@@ -1,6 +1,6 @@
 "use client";
 import { GameBanner } from "@/features/game/interfaces/banner";
-import React, { useEffect } from "react";
+import React, { useEffect, useCallback } from "react";
 
 type Props = {
   items: GameBanner[];
@@ -45,7 +45,7 @@ export function VaultCarousel({
   const len = items.length;
   //   if (len === 0) return null;
 
-  const goTo = (i: number) => {
+  const goTo = useCallback((i: number) => {
     const nextIndex = ((i % len) + len) % len;
     if (nextIndex === activeIndex) return;
     setPrevIndex(activeIndex);
@@ -57,9 +57,9 @@ export function VaultCarousel({
       setPrevIndex(null);
       setIsFading(false);
     }, fadeMs);
-  };
+  }, [activeIndex, len, fadeMs]);
 
-  const next = () => goTo(activeIndex + 1);
+  const next = useCallback(() => goTo(activeIndex + 1), [activeIndex, goTo]);
 
   // Auto-rotate
   useEffect(() => {
@@ -70,7 +70,7 @@ export function VaultCarousel({
       if (rotateRef.current) clearInterval(rotateRef.current);
       rotateRef.current = null;
     };
-  }, [activeIndex, intervalMs, len]);
+  }, [activeIndex, intervalMs, len, next]);
 
   useEffect(() => {
     return () => {

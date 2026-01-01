@@ -1,10 +1,11 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle, faImage, faCloudUploadAlt, faSave, faCheck } from "@fortawesome/free-solid-svg-icons";
+import type { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 
 export interface WizardStep {
   id: string;
   label: string;
-  icon: any;
+  icon: IconDefinition;
 }
 
 const WIZARD_STEPS: WizardStep[] = [

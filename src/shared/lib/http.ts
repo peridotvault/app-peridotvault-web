@@ -13,8 +13,7 @@ const PUBLIC_ENDPOINTS = [
 ];
 
 export const http = axios.create({
-  // baseURL: process.env.PUBLIC_API_BASE_URL ?? "https://api.peridotvault.com",
-  baseURL: process.env.PUBLIC_API_BASE_URL ?? "http://localhost:4000",
+  baseURL: process.env.PUBLIC_API_BASE_URL ?? "https://api.peridotvault.com",
   timeout: 15_000,
 });
 

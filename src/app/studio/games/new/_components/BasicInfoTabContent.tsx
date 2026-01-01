@@ -1,10 +1,12 @@
 import { Input } from "@/shared/components/ui/Input";
 import { Textarea } from "@/shared/components/ui/Textarea";
 import { useGetCategories } from "@/shared/hooks/useCategories";
+import type { FieldErrors, UseFormRegister } from "react-hook-form";
+import type { GameFormInput } from "../page";
 
 interface BasicInfoTabContentProps {
-  register: any;
-  errors: any;
+  register: UseFormRegister<GameFormInput>;
+  errors: FieldErrors<GameFormInput>;
   selectedCategories: string[];
   tags: string[];
   tagInput: string;

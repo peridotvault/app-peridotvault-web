@@ -5,14 +5,13 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { GameFormData } from "@/features/studio/interfaces/gameForm";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
 import { generateGameId } from "@/shared/utils/generateGameId";
 import { BasicInfoTabContent } from "./_components/BasicInfoTabContent";
 import { MediaUploadTabContent } from "./_components/MediaUploadTabContent";
-import { BuildsTabContent, BuildConfig } from "./_components/BuildsTabContent";
+import { BuildsTabContent } from "./_components/BuildsTabContent";
 import { ReviewPublishTabContent } from "./_components/ReviewPublishTabContent";
 import { WizardProgress, WIZARD_STEPS } from "./_components/WizardProgress";
 import { WizardActions } from "./_components/WizardActions";
@@ -36,7 +35,7 @@ const gameFormSchema = z.object({
   releaseDate: z.date().nullable(),
 });
 
-type GameFormInput = z.infer<typeof gameFormSchema>;
+export type GameFormInput = z.infer<typeof gameFormSchema>;
 
 export default function CreateNewGamePage() {
   const router = useRouter();
@@ -52,8 +51,6 @@ export default function CreateNewGamePage() {
     handleBack,
     handleSkip,
     handleStepClick,
-    canGoNext,
-    canSkip,
   } = useGameFormWizard(CONST_WIZARD_STEPS.length);
 
   const {
@@ -75,11 +72,10 @@ export default function CreateNewGamePage() {
     setBuilds,
   } = useGameFormState();
 
-  const { handleSubmit: submitForm, isSubmitting, error, clearError } = useGameFormSubmission();
+  const { handleSubmit: submitForm, isSubmitting } = useGameFormSubmission();
 
   const {
     register,
-    handleSubmit,
     formState: { errors },
     setValue,
     watch,
@@ -170,25 +166,6 @@ export default function CreateNewGamePage() {
     await handleNext();
   };
 
-  // Check if can proceed to next step
-  const checkCanGoNext = () => {
-    switch (currentStep) {
-      case 1:
-        return !!(
-          formValues.name &&
-          formValues.shortDescription &&
-          formValues.description &&
-          selectedCategories.length > 0
-        );
-      case 2:
-        return true; // Optional
-      case 3:
-        return true; // Optional
-      default:
-        return true;
-    }
-  };
-
   return (
     <div className="w-full">
       {/* Header */}
@@ -251,7 +228,12 @@ export default function CreateNewGamePage() {
                 <WizardActions
                   currentStep={currentStep}
                   totalSteps={WIZARD_STEPS.length}
-                  canGoNext={checkCanGoNext()}
+                  canGoNext={!!(
+                    formValues.name &&
+                    formValues.shortDescription &&
+                    formValues.description &&
+                    selectedCategories.length > 0
+                  )}
                   canSkip={false}
                   isSubmitting={isSubmitting}
                   onBack={handleBack}
@@ -343,15 +325,8 @@ export default function CreateNewGamePage() {
                     previews,
                   }}
                   buildsData={builds}
-                  pricingData={{
-                    price: formValues.price || 0,
-                    releaseDate: formValues.releaseDate,
-                  }}
                   register={register}
                   errors={errors}
-                  onPublish={() => handleSaveDraft(true)}
-                  onSaveDraft={() => handleSaveDraft(false)}
-                  isPublishing={isSubmitting}
                 />
                 <WizardActions
                   currentStep={currentStep}

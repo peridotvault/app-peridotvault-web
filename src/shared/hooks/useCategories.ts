@@ -23,7 +23,7 @@ export function useGetCategories(): UseCategoriesState {
 
                 const resAllCategories = await getCategories();
 
-                setCategories(resAllCategories.data.data);
+                setCategories(resAllCategories.data?.data || []);
             } catch {
                 setError("Failed to fetch games");
                 // setError(err?.message ?? "Failed to fetch games");

@@ -22,7 +22,7 @@ export function usePublishedGames(): UsePublishedGamesState {
 
         const resAllGames = await getPublishedGames();
 
-        setGames(resAllGames.data.data);
+        setGames(resAllGames.data?.data || []);
       } catch {
         setError("Failed to fetch games");
         // setError(err?.message ?? "Failed to fetch games");

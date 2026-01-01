@@ -1,8 +1,15 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { CompactFileInput } from "@/shared/components/ui/CompactFileInput";
 import { PLATFORMS, PLATFORM_EXTENSIONS, DEFAULT_VERSION, type PlatformId } from "@/features/studio/constants/builds";
+
+// Generate unique ID for builds
+let buildIdCounter = 0;
+const generateBuildId = (platform: PlatformId): string => {
+  buildIdCounter++;
+  return `${platform}-${buildIdCounter}`;
+};
 
 export interface BuildConfig {
   id: string;
@@ -22,17 +29,18 @@ interface BuildsTabContentProps {
 export function BuildsTabContent({ builds, onBuildsChange }: BuildsTabContentProps) {
   const [expandedBuilds, setExpandedBuilds] = useState<Set<string>>(new Set());
 
-  const handleAddBuild = (platform: PlatformId) => {
+  const handleAddBuild = useCallback((platform: PlatformId) => {
+    const platformConfig = PLATFORMS.find((p) => p.id === platform);
     const newBuild: BuildConfig = {
-      id: Math.random().toString(36).substring(7),
+      id: generateBuildId(platform),
       platform,
       file: null,
       version: DEFAULT_VERSION,
-      architecture: PLATFORMS.find((p) => p.id === platform)?.architectures[0] as any,
+      architecture: platformConfig?.architectures[0],
     };
     onBuildsChange([...builds, newBuild]);
     setExpandedBuilds(new Set([...expandedBuilds, newBuild.id]));
-  };
+  }, [builds, expandedBuilds, onBuildsChange]);
 
   const handleRemoveBuild = (buildId: string) => {
     onBuildsChange(builds.filter((b) => b.id !== buildId));
@@ -184,7 +192,7 @@ export function BuildsTabContent({ builds, onBuildsChange }: BuildsTabContentPro
                               value={build.architecture || ""}
                               onChange={(e) =>
                                 handleUpdateBuild(build.id, {
-                                  architecture: e.target.value as any,
+                                  architecture: e.target.value,
                                 })
                               }
                               className="w-full px-4 py-2 rounded-md border border-border bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-accent/50"
