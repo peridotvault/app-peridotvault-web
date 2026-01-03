@@ -1,14 +1,14 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
-import type { AuthContextValue, AuthCredentials, WalletInfo, AuthError } from "../interfaces";
+import type { AuthContextValue, AuthCredentials, AuthError } from "../interfaces";
 import { signMessage } from "@/shared/temp/peridotBridge";
 import { isTokenExpired, getAccessToken } from "../utils/token";
 import { createAuthError, AuthErrorType } from "../utils/authError";
 import { verifySignature, logout } from "../services/auth";
 import { refreshToken, shouldAttemptRefresh } from "../services/refreshToken";
 
-// Extend Window interface for peridotwallet
+// Extend Window interface for Peridot Wallet
 declare global {
   interface Window {
     peridotwallet?: {
@@ -45,9 +45,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setMounted(true);
   }, []);
 
-  // Load credentials from localStorage on mount (client-side only)
+  // Load credentials from localStorage on mount
   useEffect(() => {
-    if (!mounted) return; // Wait until client-side mounting is complete
+    if (!mounted) return;
 
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored) {
@@ -55,11 +55,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const parsed = JSON.parse(stored) as AuthCredentials;
         setCredentials(parsed);
 
-        // Check if token is expired
         if (!isTokenExpired(parsed)) {
           setIsAuthenticated(true);
         } else {
-          // Token is expired, clear it
           console.log("Stored token is expired, clearing...");
           localStorage.removeItem(STORAGE_KEY);
         }
@@ -77,7 +75,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return;
     }
 
-    // Check token expiration periodically
     const interval = setInterval(async () => {
       if (isTokenExpired(credentials) && !isRefreshing) {
         console.log("Token is expiring soon, refreshing...");
@@ -85,7 +82,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           await performTokenRefresh();
         } catch (error) {
           console.error("Auto token refresh failed:", error);
-          // If auto-refresh fails, user will need to re-authenticate on next request
         }
       }
     }, TOKEN_REFRESH_CHECK_INTERVAL);
@@ -101,7 +97,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return;
     }
 
-    // Check if we should attempt refresh (rate limiting)
     if (!shouldAttemptRefresh(credentials.wallet.address)) {
       throw createAuthError(
         "Too many refresh attempts. Please reconnect your wallet.",
@@ -125,7 +120,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         );
       }
 
-      // Update credentials with new token
       const updatedCredentials: AuthCredentials = {
         ...credentials,
         token: response.data.token,
@@ -141,12 +135,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [credentials, isRefreshing]);
 
+  /**
+   * Connect wallet and authenticate
+   */
   const connect = useCallback(async () => {
     setIsLoading(true);
     setError(null);
 
     try {
-      // Check if wallet is available
       if (!window.peridotwallet || !window.peridotwallet.master) {
         throw createAuthError(
           "Peridot Wallet extension not found. Please install it first.",
@@ -154,7 +150,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         );
       }
 
-      // Sign message to authenticate
       const message = "Sign this message to authenticate with PeridotVault Studio";
       const response = await signMessage(message);
 
@@ -165,10 +160,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         );
       }
 
-      // Extract address from public key (simplified - adjust based on actual wallet implementation)
       const address = response.publicKey as `0x${string}`;
 
-      // Call backend API to verify signature and get token
       const authResponse = await verifySignature({
         signature: response.signature,
         message,
@@ -206,7 +199,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         expiresAt: authResponse.data.expiresAt,
       };
 
-      // Store credentials
       setCredentials(newCredentials);
       setIsAuthenticated(true);
       localStorage.setItem(STORAGE_KEY, JSON.stringify(newCredentials));
@@ -223,14 +215,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
+  /**
+   * Disconnect wallet and clear credentials
+   */
   const disconnect = useCallback(async () => {
-    // Call logout API if we have credentials
     if (credentials?.token) {
       try {
         await logout();
       } catch (error) {
         console.error("Logout API call failed:", error);
-        // Continue with local logout even if API call fails
       }
     }
 
@@ -240,6 +233,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     localStorage.removeItem(STORAGE_KEY);
   }, [credentials]);
 
+  /**
+   * Refresh authentication (token refresh or re-sign)
+   */
   const refreshAuth = useCallback(async () => {
     if (!credentials) {
       throw createAuthError(
@@ -248,18 +244,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       );
     }
 
-    // If we have a token, try to refresh it
     if (credentials.token) {
       try {
         await performTokenRefresh();
         return;
       } catch (error) {
         console.warn("Token refresh failed, falling back to re-signing:", error);
-        // Fall through to re-sign method
       }
     }
 
-    // Fallback: Re-sign with the stored message
     setIsLoading(true);
     setError(null);
 
@@ -288,27 +281,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const authError = err as AuthError;
       const errorMessage = authError.message || "Failed to refresh authentication";
       setError(errorMessage);
-      // If refresh fails, disconnect the user
       await disconnect();
       throw err;
     } finally {
       setIsLoading(false);
     }
   }, [credentials, disconnect, performTokenRefresh]);
-
-  /**
-   * Gets the current access token
-   */
-  const getAccessTokenCallback = useCallback(() => {
-    return getAccessToken(credentials);
-  }, [credentials]);
-
-  /**
-   * Checks if the current token is expired
-   */
-  const isTokenExpiredCallback = useCallback(() => {
-    return isTokenExpired(credentials);
-  }, [credentials]);
 
   const value: AuthContextValue = {
     isAuthenticated,
@@ -318,20 +296,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     connect,
     disconnect,
     refreshAuth,
-    getAccessToken: getAccessTokenCallback,
-    isTokenExpired: isTokenExpiredCallback,
+    getAccessToken: useCallback(() => getAccessToken(credentials), [credentials]),
+    isTokenExpired: useCallback(() => isTokenExpired(credentials), [credentials]),
   };
 
-  // During SSR, render with current state to avoid hydration mismatch
-  // Client will hydrate with same state, then update after localStorage is read
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
+/**
+ * Hook to access authentication context
+ */
 export function useAuth() {
   const context = useContext(AuthContext);
 
   if (context === undefined) {
-    // Should not happen if used within AuthProvider
     throw new Error("useAuth must be used within an AuthProvider");
   }
 
