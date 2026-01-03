@@ -12,7 +12,7 @@ import { useTopGames } from "@/features/game/hooks/useTopGames";
 export default function Vault() {
   const { games: publishedGames } = usePublishedGames();
   const { games: bannerGames } = useBannerGames();
-  const { games: topGames } = useTopGames();
+  const { games: topGames, isLoading: isLoadingTopGames } = useTopGames();
   const { categories } = useGetCategories();
 
   return (
@@ -21,7 +21,7 @@ export default function Vault() {
       <VaultCarousel items={bannerGames} />
 
       {/* ✅ section 3  */}
-      <VaultTopGames games={topGames} />
+      <VaultTopGames games={topGames} isLoading={isLoadingTopGames} />
 
       {/* ✅ section 3  */}
       <section className="flex justify-center w-full px-10">

@@ -14,9 +14,14 @@ import Image from "next/image";
 type Props = {
   className?: string; // optional: untuk -mt overlap dari parent
   games: GameCard[];
+  isLoading: boolean;
 };
 
-export const VaultTopGames: React.FC<Props> = ({ className = "", games }) => {
+export const VaultTopGames: React.FC<Props> = ({
+  className = "",
+  games,
+  isLoading,
+}) => {
   const scrollerRef = React.useRef<HTMLDivElement | null>(null);
   const [canLeft, setCanLeft] = React.useState(false);
   const [canRight, setCanRight] = React.useState(true);
@@ -112,29 +117,47 @@ export const VaultTopGames: React.FC<Props> = ({ className = "", games }) => {
             ref={scrollerRef}
             className="overflow-x-auto overflow-y-hidden scrollbar-hide scroll-smooth"
           >
-            <div className="pv-topgames-row flex gap-2 w-max">
-              {games.map((item, idx) => (
-                <Link
-                  key={idx}
-                  href={`/${formatTitle(item.name)}/${item.game_id}`}
-                  className="w-72 h-80 relative flex justify-end"
-                >
-                  <span className="text-[12rem] font-bold absolute left-2 bottom-16 z-5">
-                    {idx + 1}
-                  </span>
-                  <div className="h-80 w-60 bg-muted rounded-lg overflow-hidden relative">
-                    <Image
-                      src={item.cover_vertical_image}
-                      alt=""
-                      className="w-full h-full object-cover"
-                      width={720}
-                      height={1080}
-                    />
-                    <div className="bg-linear-to-tr from-black/20 absolute left-0 top-0 h-full w-full"></div>
+            {isLoading ? (
+              <div className="pv-topgames-row flex gap-2 w-max">
+                {Array.from({ length: 4 }).map((item, idx) => (
+                  <div
+                    key={idx}
+                    className="w-72 h-80 relative flex justify-end "
+                  >
+                    <span className="text-[12rem] font-bold absolute left-2 bottom-16 z-5">
+                      {idx + 1}
+                    </span>
+                    <div className="h-80 w-60 bg-muted rounded-lg overflow-hidden relative animate-pulse">
+                      <div className="bg-muted  absolute left-0 top-0 h-full w-full"></div>
+                    </div>
                   </div>
-                </Link>
-              ))}
-            </div>
+                ))}
+              </div>
+            ) : (
+              <div className="pv-topgames-row flex gap-2 w-max">
+                {games.map((item, idx) => (
+                  <Link
+                    key={idx}
+                    href={`/${formatTitle(item.name)}/${item.game_id}`}
+                    className="w-72 h-80 relative flex justify-end"
+                  >
+                    <span className="text-[12rem] font-bold absolute left-2 bottom-16 z-5">
+                      {idx + 1}
+                    </span>
+                    <div className="h-80 w-60 bg-muted rounded-lg overflow-hidden relative">
+                      <Image
+                        src={item.cover_vertical_image}
+                        alt=""
+                        className="w-full h-full object-cover"
+                        width={720}
+                        height={1080}
+                      />
+                      <div className="bg-linear-to-tr from-black/20 absolute left-0 top-0 h-full w-full"></div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* edge fades — pointer-events none biar gak nutupin klik */}
