@@ -1,10 +1,12 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { DropdownMenu } from "@/shared/components/ui/DropdownMenu";
-import { DropdownMenuItem, DropdownMenuHeader } from "@/shared/components/ui/DropdownMenuItem";
+import {
+  DropdownMenuItem,
+  DropdownMenuHeader,
+} from "@/shared/components/ui/DropdownMenuItem";
 import { useToast } from "@/shared/components/ui";
 
 /**
@@ -28,7 +30,17 @@ function short(v?: string, head = 6, tail = 4) {
 
 // Icons
 const StudioIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
     <rect width="18" height="18" x="3" y="3" rx="2" />
     <path d="M3 9h18" />
     <path d="M9 21V9" />
@@ -36,7 +48,17 @@ const StudioIcon = () => (
 );
 
 const LogoutIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
     <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
     <polyline points="16 17 21 12 16 7" />
     <line x1="21" x2="9" y1="12" y2="12" />
@@ -44,7 +66,17 @@ const LogoutIcon = () => (
 );
 
 const WalletIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
     <path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1" />
     <path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4" />
   </svg>
@@ -53,7 +85,14 @@ const WalletIcon = () => (
 export function ConnectPeridotButton() {
   const router = useRouter();
   const { showSuccess, showError } = useToast();
-  const { isAuthenticated, isLoading, credentials, error, connect, disconnect } = useAuth();
+  const {
+    isAuthenticated,
+    isLoading,
+    credentials,
+    error,
+    connect,
+    disconnect,
+  } = useAuth();
 
   async function handleConnect() {
     try {
@@ -61,7 +100,8 @@ export function ConnectPeridotButton() {
       showSuccess("Wallet connected successfully!");
     } catch (err) {
       // Error is already handled in AuthContext, but we can show additional feedback
-      const errorMessage = err instanceof Error ? err.message : "Failed to connect wallet";
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to connect wallet";
       showError(errorMessage);
     }
   }
@@ -78,7 +118,7 @@ export function ConnectPeridotButton() {
   // Not authenticated - show connect button
   if (!isAuthenticated) {
     return (
-      <div className="grid gap-3 rounded-2xl border border-white/10 bg-white/5 p-4">
+      <div className="grid gap-3">
         <button
           onClick={handleConnect}
           disabled={isLoading}
@@ -100,7 +140,7 @@ export function ConnectPeridotButton() {
 
   // Authenticated - show dropdown menu with wallet info
   return (
-    <div className="grid gap-3 rounded-2xl border border-white/10 bg-white/5 p-4">
+    <div className="grid gap-3">
       <DropdownMenu
         trigger={
           <button
@@ -119,7 +159,9 @@ export function ConnectPeridotButton() {
         <DropdownMenuHeader>
           <div className="flex flex-col gap-1">
             <span className="text-xs text-white/60">Connected as</span>
-            <span className="text-sm font-medium">{credentials?.wallet.address}</span>
+            <span className="text-sm font-medium">
+              {credentials?.wallet.address}
+            </span>
           </div>
         </DropdownMenuHeader>
 
@@ -127,7 +169,11 @@ export function ConnectPeridotButton() {
           Go to Studio
         </DropdownMenuItem>
 
-        <DropdownMenuItem onClick={handleDisconnect} icon={<LogoutIcon />} variant="danger">
+        <DropdownMenuItem
+          onClick={handleDisconnect}
+          icon={<LogoutIcon />}
+          variant="danger"
+        >
           Disconnect
         </DropdownMenuItem>
       </DropdownMenu>

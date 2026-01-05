@@ -1,12 +1,23 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
-import type { AuthContextValue, AuthCredentials, WalletInfo, AuthError } from "../interfaces";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+} from "react";
+import type {
+  AuthContextValue,
+  AuthCredentials,
+  AuthError,
+} from "../interfaces";
 import { signMessage } from "@/shared/temp/peridotBridge";
 import { isTokenExpired, getAccessToken } from "../utils/token";
 import { createAuthError, AuthErrorType } from "../utils/authError";
 import { verifySignature, logout } from "../services/auth";
 import { refreshToken, shouldAttemptRefresh } from "../services/refreshToken";
+import { Challange } from "@/shared/interfaces/challenge";
 
 // Extend Window interface for peridotwallet
 declare global {
@@ -14,13 +25,13 @@ declare global {
     peridotwallet?: {
       master?: {
         isPeridotWallet?: boolean;
-        signMessage?: (message: Uint8Array) => Promise<{
+        signMessage?: (
+          message: Uint8Array,
+          challange: Challange
+        ) => Promise<{
           signature?: string;
-          signatureBase64?: string;
-          signatureHex?: string;
           publicKey?: string;
-          publicKeyBase64?: string;
-          publicKeyBase58?: string;
+          signedMessage?: string;
         }>;
       };
     };
@@ -155,7 +166,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       // Sign message to authenticate
-      const message = "Sign this message to authenticate with PeridotVault Studio";
+      const message =
+        "Sign this message to authenticate with PeridotVault Studio";
+
       const response = await signMessage(message);
 
       if (!response || !response.signature || !response.publicKey) {
@@ -185,7 +198,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 INVALID_SIGNATURE: AuthErrorType.SIGNATURE_FAILED,
                 RATE_LIMIT_EXCEEDED: AuthErrorType.NETWORK_ERROR,
               };
-              return errorMap[authResponse.error] || AuthErrorType.UNKNOWN_ERROR;
+              return (
+                errorMap[authResponse.error] || AuthErrorType.UNKNOWN_ERROR
+              );
             })()
           : AuthErrorType.UNKNOWN_ERROR;
 
@@ -254,7 +269,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         await performTokenRefresh();
         return;
       } catch (error) {
-        console.warn("Token refresh failed, falling back to re-signing:", error);
+        console.warn(
+          "Token refresh failed, falling back to re-signing:",
+          error
+        );
         // Fall through to re-sign method
       }
     }
@@ -286,7 +304,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedCredentials));
     } catch (err) {
       const authError = err as AuthError;
-      const errorMessage = authError.message || "Failed to refresh authentication";
+      const errorMessage =
+        authError.message || "Failed to refresh authentication";
       setError(errorMessage);
       // If refresh fails, disconnect the user
       await disconnect();
