@@ -83,14 +83,14 @@ export function VaultCarousel({
   if (len === 0) {
     // tidak ada data → jangan render carousel sama sekali
     return (
-      <div className="w-full max-w-[1400px] h-[50dvh] max-h-160 flex bg-muted"></div>
+      <div className="w-full max-w-400 h-[50dvh] max-h-160 flex bg-muted"></div>
     );
   }
 
   return (
     <section
       ref={hostRef}
-      className="relative flex w-full max-w-[1400px] justify-center"
+      className="relative flex w-full max-w-400 justify-center"
       aria-roledescription="carousel"
       aria-label="Game showcase"
     >

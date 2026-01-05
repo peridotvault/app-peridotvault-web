@@ -1,11 +1,11 @@
-import { ConnectPeridotButton } from "@/shared/temp/ConnectPeridotButton";
+import { ConnectButton } from "@/features/auth/components/ConnectButton";
 import Image from "next/image";
 import Link from "next/link";
 
 export default function Navbar() {
   return (
     <header className="w-full bg-card px-8 py-6 ">
-      <div className="mx-auto max-w-[1400px] flex items-center justify-between w-full">
+      <div className="mx-auto max-w-400 flex items-center justify-between w-full">
         <div className="">
           <nav className="flex">
             <ol>
@@ -26,7 +26,7 @@ export default function Navbar() {
             </ol>
           </nav>
         </div>
-        <ConnectPeridotButton />
+        <ConnectButton />
       </div>
     </header>
   );

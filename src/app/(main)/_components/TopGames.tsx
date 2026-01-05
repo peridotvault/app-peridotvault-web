@@ -85,7 +85,7 @@ export const VaultTopGames: React.FC<Props> = ({
       className={["flex justify-center w-full px-10", className].join(" ")}
     >
       {/* ✅ kontainer konsisten: max-w + w-full + gap */}
-      <div className="w-full max-w-[1400px] flex flex-col gap-6">
+      <div className="w-full max-w-400 flex flex-col gap-6">
         {/* header row: judul & tombol */}
         <div className="w-full flex items-center justify-between">
           <TypographyH2 text="Top Games This Month" />

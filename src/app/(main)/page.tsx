@@ -25,7 +25,7 @@ export default function Vault() {
 
       {/* ✅ section 3  */}
       <section className="flex justify-center w-full px-10">
-        <div className="flex flex-col gap-6 w-full max-w-[1400px]">
+        <div className="flex flex-col gap-6 w-full max-w-400">
           <TypographyH2 text="New on PeridotVault" />
           {/* contents  */}
           <div className="grid grid-cols-5 max-xl:grid-cols-4 gap-6">
@@ -45,7 +45,7 @@ export default function Vault() {
 
       {/* section 4  */}
       <section className="flex justify-center w-full px-10">
-        <div className="flex flex-col gap-6 w-full max-w-[1400px]">
+        <div className="flex flex-col gap-6 w-full max-w-400">
           <TypographyH2 text="Favorite Categories" />
           <div className="flex gap-6 xl:gap-12 duration-300 ">
             {categories.slice(0, 3).map((item) => (
@@ -67,7 +67,7 @@ export default function Vault() {
 
       {/* section 5  */}
       <section className="flex justify-center w-full px-10">
-        <div className="flex flex-col gap-6 w-full max-w-[1400px]">
+        <div className="flex flex-col gap-6 w-full max-w-400">
           <TypographyH2 text="All Games" />
           {/* contents  */}
           <div className="grid grid-cols-5 max-xl:grid-cols-4 gap-6">
