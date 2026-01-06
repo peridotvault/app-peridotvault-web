@@ -6,7 +6,7 @@
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
   --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
+  --color-highlight: var(--highlight);
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
   --color-chart-1: var(--chart-1);
@@ -20,11 +20,21 @@
 }
 
 :root {
+  /* =========================
+     Brand tokens (identity)
+     ========================= */
+  --brand-1: #349b65;
+  --brand-2: #87ee83;
+
+  /* =========================
+     Semantic tokens (UI)
+     ========================= */
   --background: #1c1f1d;
   --foreground: white;
   --card: #121714; /* background_secondary */
   --card-foreground: white;
-  --accent: #349b65;
+  --accent: var(--brand-1);
+  --highlight: var(--brand-2);
   --accent-foreground: #87ee83;
   --muted: #121714; /* background_disabled */
   --muted-foreground: rgb(110, 110, 110); /* text_disabled */

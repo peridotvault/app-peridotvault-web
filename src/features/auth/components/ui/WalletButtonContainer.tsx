@@ -1,19 +1,21 @@
 import React from "react";
 
-interface WalletContainerProps
+interface WalletButtonContainerProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children: React.ReactNode; // Menggunakan ReactNode, bukan HTMLElementType
 }
 
-export const WalletContainer = ({
+export const WalletButtonContainer = ({
   children,
   className, // Memisahkan className agar bisa digabung jika perlu
   ...props
-}: WalletContainerProps) => {
+}: WalletButtonContainerProps) => {
   return (
     <button
       {...props}
-      className={`px-4 py-6 w-full cursor-pointer ${className || ""}`}
+      className={`p-4 w-full cursor-pointer text-lg font-medium disabled:cursor-not-allowed ${
+        className || ""
+      }`}
     >
       {children}
     </button>
