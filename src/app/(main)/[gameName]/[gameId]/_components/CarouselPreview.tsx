@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 /* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
@@ -247,7 +248,7 @@ export default function CarouselPreview({
         </div>
 
         {/* Counter */}
-        <div className="pointer-events-none absolute left-3 top-3 z-10 rounded-md px-2 py-1 text-xs text-foreground shadow-flat-sm bg-background">
+        <div className="pointer-events-none absolute left-3 top-3 z-5 rounded-md px-2 py-1 text-xs text-foreground shadow-flat-sm bg-background">
           {`${index + 1} / ${normalized.length}`}
         </div>
 
@@ -256,7 +257,7 @@ export default function CarouselPreview({
           type="button"
           onClick={() => setIsPlaying((s) => !s)}
           aria-label={isPlaying ? "Pause autoplay" : "Play autoplay"}
-          className="absolute right-3 top-3 z-10 rounded-md px-2 py-1 text-xs text-foreground hover:bg-black/70"
+          className="absolute right-3 top-3 z-5 rounded-md px-2 py-1 text-xs text-foreground hover:bg-black/70"
         >
           {isPlaying ? "Pause" : "Play"}
         </button>
@@ -268,7 +269,7 @@ export default function CarouselPreview({
               type="button"
               onClick={goPrev}
               aria-label="Previous"
-              className="group absolute left-2 top-1/2 z-10 -translate-y-1/2 rounded-full bg-black/50 p-2 text-foreground hover:bg-black/70"
+              className="group absolute left-2 top-1/2 z-5 -translate-y-1/2 rounded-full bg-black/50 p-2 text-foreground hover:bg-black/70"
             >
               <Chevron dir="left" />
             </button>
@@ -276,7 +277,7 @@ export default function CarouselPreview({
               type="button"
               onClick={goNext}
               aria-label="Next"
-              className="group absolute right-2 top-1/2 z-10 -translate-y-1/2 rounded-full bg-black/50 p-2 text-foreground hover:bg-black/70"
+              className="group absolute right-2 top-1/2 z-5 -translate-y-1/2 rounded-full bg-black/50 p-2 text-foreground hover:bg-black/70"
             >
               <Chevron dir="right" />
             </button>

@@ -58,7 +58,7 @@ export default function Vault() {
                   alt={item.name + " Image"}
                   className="w-full h-full object-cover absolute top-0 left-0 opacity-50 duration-300 group-hover:scale-105"
                 /> */}
-                <span className="z-10">{item.name}</span>
+                <span className="z-5">{item.name}</span>
               </div>
             ))}
           </div>

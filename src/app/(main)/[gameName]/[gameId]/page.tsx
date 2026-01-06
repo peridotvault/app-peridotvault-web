@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
@@ -151,7 +152,7 @@ export default function GameDetailPage(): React.ReactElement {
             <div className="absolute inset-0 w-full h-full bg-muted" />
           )}
           <div className="absolute inset-0 bg-linear-to-t from-background via-background/40 to-transparent" />
-          <div className="relative z-10 flex flex-col md:flex-row gap-6 justify-between items-end px-8 md:px-12 py-10 h-full">
+          <div className="relative z-5 flex flex-col md:flex-row gap-6 justify-between items-end px-8 md:px-12 py-10 h-full">
             <div className="flex flex-col gap-4 md:w-3/5">
               <div className="flex flex-wrap gap-2 text-sm">
                 {categoryNames.map((item) => (

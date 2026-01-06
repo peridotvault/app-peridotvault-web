@@ -1,16 +1,18 @@
-import { ConnectButton } from "@/features/auth/components/ConnectButton";
+"use client";
+
+import { ConnectButton } from "@/shared/components/ConnectButton";
 import Image from "next/image";
 import Link from "next/link";
 
 export default function Navbar() {
   return (
-    <header className="w-full bg-card px-8 py-6 ">
-      <div className="mx-auto max-w-400 flex items-center justify-between w-full">
-        <div className="">
+    <header className=" w-full bg-card px-6 py-6 fixed flex left-0 top-0 z-10">
+      <div className="flex items-center justify-between w-full">
+        <div>
           <nav className="flex">
             <ol>
               <li>
-                <Link href={"/"} className="flex items-center text-3xl gap-3">
+                <Link href="/" className="flex items-center text-3xl gap-3">
                   <Image
                     width={120}
                     height={120}
@@ -26,6 +28,7 @@ export default function Navbar() {
             </ol>
           </nav>
         </div>
+
         <ConnectButton />
       </div>
     </header>

@@ -161,8 +161,8 @@ export const VaultTopGames: React.FC<Props> = ({
           </div>
 
           {/* edge fades — pointer-events none biar gak nutupin klik */}
-          <div className="pointer-events-none h-full w-16 bg-linear-to-r from-background absolute left-0 top-0 z-10"></div>
-          <div className="pointer-events-none h-full w-16 bg-linear-to-l from-background absolute right-0 top-0 z-10"></div>
+          <div className="pointer-events-none h-full w-16 bg-linear-to-r from-background absolute left-0 top-0 z-5"></div>
+          <div className="pointer-events-none h-full w-16 bg-linear-to-l from-background absolute right-0 top-0 z-5"></div>
         </div>
       </div>
     </section>

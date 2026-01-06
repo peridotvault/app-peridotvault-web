@@ -96,7 +96,7 @@ export function VaultCarousel({
     >
       <div className="w-full h-[50dvh] max-h-160 flex">
         {/* LEFT: Description panel */}
-        <div className="absolute z-10 left-0 bottom-0 w-full flex justify-between px-10 items-end">
+        <div className="absolute z-5 left-0 bottom-0 w-full flex justify-between px-10 items-end">
           <div className="w-full h-full flex flex-col gap-6 justify-center">
             <div className="flex flex-col gap-4 max-w-200">
               <h2 className="font-semibold text-3xl leading-tight">
