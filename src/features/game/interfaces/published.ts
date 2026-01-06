@@ -1,6 +1,6 @@
-import { ApiResponse } from "@/shared/interfaces/api";
-import { Category } from "@/shared/interfaces/category";
-import { PaginatedData } from "@/shared/interfaces/pagination";
+import { ApiResponse } from "@/shared/types/api";
+import { Category } from "@/shared/types/category";
+import { PaginatedData } from "@/shared/types/pagination";
 
 export type GamePublishedResponse = ApiResponse<PaginatedData<GameCard>>;
 

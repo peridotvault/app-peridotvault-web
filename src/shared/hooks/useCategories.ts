@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Category } from "../interfaces/category";
+import { Category } from "../types/category";
 import { getCategories } from "@/app/(main)/_services/getCategory";
 
 interface UseCategoriesState {

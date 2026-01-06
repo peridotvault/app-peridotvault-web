@@ -1,30 +1,81 @@
+"use client";
+
 /* eslint-disable @next/next/no-img-element */
-import React from "react";
+import { useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { WalletButtonContainer } from "./ui/WalletButtonContainer";
+import { Metamask } from "../services/metamask";
+import { WalletItem } from "../types/wallet";
+import { buildChallenge } from "@/shared/utils/buildChallenge";
+import { SignState } from "../types/sign";
+import { Phantom } from "../services/phantom";
 
 type Props = {
   open: boolean;
   onClose: () => void;
+  onSigned: (state: SignState) => Promise<void> | void;
 };
 
-type WalletProps = {
-  name: string;
-  title: string;
-  logoUrl: string;
-};
+function openExternal(url: string) {
+  window.open(url, "_blank", "noopener,noreferrer");
+}
 
-export const ConnectModal = ({ open, onClose }: Props) => {
-  const listWallet: WalletProps[] = [
+export const ConnectModal = ({ open, onClose, onSigned }: Props) => {
+  const [loading, setLoading] = useState<null | string>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  // Store Wallets
+  const metamask = useMemo(() => new Metamask(), []);
+  const metamaskDetected = metamask.isMetamaskInstalled();
+  const phantom = useMemo(() => new Phantom(), []);
+  const phantomkDetected = phantom.isPhantomInstalled();
+
+  const listWallet: WalletItem[] = [
     {
       name: "metamask",
       title: "Metamask",
       logoUrl: "/assets/wallets/metamask.svg",
+      downloadUrl: "https://metamask.io/download",
+      detected: metamaskDetected,
+      onClick: async () => {
+        setError(null);
+        setLoading("metamask");
+        try {
+          const message = buildChallenge("PeridotVault Login");
+          const signed = await metamask.Login(message);
+          await onSigned(signed);
+          onClose();
+        } catch (e: unknown) {
+          const msg =
+            e instanceof Error ? e.message : "Failed to connect MetaMask.";
+          setError(msg);
+        } finally {
+          setLoading(null);
+        }
+      },
     },
     {
       name: "phantom",
       title: "Phantom",
       logoUrl: "/assets/wallets/phantom.svg",
+      downloadUrl: "https://phantom.com/download",
+      detected: phantomkDetected,
+      onClick: async () => {
+        setError(null);
+        setLoading("phantom");
+        try {
+          const message = buildChallenge("PeridotVault Login");
+          const signed = await phantom.Login(message);
+          await onSigned(signed);
+          onClose();
+        } catch (e: unknown) {
+          const msg =
+            e instanceof Error ? e.message : "Failed to connect Phantom.";
+          setError(msg);
+        } finally {
+          setLoading(null);
+        }
+      },
     },
   ];
 
@@ -40,7 +91,7 @@ export const ConnectModal = ({ open, onClose }: Props) => {
         >
           {/* Panel (slide from left) */}
           <motion.div
-            className="bg-card rounded-b-4xl p-10 max-w-130 w-full flex flex-col gap-8 items-center border-x border-b border-foreground/20"
+            className="bg-card rounded-b-4xl p-8 max-w-130 w-full flex flex-col gap-8 items-center border-x border-b border-foreground/20"
             role="dialog"
             aria-label="Required Password"
             initial={{ y: "-100%", opacity: 0 }}
@@ -70,7 +121,12 @@ export const ConnectModal = ({ open, onClose }: Props) => {
 
             <div className="bg-background w-full rounded-xl overflow-hidden">
               {listWallet.map((item, index) => (
-                <WalletConnect key={index} isFirst={index == 0} item={item} />
+                <WalletConnect
+                  key={index}
+                  isFirst={index == 0}
+                  item={item}
+                  loading={loading === item.name}
+                />
               ))}
             </div>
 
@@ -100,7 +156,7 @@ const PeridotWalletConnect = () => {
         </div>
         <div className="flex flex-col items-start leading-tight">
           <span>Get Peridot Wallet</span>
-          <span className="text-sm">Comming Soon</span>
+          <span className="text-sm font-normal">Comming Soon</span>
           {/* <span className="text-sm">Available on iOS, Android and Chrome</span> */}
         </div>
       </div>
@@ -112,21 +168,41 @@ const PeridotWalletConnect = () => {
 const WalletConnect = ({
   isFirst,
   item,
+  loading,
 }: {
   isFirst: boolean;
-  item: WalletProps;
+  item: WalletItem;
+  loading: boolean;
 }) => {
+  const handleClick = () => {
+    if (loading) return;
+
+    if (item.detected) {
+      void item.onClick();
+      return;
+    }
+
+    // External link: open new tab
+    openExternal(item.downloadUrl);
+  };
   return (
     <div className="">
       {!isFirst && <hr className="border-foreground/10" />}
-      <WalletButtonContainer className="hover:bg-muted-foreground duration-300 flex items-center justify-between">
+      <WalletButtonContainer
+        onClick={handleClick}
+        className={
+          "duration-300 flex items-center justify-between hover:bg-foreground/10 cursor-pointer"
+        }
+      >
         <div className="flex items-center gap-4">
           <div className="h-12 w-12 aspect-square bg-foreground rounded-md overflow-hidden">
             <img src={item.logoUrl} alt={"Logo" + item.title} />
           </div>
           <span>{item.title}</span>
         </div>
-        <div className=""></div>
+        <div className="text-sm font-normal text-muted-foreground">
+          {item.detected ? "Detected" : ""}
+        </div>
       </WalletButtonContainer>
     </div>
   );

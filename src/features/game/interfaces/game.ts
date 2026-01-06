@@ -1,7 +1,7 @@
-import { Category } from "@/shared/interfaces/category"
+import { Category } from "@/shared/types/category"
 import { GameDistribution } from "./distribution"
 import { GamePriview } from "./media"
-import { ApiResponse } from "@/shared/interfaces/api"
+import { ApiResponse } from "@/shared/types/api"
 
 export type GameDetailResponse = ApiResponse<Game>;
 

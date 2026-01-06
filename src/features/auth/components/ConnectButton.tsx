@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState } from "react";
@@ -7,35 +6,37 @@ import { short } from "@/shared/utils/customAccountId";
 import { ConnectModal } from "./ConnectModal";
 
 export function ConnectButton() {
-  const [state, setState] = useState<SignState>({
-    message: "Login from app.peridotvault.com",
-  });
-  const [busy, setBusy] = useState(false);
+  const [state, setState] = useState<null | SignState>();
   const [isOpenConnectModal, setIsOpenConnectModal] = useState(false);
 
-  return (
-    <div className="">
-      <button
-        onClick={() => setIsOpenConnectModal(!isOpenConnectModal)}
-        disabled={busy}
-        className={`rounded px-8 py-2 duration-300 font-bold 
-        ${
-          busy
-            ? "bg-white text-background cursor-not-allowed opacity-60"
-            : "bg-accent hover:scale-105 cursor-pointer"
-        }  `}
-      >
-        {state.publicKey
-          ? short(state.publicKey)
-          : busy
-          ? "Connecting..."
-          : "Connect"}
-      </button>
+  if (state) {
+    return (
+      <div className="">
+        <span>{short(state.accountId)}</span>
+      </div>
+    );
+  } else {
+    return (
+      <div className="">
+        <button
+          onClick={() => setIsOpenConnectModal(!isOpenConnectModal)}
+          disabled={isOpenConnectModal}
+          className={`rounded px-8 py-2 duration-300 font-bold 
+          ${
+            isOpenConnectModal
+              ? "bg-white text-background cursor-not-allowed opacity-60"
+              : "bg-accent hover:scale-105 cursor-pointer"
+          }  `}
+        >
+          {isOpenConnectModal ? "Connecting..." : "Connect"}
+        </button>
 
-      <ConnectModal
-        open={isOpenConnectModal}
-        onClose={() => setIsOpenConnectModal(false)}
-      />
-    </div>
-  );
+        <ConnectModal
+          open={isOpenConnectModal}
+          onClose={() => setIsOpenConnectModal(false)}
+          onSigned={(state: SignState) => setState(state)}
+        />
+      </div>
+    );
+  }
 }

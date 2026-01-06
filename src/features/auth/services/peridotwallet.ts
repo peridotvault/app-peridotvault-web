@@ -1,60 +1,61 @@
 
-export class PeridotWallet {
 
-    getPeridot() {
-        if (typeof window === "undefined") return null;
-        return (window as any).peridotwallet;
-    }
+// export class PeridotWallet {
 
-    assertPeridot() {
-        if (!getPeridot().master.isPeridotWallet) {
-            throw new Error(
-                "PeridotWallet extension not detected (window.peridotwallet.master missing)."
-            );
-        }
-    }
+//     getPeridot() {
+//         if (typeof window === "undefined") return null;
+//         return (window as any).peridotwallet;
+//     }
 
-    async signMaster() {
-        setBusy(true);
-        // setError("");
-        try {
-            assertPeridot();
+//     assertPeridot() {
+//         if (!getPeridot().master.isPeridotWallet) {
+//             throw new Error(
+//                 "PeridotWallet extension not detected (window.peridotwallet.master missing)."
+//             );
+//         }
+//     }
 
-            const domain = window.location.host;
-            const challenge = buildMasterChallenge(domain);
+//     async signMaster() {
+//         setBusy(true);
+//         // setError("");
+//         try {
+//             assertPeridot();
 
-            const msgText = state.message ?? "";
-            if (!msgText.trim()) throw new Error("Message cannot be empty.");
+//             const domain = window.location.host;
+//             const challenge = buildMasterChallenge(domain);
 
-            // IMPORTANT: runtime terbaru expect { message: Uint8Array, challenge }
-            const res = await getPeridot().master.signMessage(
-                toU8Message(msgText),
-                challenge
-            );
+//             const msgText = state.message ?? "";
+//             if (!msgText.trim()) throw new Error("Message cannot be empty.");
 
-            console.log(res);
+//             // IMPORTANT: runtime terbaru expect { message: Uint8Array, challenge }
+//             const res = await getPeridot().master.signMessage(
+//                 toU8Message(msgText),
+//                 challenge
+//             );
 
-            // support new nested results OR legacy flat results
-            const signature =
-                res?.signature?.data ?? res?.signature ?? res?.signatureBase64;
-            const publicKey =
-                res?.publicKey?.data ?? res?.publicKey ?? res?.publicKeyBase64;
-            const signedMessage =
-                res?.signedMessage?.data ?? res?.signedMessage ?? undefined;
+//             console.log(res);
 
-            if (!signature) throw new Error("signMessage did not return signature.");
+//             // support new nested results OR legacy flat results
+//             const signature =
+//                 res?.signature?.data ?? res?.signature ?? res?.signatureBase64;
+//             const publicKey =
+//                 res?.publicKey?.data ?? res?.publicKey ?? res?.publicKeyBase64;
+//             const signedMessage =
+//                 res?.signedMessage?.data ?? res?.signedMessage ?? undefined;
 
-            setState((s) => ({
-                ...s,
-                signature,
-                publicKey: publicKey ?? s.publicKey,
-                signedMessage,
-            }));
-        } catch (e: any) {
-            // setError(e?.message ?? "Unknown error");
-            console.error(e);
-        } finally {
-            setBusy(false);
-        }
-    }
-}
+//             if (!signature) throw new Error("signMessage did not return signature.");
+
+//             setState((s) => ({
+//                 ...s,
+//                 signature,
+//                 publicKey: publicKey ?? s.publicKey,
+//                 signedMessage,
+//             }));
+//         } catch (e: any) {
+//             // setError(e?.message ?? "Unknown error");
+//             console.error(e);
+//         } finally {
+//             setBusy(false);
+//         }
+//     }
+// }

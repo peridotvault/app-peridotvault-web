@@ -1,5 +1,5 @@
 import { IMAGE_PER_COIN } from "../constants/image";
-import { CoinDisplayInfo } from "../interfaces/coin";
+import { CoinDisplayInfo } from "../types/coin";
 import { PowerOfTen } from "./calculation";
 
 const DEFAULT_TOKEN: CoinDisplayInfo = {

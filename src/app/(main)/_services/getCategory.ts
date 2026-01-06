@@ -1,4 +1,4 @@
-import { CategoryListResponse } from "@/shared/interfaces/category";
+import { CategoryListResponse } from "@/shared/types/category";
 import { http } from "@/shared/lib/http";
 
 export async function getCategories(params?: {
