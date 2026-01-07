@@ -139,9 +139,9 @@ export default function GameDetailPage(): React.ReactElement {
 
   return (
     <main className="flex justify-center duration-300">
-      <div className="max-w-[1400px] w-full flex flex-col gap-10 duration-300 px-6 sm:px-8 md:px-12">
+      <div className="max-w-400 w-full flex flex-col gap-10 duration-300 px-6 sm:px-8 md:px-12">
         {/* Hero */}
-        <section className="relative w-full min-h-80 overflow-hidden shadow-flat-lg">
+        <section className="relative w-full min-h-120 overflow-hidden shadow-flat-lg">
           {bannerImage ? (
             <img
               src={bannerImage}
