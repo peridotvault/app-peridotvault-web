@@ -1,4 +1,3 @@
-import { Category } from "@/shared/types/category"
 import { GameDistribution } from "./distribution"
 import { GamePriview } from "./media"
 import { ApiResponse } from "@/shared/types/api"
@@ -19,7 +18,7 @@ export interface Game {
     draft_status: string,
     created_at: string,
     updated_at: string,
-    categories: Category[],
+    categories: string[],
     tags: string[],
     previews: GamePriview[]
     distributions: GameDistribution[],

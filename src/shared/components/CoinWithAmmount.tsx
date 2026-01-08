@@ -37,7 +37,7 @@ export const PriceCoin = ({
   if (isZeroCoinAmount(amount, decimals)) {
     return (
       <div className={`${textSizeClass} flex gap-2 items-center text-start`}>
-        <p>FREE</p>
+        <p>Free</p>
       </div>
     );
   }

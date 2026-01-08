@@ -190,7 +190,6 @@ export default function CarouselPreview({
             />
           ) : (
             <video
-              key={it.src}
               ref={(el) => {
                 videoRefs.current[i] = el;
               }}

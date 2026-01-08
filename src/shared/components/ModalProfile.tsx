@@ -23,7 +23,7 @@ export const ModalProfile = ({ open, onClose, accountId }: Props) => {
           />
 
           <motion.div
-            className="absolute right-6 top-21 bg-card rounded-2xl px-4 py-6 max-w-100 w-full flex flex-col gap-4 items-center border border-foreground/10 z-50"
+            className="absolute right-6 sm:right-8 md:right-12 top-21 bg-card rounded-2xl px-4 py-6 max-w-100 w-full flex flex-col gap-4 items-center border border-foreground/10 z-50 duration-300"
             role="dialog"
             aria-label="Required Password"
             initial={{ y: "-10%", opacity: 0 }}

@@ -31,12 +31,12 @@
      ========================= */
   --background: #1c1f1d;
   --foreground: white;
-  --card: #121714; /* background_secondary */
+  --card: #0a0c0b; /* background_secondary */
   --card-foreground: white;
   --accent: var(--brand-1);
   --highlight: var(--brand-2);
   --accent-foreground: #87ee83;
-  --muted: #121714; /* background_disabled */
+  --muted: #363636; /* background_disabled */
   --muted-foreground: rgb(110, 110, 110); /* text_disabled */
   --chart-1: oklch(0.488 0.243 264.376);
   --chart-2: oklch(0.696 0.17 162.48);

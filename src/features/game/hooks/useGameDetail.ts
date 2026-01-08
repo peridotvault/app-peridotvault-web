@@ -29,6 +29,7 @@ export function useGameDetail({ gameId }: { gameId: string }): UseGameDetailStat
 
                 const res = await getGameDetail(gameId);
                 setGame(res.data ?? null);
+                console.log(res)
             } catch (e: any) {
                 setError(e?.message ?? "Failed to load game");
             } finally {
