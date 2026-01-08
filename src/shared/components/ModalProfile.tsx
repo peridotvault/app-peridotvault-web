@@ -58,12 +58,14 @@ export const ModalProfile = ({ open, onClose, accountId }: Props) => {
             >
               <Link
                 href={"/my-games"}
+                onClick={onClose}
                 className="bg-accent/20 hover:bg-accent/30 duration-300 text-highlight w-full rounded-xl p-4 font-medium"
               >
                 My Games
               </Link>
               <Link
                 href={""}
+                onClick={onClose}
                 className="bg-accent/20 text-highlight w-full rounded-xl p-4 font-medium opacity-50 cursor-not-allowed"
               >
                 My Items

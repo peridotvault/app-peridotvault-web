@@ -11,7 +11,7 @@ export default function MyGames() {
         {Array.from({ length: 5 }).map((item, index) => (
           <div
             key={index}
-            className="flex flex-col gap-4 hover:bg-white/5 rounded-2xl duration-300 p-3"
+            className="flex flex-col gap-4 hover:bg-white/5 rounded-2xl duration-300 px-3 py-5"
           >
             <img
               src={IMAGE_LOADING}

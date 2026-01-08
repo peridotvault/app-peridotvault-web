@@ -32,6 +32,6 @@ declare global {
         ethereum?: Eip1193Provider;
         phantom?: PhantomProvider;
         solana?: PhantomSolanaProvider;
-        isPhantomInstalled?: booelan;
+        isPhantomInstalled?: boolean;
     }
 }
