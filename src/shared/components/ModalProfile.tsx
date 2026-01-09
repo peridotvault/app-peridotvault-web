@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { short } from "../utils/customAccountId";
 import Link from "next/link";
 import {
+  faGear,
   faMicrophoneLines,
   faPowerOff,
   faPuzzlePiece,
@@ -53,11 +54,16 @@ export const ModalProfile = ({ open, onClose, accountId }: Props) => {
                   </div>
                   <h2 className="font-medium text-lg">{short(accountId)}</h2>
                 </div>
-                <div className="">
-                  <button className="text-muted-foreground hover:text-chart-5 duration-300 cursor-pointer">
-                    <FontAwesomeIcon icon={faPowerOff} />
-                  </button>
-                </div>
+                <nav>
+                  <div className="flex gap-3 items-center text-lg">
+                    <button className="text-muted-foreground hover:text-foreground duration-300 cursor-pointer">
+                      <FontAwesomeIcon icon={faGear} />
+                    </button>
+                    <button className="text-muted-foreground hover:text-chart-5 duration-300 cursor-pointer">
+                      <FontAwesomeIcon icon={faPowerOff} />
+                    </button>
+                  </div>
+                </nav>
               </section>
 
               <div

@@ -89,29 +89,33 @@ export const VaultTopGames: React.FC<Props> = ({
       {/* ✅ kontainer konsisten: max-w + w-full + gap */}
       <div className="w-full max-w-400 flex flex-col gap-6">
         {/* header row: judul & tombol */}
-        <div className="w-full flex items-center justify-between">
-          <TypographyH2 text="Top Games This Month" />
-          <div className="flex items-center gap-4">
-            <button
-              className="aspect-square w-10 rounded-md bg-accent disabled:opacity-30 duration-300 disabled:cursor-not-allowed"
-              onClick={() => scrollStep("left")}
-              disabled={!canLeft}
-              aria-disabled={!canLeft}
-              aria-label="Scroll left"
-            >
-              <FontAwesomeIcon icon={faChevronLeft} />
-            </button>
-            <button
-              className="aspect-square w-10 rounded-md bg-accent disabled:opacity-30 duration-300 disabled:cursor-not-allowed"
-              onClick={() => scrollStep("right")}
-              disabled={!canRight}
-              aria-disabled={!canRight}
-              aria-label="Scroll right"
-            >
-              <FontAwesomeIcon icon={faChevronRight} />
-            </button>
+        {isLoading || isError ? (
+          <div className="w-1/3 h-12 bg-muted animate-pulse rounded-xl" />
+        ) : (
+          <div className="w-full flex items-center justify-between">
+            <TypographyH2 text="Top Games This Month" />
+            <div className="flex items-center gap-4">
+              <button
+                className="aspect-square w-10 rounded-md bg-accent disabled:opacity-30 duration-300 disabled:cursor-not-allowed"
+                onClick={() => scrollStep("left")}
+                disabled={!canLeft}
+                aria-disabled={!canLeft}
+                aria-label="Scroll left"
+              >
+                <FontAwesomeIcon icon={faChevronLeft} />
+              </button>
+              <button
+                className="aspect-square w-10 rounded-md bg-accent disabled:opacity-30 duration-300 disabled:cursor-not-allowed"
+                onClick={() => scrollStep("right")}
+                disabled={!canRight}
+                aria-disabled={!canRight}
+                aria-label="Scroll right"
+              >
+                <FontAwesomeIcon icon={faChevronRight} />
+              </button>
+            </div>
           </div>
-        </div>
+        )}
 
         {/* contents */}
         <div className="relative">
