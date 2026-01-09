@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { GameBanner } from "../interfaces/banner";
+import { GameBanner } from "../types/banner";
 import { getBannerGames } from "../services/banner";
 
 interface UseBannerGamesState {

@@ -1,5 +1,5 @@
 import { http } from "@/shared/lib/http";
-import { GamePublishedResponse } from "../interfaces/published";
+import { GamePublishedResponse } from "../types/published";
 
 export async function getTopGames(): Promise<GamePublishedResponse> {
     const res = await http.get<GamePublishedResponse>("/api/games/top-games");

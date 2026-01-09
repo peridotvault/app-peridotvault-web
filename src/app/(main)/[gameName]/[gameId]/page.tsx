@@ -6,7 +6,7 @@ import React from "react";
 import { useParams } from "next/navigation";
 
 import { useGameDetail } from "@/features/game/hooks/useGameDetail";
-import { GameDistribution } from "@/features/game/interfaces/distribution";
+import { GameDistribution } from "@/features/game/types/distribution";
 import { HeroSection } from "./_components/HeroSection";
 import { ContainerPadding } from "@/shared/components/ui/ContainerPadding";
 import { DetailContent } from "./_components/DetailContent";

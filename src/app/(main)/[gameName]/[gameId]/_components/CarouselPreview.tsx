@@ -2,7 +2,7 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
-import type { GamePriview } from "@/features/game/interfaces/media";
+import type { GamePriview } from "@/features/game/types/media";
 import React, {
   ReactNode,
   useCallback,

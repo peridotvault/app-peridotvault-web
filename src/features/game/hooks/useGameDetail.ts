@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { useEffect, useState } from "react";
-import { Game } from "../interfaces/game";
+import { Game } from "../types/game";
 import { getGameDetail } from "../services/detail";
 
 interface UseGameDetailState {

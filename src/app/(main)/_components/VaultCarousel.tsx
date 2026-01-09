@@ -1,17 +1,22 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
-import { GameBanner } from "@/features/game/interfaces/banner";
+import { GameBanner } from "@/features/game/types/banner";
 import React, { useEffect } from "react";
 
 type Props = {
   items: GameBanner[];
   intervalMs?: number;
   fadeMs?: number; // durasi fade (ms)
+  isLoading: boolean;
+  isError?: string | null;
 };
 
 export function VaultCarousel({
   items,
   intervalMs = 10000,
   fadeMs = 500,
+  isLoading,
+  isError,
 }: Props) {
   const [activeIndex, setActiveIndex] = React.useState(0);
   const [prevIndex, setPrevIndex] = React.useState<number | null>(null);
@@ -70,6 +75,7 @@ export function VaultCarousel({
       if (rotateRef.current) clearInterval(rotateRef.current);
       rotateRef.current = null;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeIndex, intervalMs, len]);
 
   useEffect(() => {
@@ -80,10 +86,10 @@ export function VaultCarousel({
 
   const active = items[activeIndex];
 
-  if (len === 0) {
+  if (len === 0 || isLoading || isError) {
     // tidak ada data → jangan render carousel sama sekali
     return (
-      <div className="w-full max-w-400 h-[50dvh] max-h-160 flex bg-muted"></div>
+      <div className="w-full max-w-400 h-[50dvh] max-h-160 flex bg-muted animate-pulse"></div>
     );
   }
 
@@ -94,14 +100,15 @@ export function VaultCarousel({
       aria-roledescription="carousel"
       aria-label="Game showcase"
     >
+      <h2 className="sr-only">Game Highlight Banner</h2>
       <div className="w-full h-[50dvh] max-h-160 flex">
         {/* LEFT: Description panel */}
         <div className="absolute z-5 left-0 bottom-0 w-full flex justify-between px-10 items-end">
           <div className="w-full h-full flex flex-col gap-6 justify-center">
             <div className="flex flex-col gap-4 max-w-200">
-              <h2 className="font-semibold text-3xl leading-tight">
+              <h3 className="font-semibold text-3xl leading-tight">
                 {active.name}
-              </h2>
+              </h3>
               <p className="line-clamp-8/10 text-foreground/90">
                 {active.description}
               </p>

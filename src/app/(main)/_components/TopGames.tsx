@@ -6,7 +6,7 @@ import {
   faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
 import { TypographyH2 } from "@/shared/components/ui/TypographyH2";
-import { GameCard } from "@/features/game/interfaces/published";
+import { GameCard } from "@/features/game/types/published";
 import Link from "next/link";
 import { formatTitle } from "@/shared/utils/formatUrl";
 import Image from "next/image";
@@ -15,12 +15,14 @@ type Props = {
   className?: string; // optional: untuk -mt overlap dari parent
   games: GameCard[];
   isLoading: boolean;
+  isError?: string | null;
 };
 
 export const VaultTopGames: React.FC<Props> = ({
   className = "",
   games,
   isLoading,
+  isError,
 }) => {
   const scrollerRef = React.useRef<HTMLDivElement | null>(null);
   const [canLeft, setCanLeft] = React.useState(false);
@@ -117,18 +119,18 @@ export const VaultTopGames: React.FC<Props> = ({
             ref={scrollerRef}
             className="overflow-x-auto overflow-y-hidden scrollbar-hide scroll-smooth"
           >
-            {isLoading ? (
+            {isLoading || isError ? (
               <div className="pv-topgames-row flex gap-2 w-max">
-                {Array.from({ length: 4 }).map((item, idx) => (
+                {Array.from({ length: 7 }).map((item, idx) => (
                   <div
                     key={idx}
-                    className="w-72 h-80 relative flex justify-end "
+                    className="w-72 h-80 relative flex justify-end animate-pulse"
                   >
                     <span className="text-[12rem] font-bold absolute left-2 bottom-16 z-5">
                       {idx + 1}
                     </span>
-                    <div className="h-80 w-60 bg-muted rounded-lg overflow-hidden relative animate-pulse">
-                      <div className="bg-muted  absolute left-0 top-0 h-full w-full"></div>
+                    <div className="h-80 w-60 bg-muted rounded-lg overflow-hidden relative">
+                      <div className="bg-muted absolute left-0 top-0 h-full w-full"></div>
                     </div>
                   </div>
                 ))}

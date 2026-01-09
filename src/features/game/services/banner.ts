@@ -1,5 +1,5 @@
 import { http } from "@/shared/lib/http";
-import { GameBannerResponse } from "../interfaces/banner";
+import { GameBannerResponse } from "../types/banner";
 
 export async function getBannerGames(params?: {
     page?: number;

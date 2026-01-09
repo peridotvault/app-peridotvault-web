@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 import { ContainerPadding } from "@/shared/components/ui/ContainerPadding";
 import CarouselPreview from "./CarouselPreview";
-import { GamePriview } from "@/features/game/interfaces/media";
+import { GamePriview } from "@/features/game/types/media";
 import { SMALL_GRID } from "@/shared/constants/style";
 
 type Props = {

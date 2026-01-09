@@ -11,17 +11,35 @@ import { useTopGames } from "@/features/game/hooks/useTopGames";
 
 export default function Vault() {
   const { games: publishedGames } = usePublishedGames();
-  const { games: bannerGames } = useBannerGames();
-  const { games: topGames, isLoading: isLoadingTopGames } = useTopGames();
+  const {
+    games: bannerGames,
+    isLoading: isLoadingCarousel,
+    error: errorBanner,
+  } = useBannerGames();
+  const {
+    games: topGames,
+    isLoading: isLoadingTopGames,
+    error: errorTopGames,
+  } = useTopGames();
   const { categories } = useGetCategories();
 
   return (
     <main className="flex flex-col items-center gap-16">
+      <h1 className="sr-only">Search your Favorite Games in PeridotVault</h1>
+
       {/* Section 1  */}
-      <VaultCarousel items={bannerGames} />
+      <VaultCarousel
+        items={bannerGames}
+        isLoading={isLoadingCarousel}
+        isError={errorBanner}
+      />
 
       {/* ✅ section 3  */}
-      <VaultTopGames games={topGames} isLoading={isLoadingTopGames} />
+      <VaultTopGames
+        games={topGames}
+        isLoading={isLoadingTopGames}
+        isError={errorTopGames}
+      />
 
       {/* ✅ section 3  */}
       <section className="flex justify-center w-full px-10">

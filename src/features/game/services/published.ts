@@ -1,5 +1,5 @@
 import { http } from "@/shared/lib/http";
-import { GamePublishedResponse } from "../interfaces/published";
+import { GamePublishedResponse } from "../types/published";
 
 
 export async function getPublishedGames(params?: {
