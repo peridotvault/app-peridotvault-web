@@ -9,6 +9,7 @@ import {
   faShirt,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { logoutEverywhere } from "@/features/auth/logout/logout.service";
 
 type Props = {
   open: boolean;
@@ -17,6 +18,11 @@ type Props = {
 };
 
 export const ModalProfile = ({ open, onClose, accountId }: Props) => {
+  async function onLogout() {
+    await logoutEverywhere();
+    onClose();
+  }
+
   return (
     <AnimatePresence /* initial={false} boleh ditambah kalau mau */>
       {open && (
@@ -59,7 +65,10 @@ export const ModalProfile = ({ open, onClose, accountId }: Props) => {
                     <button className="text-muted-foreground hover:text-foreground duration-300 cursor-pointer">
                       <FontAwesomeIcon icon={faGear} />
                     </button>
-                    <button className="text-muted-foreground hover:text-chart-5 duration-300 cursor-pointer">
+                    <button
+                      onClick={onLogout}
+                      className="text-muted-foreground hover:text-chart-5 duration-300 cursor-pointer"
+                    >
                       <FontAwesomeIcon icon={faPowerOff} />
                     </button>
                   </div>

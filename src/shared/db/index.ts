@@ -4,8 +4,8 @@ import Dexie, { Table } from "dexie";
 //   GameCacheRow,
 //   gameTablesSchemaV1,
 // } from "@/features/game/db/game.table";
-import { AUTH_SESSION_TABLE, AuthSessionRow } from "@/features/auth/types/db.table";
-import { authTablesSchemaV1 } from "@/features/auth/constants/db.schema";
+import { AUTH_SESSION_TABLE, AuthSessionRow } from "@/features/auth/_db/db.table";
+import { authTablesSchemaV1 } from "@/features/auth/_db/db.schema";
 
 class AppDB extends Dexie {
     // tables (typed)
