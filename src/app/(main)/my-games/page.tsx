@@ -29,6 +29,7 @@ export default function MyGames() {
         setErrorCode(null);
 
         const my = await getMyGamesForSession({ fromBlock: BigInt(0) });
+        console.log("My Games:", my);
 
         if (!mounted) return;
         setGames(my);

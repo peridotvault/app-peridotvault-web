@@ -10,6 +10,8 @@ import { GameCard } from "@/features/game/published/published.type";
 import Link from "next/link";
 import { formatTitle } from "@/shared/utils/formatUrl";
 import Image from "next/image";
+import { IMAGE_LOADING } from "@/shared/constants/image";
+import { getAssetUrl } from "@/shared/utils/helper.url";
 
 type Props = {
   className?: string; // optional: untuk -mt overlap dari parent
@@ -80,6 +82,11 @@ export const VaultTopGames: React.FC<Props> = ({
       ro.disconnect();
     };
   }, [updateArrows]);
+
+  const getCoverSrc = (src: string | null | undefined) => {
+    if (!src) return IMAGE_LOADING;
+    return getAssetUrl(src);
+  };
 
   return (
     // ✅ sama seperti section-section lain: w-full + px-10 + center
@@ -152,7 +159,7 @@ export const VaultTopGames: React.FC<Props> = ({
                     </span>
                     <div className="h-80 w-60 bg-muted rounded-lg overflow-hidden relative">
                       <Image
-                        src={item.cover_vertical_image}
+                        src={getCoverSrc(item.cover_vertical_image)}
                         alt=""
                         className="w-full h-full object-cover"
                         width={720}

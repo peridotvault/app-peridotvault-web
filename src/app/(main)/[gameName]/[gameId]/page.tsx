@@ -11,6 +11,7 @@ import { DetailContent } from "./_components/DetailContent";
 import { GameGlance } from "./_components/GameGlance";
 import { SystemRequirement } from "./_components/SystemRequirement";
 import { GameDistribution } from "@/features/game/published/distribution.type";
+import { getAssetUrl } from "@/shared/utils/helper.url";
 
 export default function GameDetailPage(): React.ReactElement {
   const params = useParams();
@@ -86,7 +87,7 @@ export default function GameDetailPage(): React.ReactElement {
         <div className="flex flex-col gap-8">
           {/* Hero */}
           <HeroSection
-            bannerImage={game.banner_image}
+            bannerImage={getAssetUrl(game.banner_image)}
             gameName={game.name}
             categories={game.categories ?? []}
             price={game.price}
@@ -95,7 +96,7 @@ export default function GameDetailPage(): React.ReactElement {
 
           {/* Game Glance  */}
           <GameGlance
-            coverHorizontalImage={game.cover_horizontal_image}
+            coverHorizontalImage={getAssetUrl(game.cover_horizontal_image)}
             gameDescription={game.description}
             gameName={game.name}
             previews={game.previews}

@@ -2,7 +2,8 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
-import type { GamePriview } from "@/features/game/types/media";
+import { GamePriview } from "@/features/game/published/media.type";
+import { getAssetUrl } from "@/shared/utils/helper.url";
 import React, {
   ReactNode,
   useCallback,
@@ -183,7 +184,7 @@ export default function CarouselPreview({
         >
           {it.kind === "image" ? (
             <img
-              src={it.src}
+              src={getAssetUrl(it.src)}
               alt="Game screenshot"
               className="h-full w-full object-cover"
               draggable={false}
@@ -200,7 +201,7 @@ export default function CarouselPreview({
               loop
               controls={i === index}
             >
-              <source src={it.src} type="video/mp4" />
+              <source src={getAssetUrl(it.src)} type="video/mp4" />
             </video>
           )}
         </div>
@@ -301,7 +302,7 @@ export default function CarouselPreview({
             >
               {it.kind === "image" ? (
                 <img
-                  src={it.src}
+                  src={getAssetUrl(it.src)}
                   alt={`Media ${i + 1}`}
                   className="h-full w-full object-cover"
                 />
@@ -313,7 +314,7 @@ export default function CarouselPreview({
                     playsInline
                     preload="metadata"
                   >
-                    <source src={it.src} type="video/mp4" />
+                    <source src={getAssetUrl(it.src)} type="video/mp4" />
                   </video>
                   <span className="pointer-events-none absolute inset-0 grid place-items-center text-foreground/90">
                     <svg viewBox="0 0 24 24" className="h-6 w-6 drop-shadow">

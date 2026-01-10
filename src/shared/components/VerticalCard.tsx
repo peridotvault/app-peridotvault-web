@@ -2,6 +2,7 @@ import React from "react";
 import Link from "next/link";
 import { PriceCoin } from "./CoinWithAmmount";
 import { formatTitle } from "../utils/formatUrl";
+import { getAssetUrl } from "../utils/helper.url";
 
 export const VerticalCard = ({
   gameId,
@@ -29,7 +30,7 @@ export const VerticalCard = ({
     >
       <div className="w-full aspect-3/4 overflow-hidden bg-muted rounded-xl duration-300">
         <img
-          src={imgUrl}
+          src={getAssetUrl(imgUrl)}
           alt={gameName}
           className="w-full h-full object-cover group-hover:scale-105 duration-300"
         />

@@ -2,19 +2,20 @@ import { PGC1Abi } from "@/shared/chains/evm/abis/abi.pgc1";
 import { getSession } from "@/features/auth/_db/db.service";
 import { publicClient } from "@/shared/chains/evm/viem";
 import { getAddress, isAddress, parseAbiItem, type Hex } from "viem";
-import { PERIDOT_REGISTRY } from "./library.config";
+import { PERIDOT_REGISTRY, PGC1_LICENSE_ID } from "./library.config";
 
 export type MyGameItem = {
     gameId: Hex;
     pgc1: `0x${string}`;
     publisher: string;
+    createdAt: bigint;
     active: boolean;
 };
 
 type RegistryGame = {
     pgc1: `0x${string}`;
     publisher: `0x${string}`;
-    createdAt: bigint | number;
+    createdAt: bigint;
     active: boolean;
 };
 
@@ -103,13 +104,20 @@ export async function getMyGames(user: string, opts?: { fromBlock?: bigint }) {
                 address: pgc1,
                 abi: PGC1Abi,
                 functionName: "balanceOf",
-                args: [address],
+                args: [address, PGC1_LICENSE_ID],
             })) as bigint;
 
             // bal typed -> bigint, jadi aman
             const owns = bal > ZERO;
 
-            if (owns) results.push({ gameId, pgc1, publisher, active });
+            if (owns)
+                results.push({
+                    gameId,
+                    pgc1,
+                    publisher,
+                    createdAt: game.createdAt,
+                    active,
+                });
         }
 
         return results;
