@@ -1,0 +1,60 @@
+name: Deploy to VPS
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Deploy via Docker Compose
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to VPS
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script_stop: true
+          script: |
+            set -e
+
+            APP_DIR="/home/peridot/peridotvault-web"
+            REPO_URL="https://${{ secrets.GH_TOKEN }}@github.com/${{ github.repository }}.git"
+
+            # Navigate to project directory
+            echo "Changing to project directory: $APP_DIR"
+            cd "$APP_DIR" || exit 1
+
+            # Pull latest changes
+            echo "Pulling latest changes from main..."
+            git fetch origin
+            git reset --hard origin/main
+            git clean -fd
+
+            # Create .env file if not exists
+            if [ ! -f .env ]; then
+              echo "Creating .env file..."
+              cat <<'EOF' > .env
+            ${{ secrets.ENV_FILE }}
+            EOF
+            fi
+
+            # Deploy with Docker Compose
+            echo "Building and starting containers..."
+            docker compose down
+            docker compose build --no-cache
+            docker compose up -d
+
+            # Cleanup old images
+            echo "Cleaning up old images..."
+            docker image prune -af --filter "until=24h"
+
+            # Check status
+            echo "Container status:"
+            docker compose ps
+
+            echo "Deployment completed successfully!"
