@@ -79,7 +79,7 @@ export default function MyGames() {
 
   return (
     <main className="max-w-400 w-full mx-auto p-8 flex flex-col gap-8">
-      <section className="mt-20">
+      <section>
         <h1 className="text-4xl font-medium">My Games</h1>
       </section>
 

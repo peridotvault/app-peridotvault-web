@@ -33,10 +33,56 @@ export type LibraryError = Error & { code: LibraryErrorCode };
 
 const ZERO = BigInt(0);
 
-function createLibraryError(code: LibraryErrorCode): LibraryError {
+function createLibraryError(code: LibraryErrorCode, cause?: unknown): LibraryError {
     const err = new Error(code) as LibraryError;
     err.code = code;
+    err.cause = cause;
     return err;
+}
+
+function parseRegistryGame(value: unknown): RegistryGame | null {
+    if (!value) return null;
+
+    if (Array.isArray(value)) {
+        const [pgc1, publisher, createdAt, active] = value;
+        if (typeof pgc1 !== "string" || typeof publisher !== "string")
+            return null;
+        if (!isAddress(pgc1) || !isAddress(publisher)) return null;
+        return {
+            pgc1: getAddress(pgc1),
+            publisher: getAddress(publisher),
+            createdAt:
+                typeof createdAt === "bigint"
+                    ? createdAt
+                    : BigInt(createdAt ?? 0),
+            active: Boolean(active),
+        };
+    }
+
+    if (typeof value === "object") {
+        const game = value as Partial<RegistryGame> & {
+            pgc1?: string;
+            publisher?: string;
+            createdAt?: bigint | number;
+            active?: boolean;
+        };
+
+        if (typeof game.pgc1 !== "string" || typeof game.publisher !== "string")
+            return null;
+        if (!isAddress(game.pgc1) || !isAddress(game.publisher)) return null;
+
+        return {
+            pgc1: getAddress(game.pgc1),
+            publisher: getAddress(game.publisher),
+            createdAt:
+                typeof game.createdAt === "bigint"
+                    ? game.createdAt
+                    : BigInt(game.createdAt ?? 0),
+            active: Boolean(game.active),
+        };
+    }
+
+    return null;
 }
 
 export function isLibraryErrorCode(value: string): value is LibraryErrorCode {
@@ -89,15 +135,18 @@ export async function getMyGames(user: string, opts?: { fromBlock?: bigint }) {
         const results: MyGameItem[] = [];
 
         for (const gameId of gameIds) {
-            const game = (await publicClient.readContract({
+            const gameRaw = await publicClient.readContract({
                 ...PERIDOT_REGISTRY,
                 functionName: "games",
                 args: [gameId],
-            })) as RegistryGame;
+            });
 
-            const pgc1 = getAddress(game.pgc1);
-            const publisher = getAddress(game.publisher);
-            const active = game.active;
+            const game = parseRegistryGame(gameRaw);
+            if (!game) {
+                throw createLibraryError(LIBRARY_ERROR_CODES.RpcFailed, gameRaw);
+            }
+
+            const { pgc1, publisher, createdAt, active } = game;
 
             // balanceOf harus return bigint kalau ABI PGC1 benar (uint256)
             const bal = (await publicClient.readContract({
@@ -115,14 +164,17 @@ export async function getMyGames(user: string, opts?: { fromBlock?: bigint }) {
                     gameId,
                     pgc1,
                     publisher,
-                    createdAt: game.createdAt,
+                    createdAt,
                     active,
                 });
         }
 
+        console.log("My games fetched:", results.length);
+
         return results;
     } catch (error) {
-        throw createLibraryError(LIBRARY_ERROR_CODES.RpcFailed);
+        console.error(error);
+        throw createLibraryError(LIBRARY_ERROR_CODES.RpcFailed, error);
     }
 }
 
