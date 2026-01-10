@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { useEffect, useState } from "react";
-import { Game } from "../types/game";
-import { getGameDetail } from "../services/detail";
+import { getGameDetail } from "./detail.service";
+import { Game } from "../published/game.type";
 
 interface UseGameDetailState {
     game: Game | null;

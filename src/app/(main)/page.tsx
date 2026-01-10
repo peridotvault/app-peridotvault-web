@@ -4,10 +4,10 @@ import { VerticalCard } from "@/shared/components/VerticalCard";
 import { IMAGE_LOADING } from "@/shared/constants/image";
 import { VaultCarousel } from "./_components/VaultCarousel";
 import { VaultTopGames } from "./_components/TopGames";
-import { usePublishedGames } from "@/features/game/hooks/usePublishedGames";
+import { usePublishedGames } from "@/features/game/published/published.hook";
 import { useGetCategories } from "@/shared/hooks/useCategories";
-import { useBannerGames } from "@/features/game/hooks/useBannerGames";
-import { useTopGames } from "@/features/game/hooks/useTopGames";
+import { useTopGames } from "@/features/game/top/top.hook";
+import { useBannerGames } from "@/features/game/banner/banner.hook";
 
 export default function Vault() {
   const { games: publishedGames } = usePublishedGames();

@@ -6,7 +6,7 @@ import {
   faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
 import { TypographyH2 } from "@/shared/components/ui/TypographyH2";
-import { GameCard } from "@/features/game/types/published";
+import { GameCard } from "@/features/game/published/published.type";
 import Link from "next/link";
 import { formatTitle } from "@/shared/utils/formatUrl";
 import Image from "next/image";

@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
-import { GameCard } from "../types/published";
-import { getTopGames } from "../services/topGames";
+import { GameCard } from "../published/published.type";
+import { getTopGames } from "./top.service";
 
 interface UseTopGamesState {
     games: GameCard[];

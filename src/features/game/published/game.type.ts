@@ -1,5 +1,5 @@
-import { GameDistribution } from "./distribution"
-import { GamePriview } from "./media"
+import { GameDistribution } from "./distribution.type"
+import { GamePriview } from "./media.type"
 import { ApiResponse } from "@/shared/types/api"
 
 export type GameDetailResponse = ApiResponse<Game>;

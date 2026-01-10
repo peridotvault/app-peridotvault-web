@@ -1,17 +1,16 @@
-/* eslint-disable @next/next/no-img-element */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import React from "react";
 import { useParams } from "next/navigation";
 
-import { useGameDetail } from "@/features/game/hooks/useGameDetail";
-import { GameDistribution } from "@/features/game/types/distribution";
+import { useGameDetail } from "@/features/game/detail/detail.hook";
 import { HeroSection } from "./_components/HeroSection";
 import { ContainerPadding } from "@/shared/components/ui/ContainerPadding";
 import { DetailContent } from "./_components/DetailContent";
 import { GameGlance } from "./_components/GameGlance";
 import { SystemRequirement } from "./_components/SystemRequirement";
+import { GameDistribution } from "@/features/game/published/distribution.type";
 
 export default function GameDetailPage(): React.ReactElement {
   const params = useParams();

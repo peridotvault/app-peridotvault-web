@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
-import { GameBanner } from "@/features/game/types/banner";
+import { GameBanner } from "@/features/game/banner/banner.type";
 import React, { useEffect } from "react";
 
 type Props = {
