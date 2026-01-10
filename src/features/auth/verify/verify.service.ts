@@ -17,7 +17,7 @@ export async function verifyAndCreateSession(payload: VerifyRequest) {
         refreshToken: res.data.refreshToken,
         expiresAt: res.data.expiresAt,
 
-        accountId: payload.address,
+        accountId: payload.accountId,
         accountType: payload.accountType,
     });
 

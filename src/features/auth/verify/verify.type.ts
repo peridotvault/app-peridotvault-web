@@ -3,7 +3,7 @@ import { ApiResponse } from "@/shared/types/api";
 export type VerifyRequest = {
     signature: string;   // "0x..."
     message: string;
-    address: string;     // "0x..."
+    accountId: string;     // "0x..."
     accountType: "evm" | "solana" | "icp" | string; // extend nanti
 };
 

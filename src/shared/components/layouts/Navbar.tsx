@@ -44,7 +44,7 @@ export default function Navbar() {
     await verifyAndCreateSession({
       signature: e.signature!,
       message: e.message!,
-      address: e.accountId!,
+      accountId: e.accountId!,
       accountType: e.accountType!.toLowerCase(),
     });
   }

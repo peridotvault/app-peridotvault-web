@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createPublicClient, createWalletClient, custom, http } from "viem";
-import { sepolia, baseSepolia, base, mainnet } from "viem/chains";
+import { sepolia, baseSepolia, base, mainnet, hardhat } from "viem/chains";
 
 // Pilih chain yang kamu pakai.
 // Ganti sesuai kebutuhan (mis. baseSepolia, sepolia, base, mainnet)
-export const CHAIN = baseSepolia;
+export const CHAIN = hardhat;
 
 export const publicClient = createPublicClient({
     chain: CHAIN,

@@ -1,13 +1,14 @@
 "use client";
 
 /* eslint-disable @next/next/no-img-element */
-import { getSession } from "@/features/auth/_db/db.service";
 import {
-  getMyGames,
+  getMyGamesForSession,
+  isLibraryErrorCode,
   type MyGameItem,
+  type LibraryErrorCode,
+  LIBRARY_ERROR_CODES,
 } from "@/features/game/library/library.service";
 import { IMAGE_LOADING } from "@/shared/constants/image";
-import { isAddress } from "viem";
 import { useEffect, useMemo, useState } from "react";
 
 type GridItem =
@@ -17,6 +18,7 @@ type GridItem =
 export default function MyGames() {
   const [games, setGames] = useState<MyGameItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [errorCode, setErrorCode] = useState<LibraryErrorCode | null>(null);
 
   useEffect(() => {
     let mounted = true;
@@ -24,21 +26,20 @@ export default function MyGames() {
     (async () => {
       try {
         setLoading(true);
+        setErrorCode(null);
 
-        const session = await getSession();
-        const accountId = session?.accountId;
-
-        // Guard tanpa any: pastikan address valid EVM
-        if (!accountId || !isAddress(accountId)) {
-          if (!mounted) return;
-          setGames([]);
-          return;
-        }
-
-        const my = await getMyGames(accountId, { fromBlock: BigInt(0) });
+        const my = await getMyGamesForSession({ fromBlock: BigInt(0) });
 
         if (!mounted) return;
         setGames(my);
+      } catch (error) {
+        if (!mounted) return;
+        const message = error instanceof Error ? error.message : "";
+        const code = isLibraryErrorCode(message)
+          ? message
+          : LIBRARY_ERROR_CODES.RpcFailed;
+        setErrorCode(code);
+        setGames([]);
       } finally {
         if (!mounted) return;
         setLoading(false);
@@ -58,6 +59,22 @@ export default function MyGames() {
       }));
     return games.map((g) => ({ kind: "game", data: g }));
   }, [loading, games]);
+
+  const errorMessage = useMemo(() => {
+    if (!errorCode) return null;
+
+    switch (errorCode) {
+      case LIBRARY_ERROR_CODES.MissingSession:
+        return "Please sign in to view your library.";
+      case LIBRARY_ERROR_CODES.UnsupportedAccountType:
+        return "Your account type is not supported for EVM games.";
+      case LIBRARY_ERROR_CODES.InvalidAccount:
+        return "Invalid wallet address found in your session.";
+      case LIBRARY_ERROR_CODES.RpcFailed:
+      default:
+        return "Failed to load your library from the chain.";
+    }
+  }, [errorCode]);
 
   return (
     <main className="max-w-400 w-full mx-auto p-8 flex flex-col gap-8">
@@ -118,7 +135,13 @@ export default function MyGames() {
         })}
       </section>
 
-      {!loading && games.length === 0 && (
+      {!loading && errorMessage && (
+        <section className="text-white/50">
+          {errorMessage} <span className="text-white/30">({errorCode})</span>
+        </section>
+      )}
+
+      {!loading && !errorMessage && games.length === 0 && (
         <section className="text-white/50">
           Tidak ada game yang terdeteksi di wallet ini.
         </section>
