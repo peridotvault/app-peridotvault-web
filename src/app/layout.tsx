@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { Suspense } from "react";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { UIEffects } from "./_effects/UIEffects";
@@ -34,7 +35,9 @@ export default async function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col`}
       >
         <UIEffects />
-        <EmbedLayout>{children}</EmbedLayout>
+        <Suspense fallback={null}>
+          <EmbedLayout>{children}</EmbedLayout>
+        </Suspense>
         {/* <Navbar />
         {children} */}
       </body>
