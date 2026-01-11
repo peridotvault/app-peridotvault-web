@@ -3,6 +3,7 @@ import { getSession } from "@/features/auth/_db/db.service";
 import { publicClient } from "@/shared/chains/evm/viem";
 import { getAddress, isAddress, parseAbiItem, type Hex } from "viem";
 import { PERIDOT_REGISTRY, PGC1_LICENSE_ID } from "./library.config";
+import { getLogsChunked } from "@/shared/chains/evm/services/service.registry";
 
 export type MyGameItem = {
     gameId: Hex;
@@ -99,26 +100,17 @@ const GameRegisteredEvent = parseAbiItem(
 export async function getRegisteredGamesFromLogs(opts?: { fromBlock?: bigint }) {
     const fromBlock = opts?.fromBlock ?? ZERO;
 
-    // getLogs khusus event GameRegistered (no decodeEventLog, no any)
-    const logs = await publicClient.getLogs({
-        address: PERIDOT_REGISTRY.address,
-        event: GameRegisteredEvent,
-        fromBlock,
-        toBlock: "latest",
-    });
+    const logs = await getLogsChunked(GameRegisteredEvent, fromBlock);
 
     const gameIds = new Set<Hex>();
-
     for (const log of logs) {
-        // log.args typed sesuai event signature di atas
         const gid = log.args.gameId;
-        if (gid !== undefined) {
-            gameIds.add(gid);
-        }
+        if (gid !== undefined) gameIds.add(gid);
     }
 
     return Array.from(gameIds);
 }
+
 
 export async function getMyGames(user: string, opts?: { fromBlock?: bigint }) {
     if (!isAddress(user)) {
