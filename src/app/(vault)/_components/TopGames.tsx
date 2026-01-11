@@ -7,7 +7,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { TypographyH2 } from "@/shared/components/ui/TypographyH2";
 import { GameCard } from "@/features/game/published/published.type";
-import Link from "next/link";
+import { EmbedLink } from "@/features/security/embed/embed.component";
 import { formatTitle } from "@/shared/utils/formatUrl";
 import Image from "next/image";
 import { IMAGE_LOADING } from "@/shared/constants/image";
@@ -149,7 +149,7 @@ export const VaultTopGames: React.FC<Props> = ({
             ) : (
               <div className="pv-topgames-row flex gap-2 w-max">
                 {games.map((item, idx) => (
-                  <Link
+                  <EmbedLink
                     key={idx}
                     href={`/${formatTitle(item.name)}/${item.game_id}`}
                     className="w-72 h-80 relative flex justify-end"
@@ -167,7 +167,7 @@ export const VaultTopGames: React.FC<Props> = ({
                       />
                       <div className="bg-linear-to-tr from-black/20 absolute left-0 top-0 h-full w-full"></div>
                     </div>
-                  </Link>
+                  </EmbedLink>
                 ))}
               </div>
             )}

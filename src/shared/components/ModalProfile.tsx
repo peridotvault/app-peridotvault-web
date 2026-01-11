@@ -1,3 +1,5 @@
+"use client";
+
 import { AnimatePresence, motion } from "framer-motion";
 import { short } from "../utils/customAccountId";
 import Link from "next/link";
@@ -10,6 +12,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { logoutEverywhere } from "@/features/auth/logout/logout.service";
+import { EmbedLink } from "@/features/security/embed/embed.component";
 
 type Props = {
   open: boolean;
@@ -79,14 +82,14 @@ export const ModalProfile = ({ open, onClose, accountId }: Props) => {
                 aria-label="List Game Library"
                 className="grid grid-cols-2 w-full gap-2"
               >
-                <Link
+                <EmbedLink
                   href={"/my-games"}
                   onClick={onClose}
                   className="bg-accent/20 hover:bg-accent/30 duration-300 text-highlight w-full rounded-xl p-4 font-medium flex flex-col gap-2"
                 >
                   <FontAwesomeIcon icon={faPuzzlePiece} className="text-2xl" />
                   <span>My Games</span>
-                </Link>
+                </EmbedLink>
                 <Link
                   href={""}
                   onClick={onClose}

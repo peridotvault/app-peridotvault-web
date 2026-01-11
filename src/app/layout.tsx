@@ -3,8 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { UIEffects } from "./_effects/UIEffects";
 import { METADATA } from "./_seo/metadata";
-import Navbar from "@/shared/components/layouts/Navbar";
-import { cookies } from "next/headers";
+import { EmbedLayout } from "@/features/security/embed/embed.component";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,16 +28,13 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const isEmbed = (await cookies()).get("pv_embed")?.value === "1";
-
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col`}
       >
         <UIEffects />
-        {!isEmbed && <Navbar />}
-        {children}
+        <EmbedLayout>{children}</EmbedLayout>
         {/* <Navbar />
         {children} */}
       </body>

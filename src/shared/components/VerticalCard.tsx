@@ -1,8 +1,10 @@
+"use client";
+
 import React from "react";
-import Link from "next/link";
 import { PriceCoin } from "./CoinWithAmmount";
 import { formatTitle } from "../utils/formatUrl";
 import { getAssetUrl } from "../utils/helper.url";
+import { EmbedLink } from "@/features/security/embed/embed.component";
 
 export const VerticalCard = ({
   gameId,
@@ -24,7 +26,7 @@ export const VerticalCard = ({
   tokenLogo?: string | null;
 }) => {
   return (
-    <Link
+    <EmbedLink
       href={`/${formatTitle(gameName)}/${gameId}`}
       className="w-full max-w-[250px] flex flex-col gap-3 group"
     >
@@ -47,6 +49,6 @@ export const VerticalCard = ({
         tokenDecimals={tokenDecimals}
         tokenLogo={tokenLogo}
       />
-    </Link>
+    </EmbedLink>
   );
 };

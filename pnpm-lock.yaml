@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@antigane/wallet-adapters':
-        specifier: ^0.0.10
-        version: 0.0.10(bufferutil@4.1.0)(fastestsmallesttextencoderdecoder@1.0.22)(framer-motion@12.24.10(react-dom@19.2.1(react@19.2.1))(react@19.2.1))(react-dom@19.2.1(react@19.2.1))(react@19.2.1)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.3.5)
+        specifier: ^0.0.11
+        version: 0.0.11(bufferutil@4.1.0)(fastestsmallesttextencoderdecoder@1.0.22)(framer-motion@12.24.10(react-dom@19.2.1(react@19.2.1))(react@19.2.1))(react-dom@19.2.1(react@19.2.1))(react@19.2.1)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.3.5)
       '@fortawesome/fontawesome-svg-core':
         specifier: ^7.1.0
         version: 7.1.0
@@ -108,8 +108,8 @@ packages:
     resolution: {integrity: sha512-UrcABB+4bUrFABwbluTIBErXwvbsU/V7TZWfmbgJfbkwiBuziS9gxdODUyuiecfdGQ85jglMW6juS3+z5TsKLw==}
     engines: {node: '>=10'}
 
-  '@antigane/wallet-adapters@0.0.10':
-    resolution: {integrity: sha512-1ClLGh9Yerqz9IgCMLDWlui7JYGChNRLt8IZPxND1TYQkyyQEfqs4tcnnCo6JhDXTppdDY8n/59V9WMtKHf2uw==}
+  '@antigane/wallet-adapters@0.0.11':
+    resolution: {integrity: sha512-yfOMSenDFd7Uy54YHgOOMf69i94loaMiFtDeXHe+supl+GNUyxcoRZ/uiL+3vtwhPcgr156Dr7Ig16+MjYubEg==}
     peerDependencies:
       framer-motion: '>=12.24.0 <13'
       react: '>=18'
@@ -2857,7 +2857,7 @@ snapshots:
 
   '@alloc/quick-lru@5.2.0': {}
 
-  '@antigane/wallet-adapters@0.0.10(bufferutil@4.1.0)(fastestsmallesttextencoderdecoder@1.0.22)(framer-motion@12.24.10(react-dom@19.2.1(react@19.2.1))(react@19.2.1))(react-dom@19.2.1(react@19.2.1))(react@19.2.1)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.3.5)':
+  '@antigane/wallet-adapters@0.0.11(bufferutil@4.1.0)(fastestsmallesttextencoderdecoder@1.0.22)(framer-motion@12.24.10(react-dom@19.2.1(react@19.2.1))(react@19.2.1))(react-dom@19.2.1(react@19.2.1))(react@19.2.1)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.3.5)':
     dependencies:
       '@metamask/sdk': 0.34.0(bufferutil@4.1.0)(utf-8-validate@5.0.10)
       '@phantom/browser-sdk': 1.0.0(bufferutil@4.1.0)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.3.5)

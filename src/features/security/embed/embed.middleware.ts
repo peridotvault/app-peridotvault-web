@@ -9,6 +9,7 @@ function isTruthy(v: string | null) {
 export function middleware(req: NextRequest) {
   const url = req.nextUrl;
   const embed = url.searchParams.get("embed");
+  const cookieEmbed = req.cookies.get("pv_embed")?.value === "1";
 
   const res = NextResponse.next();
 
@@ -28,6 +29,13 @@ export function middleware(req: NextRequest) {
       path: "/",
       maxAge: 0,
     });
+  }
+
+  // If embed is active via cookie, keep embed=1 in the URL for navigation.
+  if (!embed && cookieEmbed && req.method === "GET") {
+    const redirectUrl = url.clone();
+    redirectUrl.searchParams.set("embed", "1");
+    return NextResponse.redirect(redirectUrl);
   }
 
   return res;
