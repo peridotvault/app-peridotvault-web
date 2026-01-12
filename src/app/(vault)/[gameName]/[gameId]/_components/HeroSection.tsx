@@ -21,7 +21,7 @@ export const HeroSection = ({ bannerImage, gameName, categories }: Props) => {
           className="absolute inset-0 w-full h-full object-cover opacity-60"
         />
       ) : (
-        <div className="absolute inset-0 w-full h-full bg-muted" />
+        <div className="absolute inset-0 w-full h-full bg-muted animate-pulse" />
       )}
       {/* <div className="absolute inset-0 bg-linear-to-t from-background via-background/40 to-transparent" /> */}
       <ContainerPadding className="relative z-5 flex justify-end lg:justify-between lg:items-end max-lg:flex-col gap-6 py-8 h-full duration-300">

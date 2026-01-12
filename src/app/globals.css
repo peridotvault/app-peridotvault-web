@@ -7,6 +7,8 @@
   --color-card-foreground: var(--card-foreground);
   --color-accent: var(--accent);
   --color-highlight: var(--highlight);
+  --color-accent-card: var(--accent-card);
+  --color-border: var(--border);
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
   --color-chart-1: var(--chart-1);
@@ -25,6 +27,7 @@
      ========================= */
   --brand-1: #349b65;
   --brand-2: #87ee83;
+  --brand-3: #349b6650;
 
   /* =========================
      Semantic tokens (UI)
@@ -35,7 +38,9 @@
   --card-foreground: white;
   --accent: var(--brand-1);
   --highlight: var(--brand-2);
+  --accent-card: var(--brand-3);
   --accent-foreground: #87ee83;
+  --border: #ffffff28;
   --muted: #363636; /* background_disabled */
   --muted-foreground: rgb(110, 110, 110); /* text_disabled */
   --chart-1: oklch(0.488 0.243 264.376);
