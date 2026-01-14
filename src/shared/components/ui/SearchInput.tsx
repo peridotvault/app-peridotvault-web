@@ -47,7 +47,7 @@ export function SearchInput({
         onChange={handleChange}
         placeholder={placeholder}
         className="
-          w-70 bg-transparent h-8
+          w-70 bg-transparent h-6
           outline-none
           placeholder:text-muted-foreground
         "

@@ -2,6 +2,7 @@
 
 import { Dropdown, OptionComponent } from "@/shared/components/ui/Dropdown";
 import { SearchInput } from "@/shared/components/ui/SearchInput";
+import { STYLE_PADDING } from "@/shared/constants/style";
 import { useState } from "react";
 
 export const VaultNavbar = () => {
@@ -14,10 +15,10 @@ export const VaultNavbar = () => {
     },
   ];
   return (
-    <nav className="border-y border-border bg-card p-2">
+    <nav className={"border-y border-border bg-card py-2 " + STYLE_PADDING}>
       <div className="flex justify-between max-w-400 mx-auto">
         <div className=""></div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <SearchInput
             value={query}
             placeholder="Search Game..."

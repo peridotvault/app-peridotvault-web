@@ -1,3 +1,5 @@
+import { STYLE_PADDING } from "@/shared/constants/style";
+
 export const ContainerPadding = ({
   children,
   className,
@@ -6,9 +8,7 @@ export const ContainerPadding = ({
   className?: string;
 }) => {
   return (
-    <div
-      className={"max-w-420 mx-auto w-full px-6 sm:px-8 md:px-12 " + className}
-    >
+    <div className={"max-w-420 mx-auto w-full " + className + STYLE_PADDING}>
       {children}
     </div>
   );

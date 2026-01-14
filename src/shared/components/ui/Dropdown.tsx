@@ -73,7 +73,7 @@ export function Dropdown({
       <button
         type="button"
         onClick={() => setIsOpen((v) => !v)}
-        className={`py-2 px-4 rounded-xl border border-border w-full flex items-center gap-2 hover:cursor-pointer ${
+        className={`py-2 px-3 rounded-xl border border-border w-full flex items-center gap-2 hover:cursor-pointer ${
           isOpen ? "bg-white/10" : STYLE_HOVER
         }`}
       >
@@ -113,7 +113,7 @@ export function Dropdown({
       ===================== */}
       {isOpen && (
         <div className="absolute right-0 mt-2 z-50 inline-block">
-          <ul className="w-70 rounded-lg bg-card border border-border max-h-60 overflow-auto ">
+          <ul className="w-60 rounded-xl bg-card border border-border max-h-60 overflow-auto ">
             {options.map((option) => (
               <li
                 key={option.value}

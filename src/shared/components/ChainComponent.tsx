@@ -7,7 +7,7 @@ type Props = {
 export const ChainComponent = ({ imgUrl, label }: Props) => {
   return (
     <div className="flex items-center gap-2">
-      <div className="h-8 w-8 aspect-square bg-foreground p-1.5 rounded-lg">
+      <div className="h-6 w-6 aspect-square bg-foreground p-1.5 rounded-lg">
         <img
           src={imgUrl}
           className="w-full h-full object-contain"

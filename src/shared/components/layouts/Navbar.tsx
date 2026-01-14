@@ -10,6 +10,7 @@ import { useUIStore } from "@/shared/stores/ui";
 import { verifyAndCreateSession } from "@/features/auth/verify/verify.service";
 import { useAuthStore } from "@/features/auth/_store/auth.store";
 import { getSession } from "@/features/auth/_db/db.service";
+import { STYLE_PADDING } from "@/shared/constants/style";
 
 export default function Navbar() {
   const [state, setState] = useState<null | SignState>();
@@ -55,7 +56,12 @@ export default function Navbar() {
     <header className="left-0 top-0 z-20 w-full flex flex-col">
       <NotificationBar />
 
-      <div className="flex items-center justify-between w-full z-21 px-6 sm:px-8 md:px-12 py-6 bg-card">
+      <div
+        className={
+          "flex items-center justify-between w-full z-21 py-4 bg-card " +
+          STYLE_PADDING
+        }
+      >
         <div>
           <nav className="flex">
             <ol>
