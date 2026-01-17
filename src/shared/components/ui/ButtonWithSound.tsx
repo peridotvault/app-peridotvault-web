@@ -1,0 +1,41 @@
+import { useClickSound } from "@/shared/hooks/useClickSound";
+import React from "react";
+
+type ButtonWithSoundProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
+  soundUrl?: string;
+  soundVolume?: number;
+};
+
+// eslint-disable-next-line react/display-name
+export const ButtonWithSound = React.forwardRef<
+  HTMLButtonElement,
+  ButtonWithSoundProps
+>(
+  (
+    {
+      soundUrl = "/sounds/click.mp3",
+      soundVolume = 0.6,
+      onClick,
+      disabled,
+      children,
+      ...rest
+    },
+    ref,
+  ) => {
+    const play = useClickSound(soundUrl, soundVolume);
+
+    return (
+      <button
+        ref={ref}
+        {...rest}
+        disabled={disabled}
+        onClick={(e) => {
+          if (!disabled) play();
+          onClick?.(e);
+        }}
+      >
+        {children ?? ""}
+      </button>
+    );
+  },
+);

@@ -51,8 +51,9 @@
   /* shadow  */
   --flat-sm: 3px 3px 6px #0c0d0c, -3px -3px 6px #2c312e;
   --sunken-sm: inset 5px 5px 10px #0c0d0c, inset -5px -5px 10px #2c312e;
-  --arise-sm: inset 2px 2px 5px #0c0d0c, inset -2px -2px 5px #2c312e,
-    2px 2px 5px #0c0d0c, -2px -2px 5px #2c312e;
+  --arise-sm:
+    inset 2px 2px 5px #0c0d0c, inset -2px -2px 5px #2c312e, 2px 2px 5px #0c0d0c,
+    -2px -2px 5px #2c312e;
 
   background: var(--background);
   color: var(--foreground);

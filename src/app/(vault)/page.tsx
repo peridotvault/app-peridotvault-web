@@ -8,6 +8,7 @@ import { usePublishedGames } from "@/features/game/published/published.hook";
 import { useGetCategories } from "@/shared/hooks/useCategories";
 import { useTopGames } from "@/features/game/top/top.hook";
 import { useBannerGames } from "@/features/game/banner/banner.hook";
+import { CarouselWrapper } from "@/shared/components/CarouselWrapper";
 
 export default function Vault() {
   const { games: publishedGames } = usePublishedGames();
@@ -43,21 +44,47 @@ export default function Vault() {
 
       {/* ✅ section 3  */}
       <section className="flex justify-center w-full px-10">
-        <div className="flex flex-col gap-6 w-full max-w-400">
-          <TypographyH2 text="New on PeridotVault" />
+        <div className="flex flex-col gap-3 w-full items-center">
+          <div className="flex max-w-7xl mx-auto w-full">
+            <TypographyH2 text="New on PeridotVault" />
+          </div>
           {/* contents  */}
-          <div className="grid grid-cols-5 max-xl:grid-cols-4 gap-6">
-            {publishedGames?.slice(0, 5).map((item, idx) => (
+          <CarouselWrapper
+            items={publishedGames}
+            pageSize={5}
+            renderItem={(item, index) => (
               <VerticalCard
-                key={idx}
+                key={index}
                 gameId={item.game_id}
                 gameName={item.name}
                 imgUrl={item.cover_vertical_image ?? IMAGE_LOADING}
                 price={item.price ?? 0}
-                // tokenCanister={item.price}
               />
-            ))}
+            )}
+          />
+        </div>
+      </section>
+
+      {/* ✅ section 3  */}
+      <section className="flex justify-center w-full px-10">
+        <div className="flex flex-col gap-3 w-full items-center">
+          <div className="flex max-w-7xl mx-auto w-full">
+            <TypographyH2 text="New on PeridotVault" />
           </div>
+          {/* contents  */}
+          <CarouselWrapper
+            items={publishedGames}
+            pageSize={5}
+            renderItem={(item, index) => (
+              <VerticalCard
+                key={index}
+                gameId={item.game_id}
+                gameName={item.name}
+                imgUrl={item.cover_vertical_image ?? IMAGE_LOADING}
+                price={item.price ?? 0}
+              />
+            )}
+          />
         </div>
       </section>
 
