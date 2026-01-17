@@ -1,6 +1,5 @@
 "use client";
 
-/* eslint-disable @next/next/no-img-element */
 import {
   getMyGamesForSession,
   isLibraryErrorCode,
@@ -8,12 +7,8 @@ import {
   type LibraryErrorCode,
   LIBRARY_ERROR_CODES,
 } from "@/features/game/library/library.service";
-import { IMAGE_LOADING } from "@/shared/constants/image";
 import { useEffect, useMemo, useState } from "react";
-
-type GridItem =
-  | { kind: "skeleton"; key: number }
-  | { kind: "game"; data: MyGameItem };
+import { GameCard } from "./_components/GameCard";
 
 export default function MyGames() {
   const [games, setGames] = useState<MyGameItem[]>([]);
@@ -31,8 +26,8 @@ export default function MyGames() {
         const my = await getMyGamesForSession({ fromBlock: BigInt(0) });
         console.log("My Games:", my);
 
-        if (!mounted) return;
         setGames(my);
+        if (!mounted) return;
       } catch (error) {
         if (!mounted) return;
         const message = error instanceof Error ? error.message : "";
@@ -51,15 +46,6 @@ export default function MyGames() {
       mounted = false;
     };
   }, []);
-
-  const items: GridItem[] = useMemo(() => {
-    if (loading)
-      return Array.from({ length: 5 }, (_, i) => ({
-        kind: "skeleton",
-        key: i,
-      }));
-    return games.map((g) => ({ kind: "game", data: g }));
-  }, [loading, games]);
 
   const errorMessage = useMemo(() => {
     if (!errorCode) return null;
@@ -84,56 +70,13 @@ export default function MyGames() {
       </section>
 
       <section className="grid grid-cols-4">
-        {items.map((item) => {
-          const key = item.kind === "skeleton" ? item.key : item.data.gameId;
-
-          return (
-            <div
-              key={key}
-              className="flex flex-col gap-4 hover:bg-white/5 rounded-2xl duration-300 px-3 py-5"
-            >
-              <img
-                src={IMAGE_LOADING}
-                alt="Game Cover Image"
-                className="aspect-video w-full rounded-2xl"
-              />
-
-              <div className="flex flex-col gap-1">
-                <h2 className="text-2xl font-medium line-clamp-2">
-                  {item.kind === "skeleton"
-                    ? "Peridot Game"
-                    : `Game ${item.data.gameId.slice(0, 10)}…`}
-                </h2>
-
-                <span aria-label="Game Studio" className="text-white/50">
-                  {item.kind === "skeleton"
-                    ? "Antigane"
-                    : `Publisher: ${item.data.publisher.slice(0, 10)}…`}
-                </span>
-
-                {item.kind === "game" && (
-                  <span className="text-white/40 text-sm">
-                    {item.data.active ? "Active" : "Inactive"} · PGC1:{" "}
-                    {item.data.pgc1.slice(0, 10)}…
-                  </span>
-                )}
-              </div>
-
-              <div>
-                <button
-                  className="bg-accent py-2 px-4 cursor-pointer rounded-lg disabled:opacity-50"
-                  disabled={item.kind === "skeleton" || !item.data.active}
-                  onClick={() => {
-                    if (item.kind === "skeleton") return;
-                    console.log("Download:", item.data.gameId);
-                  }}
-                >
-                  Download
-                </button>
-              </div>
-            </div>
-          );
-        })}
+        {games.length > 0
+          ? games.map((item, index) => {
+              return <GameCard key={index} item={item} loading={loading} />;
+            })
+          : Array.from({ length: 5 }).map((_, index) => {
+              return <GameCard key={index} loading={loading} />;
+            })}
       </section>
 
       {!loading && errorMessage && (
@@ -144,7 +87,7 @@ export default function MyGames() {
 
       {!loading && !errorMessage && games.length === 0 && (
         <section className="text-white/50">
-          Tidak ada game yang terdeteksi di wallet ini.
+          {"You Don't Have Any Games in Your Library."}
         </section>
       )}
     </main>
