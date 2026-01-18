@@ -13,6 +13,11 @@ export const VaultNavbar = () => {
       value: "lisk-testnet",
       imageUrl: "/images/chains/lisk.svg",
     },
+    {
+      label: "Base",
+      value: "base-testnet",
+      imageUrl: "/images/chains/base.svg",
+    },
   ];
   return (
     <nav className={"border-y border-border bg-card py-2 " + STYLE_PADDING}>

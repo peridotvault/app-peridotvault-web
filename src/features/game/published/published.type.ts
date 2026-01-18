@@ -9,6 +9,7 @@ export interface GameCard {
     name: string,
     price: number,
     cover_vertical_image: string,
+    cover_horizontal_image: string,
     categories: Category[];
 }
 

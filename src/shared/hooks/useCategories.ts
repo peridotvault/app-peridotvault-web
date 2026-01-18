@@ -21,7 +21,7 @@ export function useGetCategories(): UseCategoriesState {
                 setIsLoading(true);
                 setError(null);
 
-                const resAllCategories = await getCategories();
+                const resAllCategories = await getCategories({ page: 1, limit: 12 });
 
                 setCategories(resAllCategories.data.data);
             } catch {

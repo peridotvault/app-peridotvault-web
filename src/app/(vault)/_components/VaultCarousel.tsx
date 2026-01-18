@@ -1,6 +1,9 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 import { GameBanner } from "@/features/game/banner/banner.type";
+import { EmbedLink } from "@/features/security/embed/embed.component";
+import { ButtonWithSound } from "@/shared/components/ui/ButtonWithSound";
+import { formatTitle } from "@/shared/utils/formatUrl";
 import React, { useEffect } from "react";
 
 type Props = {
@@ -23,14 +26,14 @@ export function VaultCarousel({
   const [isFading, setIsFading] = React.useState(false);
   const rotateRef = React.useRef<ReturnType<typeof setInterval> | null>(null);
   const cleanupFadeRef = React.useRef<ReturnType<typeof setTimeout> | null>(
-    null
+    null,
   );
   const rootRef = React.useRef<HTMLElement | null>(null);
   const hostRef = React.useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     rootRef.current = document.getElementById(
-      "vault-page"
+      "vault-page",
     ) as HTMLElement | null;
   }, []);
 
@@ -115,21 +118,24 @@ export function VaultCarousel({
             </div>
             <div className="flex">
               <div className="flex flex-col gap-3">
-                <button className="px-4 py-2 rounded-lg border border-foreground/15 bg-foreground/10 hover:bg-foreground/15 transition">
+                <EmbedLink
+                  href={`/${formatTitle(active.name)}/${active.game_id}`}
+                  className="px-4 py-2 rounded-lg border border-foreground/15 bg-foreground/10 hover:bg-foreground/15 transition"
+                >
                   View Game
-                </button>
+                </EmbedLink>
               </div>
             </div>
           </div>
           {/* Dots */}
           <div className="flex items-center gap-2">
             {items.map((_, i) => (
-              <button
+              <ButtonWithSound
                 key={i}
                 onClick={() => goTo(i)}
                 aria-label={`Ke slide ${i + 1}`}
                 aria-current={i === activeIndex}
-                className="h-1.5 rounded-full transition-all"
+                className="h-2.5 cursor-pointer rounded-full transition-all"
                 style={{
                   width: i === activeIndex ? 24 : 12,
                   backgroundColor:

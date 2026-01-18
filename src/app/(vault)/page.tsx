@@ -1,5 +1,5 @@
 "use client";
-import { TypographyH2 } from "@/shared/components/ui/TypographyH2";
+
 import { VerticalCard } from "@/shared/components/VerticalCard";
 import { IMAGE_LOADING } from "@/shared/constants/image";
 import { VaultCarousel } from "./_components/VaultCarousel";
@@ -9,6 +9,9 @@ import { useGetCategories } from "@/shared/hooks/useCategories";
 import { useTopGames } from "@/features/game/top/top.hook";
 import { useBannerGames } from "@/features/game/banner/banner.hook";
 import { CarouselWrapper } from "@/shared/components/CarouselWrapper";
+import { CategorySection } from "./_components/CategorySection";
+import { faLeaf, faPuzzlePiece } from "@fortawesome/free-solid-svg-icons";
+import { HeaderWithIcon } from "./_components/HeaderWithIcon";
 
 export default function Vault() {
   const { games: publishedGames } = usePublishedGames();
@@ -25,7 +28,7 @@ export default function Vault() {
   const { categories } = useGetCategories();
 
   return (
-    <main className="flex flex-col items-center gap-16">
+    <main className="flex flex-col items-center gap-10">
       <h1 className="sr-only">Search your Favorite Games in PeridotVault</h1>
 
       {/* Section 1  */}
@@ -46,30 +49,11 @@ export default function Vault() {
       <section className="flex justify-center w-full px-10">
         <div className="flex flex-col gap-3 w-full items-center">
           <div className="flex max-w-7xl mx-auto w-full">
-            <TypographyH2 text="New on PeridotVault" />
-          </div>
-          {/* contents  */}
-          <CarouselWrapper
-            items={publishedGames}
-            pageSize={5}
-            renderItem={(item, index) => (
-              <VerticalCard
-                key={index}
-                gameId={item.game_id}
-                gameName={item.name}
-                imgUrl={item.cover_vertical_image ?? IMAGE_LOADING}
-                price={item.price ?? 0}
-              />
-            )}
-          />
-        </div>
-      </section>
-
-      {/* ✅ section 3  */}
-      <section className="flex justify-center w-full px-10">
-        <div className="flex flex-col gap-3 w-full items-center">
-          <div className="flex max-w-7xl mx-auto w-full">
-            <TypographyH2 text="New on PeridotVault" />
+            <HeaderWithIcon
+              icon={faLeaf}
+              text="New on PeridotVault"
+              iconColor="text-green-200"
+            />
           </div>
           {/* contents  */}
           <CarouselWrapper
@@ -89,33 +73,18 @@ export default function Vault() {
       </section>
 
       {/* section 4  */}
-      <section className="flex justify-center w-full px-10">
-        <div className="flex flex-col gap-6 w-full max-w-400">
-          <TypographyH2 text="Favorite Categories" />
-          <div className="flex gap-6 xl:gap-12 duration-300 ">
-            {categories.slice(0, 3).map((item) => (
-              <div
-                key={item.category_id}
-                className={`w-1/3 aspect-video rounded-xl bg-muted overflow-hidden relative duration-300 flex items-end font-bold p-6 text-xl group`}
-              >
-                {/* <img
-                  src={item.}
-                  alt={item.name + " Image"}
-                  className="w-full h-full object-cover absolute top-0 left-0 opacity-50 duration-300 group-hover:scale-105"
-                /> */}
-                <span className="z-5">{item.name}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <CategorySection categories={categories} />
 
       {/* section 5  */}
       <section className="flex justify-center w-full px-10">
-        <div className="flex flex-col gap-6 w-full max-w-400">
-          <TypographyH2 text="All Games" />
+        <div className="flex flex-col gap-6 w-full max-w-7xl">
+          <HeaderWithIcon
+            icon={faPuzzlePiece}
+            text="All Games"
+            iconColor="text-highlight"
+          />
           {/* contents  */}
-          <div className="grid grid-cols-5 max-xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-5 max-xl:grid-cols-4 max-md:grid-cols-3 max-sm:grid-cols-2 gap-6">
             {publishedGames?.map((item, idx) => (
               <VerticalCard
                 key={idx}
@@ -123,7 +92,6 @@ export default function Vault() {
                 gameName={item.name}
                 imgUrl={item.cover_vertical_image ?? IMAGE_LOADING}
                 price={item.price ?? 0}
-                // tokenCanister={item.tokenPayment}
               />
             ))}
           </div>

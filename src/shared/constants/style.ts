@@ -6,4 +6,7 @@ export const STYLE_HOVER = ' hover:bg-white/10 ';
 export const STYLE_BORDER = ' border border-white/20 ';
 
 // Padding 
-export const STYLE_PADDING = ' px-6 sm:px-8 md:px-12 '; 
+export const STYLE_PADDING = ' px-6 sm:px-8 md:px-12 ';
+
+// rounded 
+export const STYLE_ROUNDED_CARD = ' rounded-2xl ';

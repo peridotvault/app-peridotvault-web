@@ -5,6 +5,7 @@ import { PriceCoin } from "./CoinWithAmmount";
 import { formatTitle } from "../utils/formatUrl";
 import { getAssetUrl } from "../utils/helper.url";
 import { EmbedLink } from "@/features/security/embed/embed.component";
+import { STYLE_ROUNDED_CARD } from "../constants/style";
 
 export const VerticalCard = ({
   gameId,
@@ -28,13 +29,14 @@ export const VerticalCard = ({
   return (
     <EmbedLink
       href={`/${formatTitle(gameName)}/${gameId}`}
-      className="w-full max-w-[250px] group relative overflow-hidden  rounded-xl"
+      className={`w-full group relative overflow-hidden  ${STYLE_ROUNDED_CARD}`}
     >
       <div className="w-full aspect-3/4 bg-muted">
         {/* IMAGE */}
         <img
           src={getAssetUrl(imgUrl)}
           alt={gameName}
+          draggable={false}
           className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
         />
       </div>
@@ -44,8 +46,8 @@ export const VerticalCard = ({
       <div
         className="
             pointer-events-none
-            absolute inset-x-0 bottom-0
-            h-1/2
+            absolute inset-x-0 -bottom-2
+            h-4/7
             backdrop-blur-lg
           "
         style={{

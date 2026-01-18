@@ -1,7 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { ButtonWithSound } from "./ui/ButtonWithSound";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faAngleLeft, faAngleRight } from "@fortawesome/free-solid-svg-icons";
+import { useBreakpoint } from "../hooks/useBreakpoint";
+import { STYLE_ROUNDED_CARD } from "../constants/style";
 
 /* =========================
    TYPES
@@ -9,7 +13,7 @@ import { ButtonWithSound } from "./ui/ButtonWithSound";
 
 interface CarouselWrapperProps<T> {
   items: T[];
-  pageSize?: number;
+  pageSize?: number; // desktop base
   renderItem: (item: T, index: number) => React.ReactNode;
   className?: string;
 }
@@ -24,17 +28,64 @@ export function CarouselWrapper<T>({
   renderItem,
   className = "",
 }: CarouselWrapperProps<T>) {
-  const [page, setPage] = useState(0);
+  const bp = useBreakpoint(); // "mobile" | "tablet" | "desktop"
+  const isMobile = bp === "mobile";
+  const isTablet = bp === "tablet";
 
-  const totalPages = Math.ceil(items.length / pageSize);
+  const [page, setPage] = React.useState(0);
 
-  const start = page * pageSize;
-  const sliced = items.slice(start, start + pageSize);
+  // desktop = pageSize, tablet = pageSize - 1
+  const effectivePageSize = React.useMemo(() => {
+    if (isTablet) return Math.max(1, pageSize - 1);
+    return pageSize;
+  }, [isTablet, pageSize]);
 
-  // keep grid width stable
+  const totalPages = Math.ceil(items.length / effectivePageSize);
+
+  // clamp page if breakpoint changes (e.g., rotate iPad)
+  React.useEffect(() => {
+    setPage((p) => Math.min(p, Math.max(0, totalPages - 1)));
+  }, [totalPages]);
+
+  /* =========================
+     MOBILE: SLIDER
+  ========================= */
+
+  if (isMobile) {
+    return (
+      <div className={`w-full overflow-hidden ${className}`}>
+        <div
+          className="
+            flex gap-4
+            overflow-x-auto overflow-y-hidden
+            scroll-smooth
+            snap-x snap-mandatory
+            cursor-grab active:cursor-grabbing
+          "
+        >
+          {items.map((item, index) => (
+            <div
+              key={index}
+              className={`shrink-0 snap-start w-[60%] overflow-hidden ${STYLE_ROUNDED_CARD}`}
+            >
+              {renderItem(item, index)}
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  /* =========================
+     TABLET + DESKTOP: PAGE CAROUSEL
+  ========================= */
+
+  const start = page * effectivePageSize;
+  const sliced = items.slice(start, start + effectivePageSize);
+
   const visibleItems: (T | null)[] = [
     ...sliced,
-    ...Array(pageSize - sliced.length).fill(null),
+    ...Array(effectivePageSize - sliced.length).fill(null),
   ];
 
   const handlePrev = () => {
@@ -47,57 +98,56 @@ export function CarouselWrapper<T>({
 
   return (
     <div
-      className={`flex flex-col items-center max-w-338 gap-4 w-full ${className}`}
+      className={`flex flex-col items-center max-w-353 gap-4 w-full ${className}`}
     >
-      {/* MAIN ROW */}
       <div className="flex items-center gap-6 w-full">
-        {/* PREV */}
         <ButtonWithSound
           onClick={handlePrev}
           disabled={page === 0}
-          className="text-xl md:text-5xl disabled:opacity-30"
+          className="bg-card w-12 aspect-square rounded-full flex items-center justify-center disabled:opacity-30 hover:bg-accent duration-300"
         >
-          {"<"}
+          <FontAwesomeIcon icon={faAngleLeft} />
         </ButtonWithSound>
 
-        {/* GRID */}
         <div
-          className="grid gap-4 w-full "
-          style={{ gridTemplateColumns: `repeat(${pageSize}, minmax(0, 1fr))` }}
+          key={`${page}-${effectivePageSize}`}
+          className="grid gap-4 w-full animate-fade-in"
+          style={{
+            gridTemplateColumns: `repeat(${effectivePageSize}, minmax(0, 1fr))`,
+          }}
         >
-          {visibleItems.map((item, index) =>
-            item ? (
-              <React.Fragment key={index}>
-                {renderItem(item, index)}
+          {visibleItems.map((item, index) => {
+            if (!item) return <EmptySlot key={`empty-${index}`} />;
+
+            const globalIndex = page * effectivePageSize + index;
+            return (
+              <React.Fragment key={globalIndex}>
+                {renderItem(item, globalIndex)}
               </React.Fragment>
-            ) : (
-              <EmptySlot key={`empty-${index}`} />
-            ),
-          )}
+            );
+          })}
         </div>
 
-        {/* NEXT */}
         <ButtonWithSound
           onClick={handleNext}
           disabled={page >= totalPages - 1}
-          className="text-xl md:text-5xl disabled:opacity-30"
+          className="bg-card w-12 aspect-square rounded-full flex items-center justify-center disabled:opacity-30 hover:bg-accent duration-300"
         >
-          {">"}
+          <FontAwesomeIcon icon={faAngleRight} />
         </ButtonWithSound>
       </div>
 
-      {/* DOT PAGINATION */}
       {totalPages > 1 && (
         <div className="flex gap-2">
           {Array.from({ length: totalPages }).map((_, i) => (
             <ButtonWithSound
               key={i}
               onClick={() => setPage(i)}
-              className={`w-3 h-3 rounded-full transition duration-300
+              className={`h-2 rounded-full transition duration-300
                 ${
                   i === page
-                    ? "bg-foreground"
-                    : "bg-foreground/30 hover:bg-foreground/60"
+                    ? "w-10 bg-highlight"
+                    : "w-3 hover:w-6 bg-foreground/30 hover:bg-foreground/60"
                 }
               `}
             />
@@ -107,10 +157,6 @@ export function CarouselWrapper<T>({
     </div>
   );
 }
-
-/* =========================
-   EMPTY SLOT
-========================= */
 
 const EmptySlot: React.FC = () => {
   return <div className="w-full h-full min-h-50 opacity-0" />;
