@@ -1,13 +1,13 @@
-import { IMAGE_PER_COIN } from "../constants/image";
+import { IMAGE_IDR_COIN } from "../constants/image";
 import { CoinDisplayInfo } from "../types/coin";
 import { PowerOfTen } from "./calculation";
 
 const DEFAULT_TOKEN: CoinDisplayInfo = {
     principal: '',
-    symbol: 'PER',
+    symbol: 'IDRX',
     decimals: 8,
-    logo: IMAGE_PER_COIN,
-    displayName: 'Peridot',
+    logo: IMAGE_IDR_COIN,
+    displayName: 'IDRX',
 };
 
 export const formatCoinAmountFromRaw = (

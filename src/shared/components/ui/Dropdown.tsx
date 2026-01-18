@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { ChainComponent } from "../ChainComponent";
 import { STYLE_HOVER } from "@/shared/constants/style";
+import { ButtonWithSound } from "./ButtonWithSound";
 
 /* =========================
    TYPES
@@ -70,8 +71,7 @@ export function Dropdown({
       {/* =====================
           TRIGGER
       ===================== */}
-      <button
-        type="button"
+      <ButtonWithSound
         onClick={() => setIsOpen((v) => !v)}
         className={`py-2 px-3 rounded-xl border border-border w-full flex items-center gap-2 hover:cursor-pointer ${
           isOpen ? "bg-white/10" : STYLE_HOVER
@@ -106,7 +106,7 @@ export function Dropdown({
             clipRule="evenodd"
           />
         </svg>
-      </button>
+      </ButtonWithSound>
 
       {/* =====================
           MENU

@@ -13,6 +13,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { logoutEverywhere } from "@/features/auth/logout/logout.service";
 import { EmbedLink } from "@/features/security/embed/embed.component";
+import { ButtonWithSound } from "./ui/ButtonWithSound";
 
 type Props = {
   open: boolean;
@@ -65,15 +66,15 @@ export const ModalProfile = ({ open, onClose, accountId }: Props) => {
                 </div>
                 <nav>
                   <div className="flex gap-3 items-center text-lg">
-                    <button className="text-muted-foreground hover:text-foreground duration-300 cursor-pointer">
+                    <ButtonWithSound className="text-muted-foreground hover:text-foreground duration-300 cursor-pointer">
                       <FontAwesomeIcon icon={faGear} />
-                    </button>
-                    <button
+                    </ButtonWithSound>
+                    <ButtonWithSound
                       onClick={onLogout}
                       className="text-muted-foreground hover:text-chart-5 duration-300 cursor-pointer"
                     >
                       <FontAwesomeIcon icon={faPowerOff} />
-                    </button>
+                    </ButtonWithSound>
                   </div>
                 </nav>
               </section>

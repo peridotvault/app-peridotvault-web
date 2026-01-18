@@ -89,8 +89,8 @@ export default function Navbar() {
               authStatus === "loading"
                 ? "loading"
                 : authed
-                ? "authenticated"
-                : "anonymous"
+                  ? "authenticated"
+                  : "anonymous"
             }
             signedState={authStatus === "authenticated" ? state : null}
             onSigned={afterSign}
