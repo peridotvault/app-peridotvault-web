@@ -9,8 +9,7 @@ import { IMAGE_LOADING } from "@/shared/constants/image";
 import { getAssetUrl } from "@/shared/utils/helper.url";
 import { CarouselWrapper } from "@/shared/components/CarouselWrapper";
 import { STYLE_ROUNDED_CARD } from "@/shared/constants/style";
-import { HeaderWithIcon } from "./HeaderWithIcon";
-import { faWebAwesome } from "@fortawesome/free-solid-svg-icons";
+import { TypographyH2 } from "@/shared/components/ui/TypographyH2";
 
 type Props = {
   className?: string; // optional: untuk -mt overlap dari parent
@@ -34,11 +33,7 @@ export const VaultTopGames: React.FC<Props> = ({
     <section className={"flex justify-center w-full px-6 " + className}>
       <div className="flex flex-col gap-3 w-full items-center">
         <div className="flex max-w-7xl mx-auto w-full">
-          <HeaderWithIcon
-            icon={faWebAwesome}
-            text="Top Games This Month"
-            iconColor="text-yellow-200"
-          />
+          <TypographyH2 text="Top Games This Month" />
         </div>
         {/* contents  */}
         {isLoading || isError ? (

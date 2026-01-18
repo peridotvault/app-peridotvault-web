@@ -32,7 +32,7 @@ export const PriceCoin = ({
   const resolved = resolveCoinInfo(tokenCanister ?? undefined);
   const decimals = tokenDecimals ?? resolved.decimals;
   const symbol = tokenSymbol ?? resolved.symbol;
-  const logo = tokenLogo === null ? undefined : tokenLogo ?? resolved.logo;
+  const logo = tokenLogo === null ? undefined : (tokenLogo ?? resolved.logo);
 
   if (isZeroCoinAmount(amount, decimals)) {
     return (
@@ -47,7 +47,11 @@ export const PriceCoin = ({
   return (
     <div className={`${textSizeClass} flex gap-2 items-center text-start`}>
       {logo ? (
-        <img src={logo} className="h-5 aspect-square object-contain" />
+        <img
+          src={logo}
+          className="h-5 aspect-square object-contain"
+          alt="Coin Image Logo"
+        />
       ) : null}
       <p>
         {formatted} {symbol}

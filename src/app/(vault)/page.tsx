@@ -10,8 +10,7 @@ import { useTopGames } from "@/features/game/top/top.hook";
 import { useBannerGames } from "@/features/game/banner/banner.hook";
 import { CarouselWrapper } from "@/shared/components/CarouselWrapper";
 import { CategorySection } from "./_components/CategorySection";
-import { faLeaf, faPuzzlePiece } from "@fortawesome/free-solid-svg-icons";
-import { HeaderWithIcon } from "./_components/HeaderWithIcon";
+import { TypographyH2 } from "@/shared/components/ui/TypographyH2";
 
 export default function Vault() {
   const { games: publishedGames } = usePublishedGames();
@@ -49,11 +48,7 @@ export default function Vault() {
       <section className="flex justify-center w-full px-10">
         <div className="flex flex-col gap-3 w-full items-center">
           <div className="flex max-w-7xl mx-auto w-full">
-            <HeaderWithIcon
-              icon={faLeaf}
-              text="New on PeridotVault"
-              iconColor="text-green-200"
-            />
+            <TypographyH2 text="New on PeridotVault" />
           </div>
           {/* contents  */}
           <CarouselWrapper
@@ -78,11 +73,7 @@ export default function Vault() {
       {/* section 5  */}
       <section className="flex justify-center w-full px-10">
         <div className="flex flex-col gap-6 w-full max-w-7xl">
-          <HeaderWithIcon
-            icon={faPuzzlePiece}
-            text="All Games"
-            iconColor="text-highlight"
-          />
+          <TypographyH2 text="All Games" />
           {/* contents  */}
           <div className="grid grid-cols-5 max-xl:grid-cols-4 max-md:grid-cols-3 max-sm:grid-cols-2 gap-6">
             {publishedGames?.map((item, idx) => (

@@ -4,8 +4,6 @@ import { TypographyH2 } from "@/shared/components/ui/TypographyH2";
 import { IMAGE_LOADING } from "@/shared/constants/image";
 import { STYLE_ROUNDED_CARD } from "@/shared/constants/style";
 import { Category } from "@/shared/types/category";
-import { faHeart } from "@fortawesome/free-solid-svg-icons";
-import { HeaderWithIcon } from "./HeaderWithIcon";
 
 type Props = {
   categories: Category[];
@@ -16,12 +14,7 @@ export const CategorySection = ({ categories }: Props) => {
     <section className="flex justify-center w-full px-10">
       <div className="flex flex-col gap-3 w-full items-center">
         <div className="flex max-w-7xl mx-auto w-full">
-          <TypographyH2 text="" />
-          <HeaderWithIcon
-            icon={faHeart}
-            text="Favorite Categories"
-            iconColor="text-red-200"
-          />
+          <TypographyH2 text="Favorite Categories" />
         </div>
         {/* contents  */}
         <CarouselWrapper
