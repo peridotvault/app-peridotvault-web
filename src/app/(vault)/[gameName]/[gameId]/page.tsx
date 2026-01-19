@@ -12,6 +12,8 @@ import { GameGlance } from "./_components/GameGlance";
 import { SystemRequirement } from "./_components/SystemRequirement";
 import { GameDistribution } from "@/features/game/published/distribution.type";
 import { getAssetUrl } from "@/shared/utils/helper.url";
+import { GameRelated } from "./_components/GameRelated";
+import { useRelatedGame } from "@/features/game/related/related.hook";
 
 export default function GameDetailPage(): React.ReactElement {
   const params = useParams();
@@ -19,6 +21,11 @@ export default function GameDetailPage(): React.ReactElement {
   const gameId = Array.isArray(raw) ? raw[0] : raw;
 
   const { game, isLoading, hasFetched, error } = useGameDetail({ gameId });
+  const {
+    games: relatedGames,
+    isLoading: relatedIsLoading,
+    error: relatedError,
+  } = useRelatedGame({ gameId, limit: 15 });
 
   // ====== Guards awal (tidak ada hook di bawah sini) ======
 
@@ -113,6 +120,10 @@ export default function GameDetailPage(): React.ReactElement {
           {/* right  */}
           <DetailContent />
         </ContainerPadding>
+
+        {!relatedIsLoading && !relatedError && relatedGames && (
+          <GameRelated games={relatedGames} />
+        )}
         <div className="mb-4"></div>
       </div>
     </main>

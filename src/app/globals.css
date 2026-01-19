@@ -8,6 +8,7 @@
   --color-accent: var(--accent);
   --color-highlight: var(--highlight);
   --color-accent-card: var(--accent-card);
+  --color-button: var(--button);
   --color-border: var(--border);
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
@@ -40,6 +41,7 @@
   --highlight: var(--brand-2);
   --accent-card: var(--brand-3);
   --accent-foreground: #87ee83;
+  --button: #414141;
   --border: #ffffff28;
   --muted: #363636; /* background_disabled */
   --muted-foreground: rgb(110, 110, 110); /* text_disabled */

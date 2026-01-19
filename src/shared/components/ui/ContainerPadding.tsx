@@ -8,7 +8,7 @@ export const ContainerPadding = ({
   className?: string;
 }) => {
   return (
-    <div className={"max-w-420 mx-auto w-full " + className + STYLE_PADDING}>
+    <div className={"max-w-400 mx-auto w-full " + className + STYLE_PADDING}>
       {children}
     </div>
   );

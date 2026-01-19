@@ -5,7 +5,7 @@ import { GamePublishedResponse } from "./published.type";
 export async function getPublishedGames(params?: {
     page?: number;
     limit?: number;
-    category?: string;
+    category_id?: string;
 }): Promise<GamePublishedResponse> {
     const res = await http.get<GamePublishedResponse>("/api/games", {
         params,

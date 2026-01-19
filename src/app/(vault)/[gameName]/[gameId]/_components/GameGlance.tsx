@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 import { ContainerPadding } from "@/shared/components/ui/ContainerPadding";
 import CarouselPreview from "./CarouselPreview";
-import { SMALL_GRID } from "@/shared/constants/style";
+import { SMALL_GRID, STYLE_ROUNDED_CARD } from "@/shared/constants/style";
 import { GamePriview } from "@/features/game/published/media.type";
 
 type Props = {
@@ -44,17 +44,29 @@ export const GameGlance = ({
           SMALL_GRID
         }
       >
-        <div className="absolute w-full h-full top-0 left-0 bg-linear-to-l from-card to-70% -z-1 rounded-r-md" />
+        <div
+          className={
+            "absolute w-full h-full top-0 left-0 bg-linear-to-l from-card to-70% -z-1 " +
+            STYLE_ROUNDED_CARD
+          }
+        />
         <div className="flex flex-col gap-6">
           <>
             {coverHorizontalImage ? (
               <img
                 src={coverHorizontalImage}
                 alt={"Cover game " + gameName}
-                className="w-full aspect-video object-cover rounded-md"
+                className={
+                  "w-full aspect-video object-cover " + STYLE_ROUNDED_CARD
+                }
               />
             ) : (
-              <div className="w-full aspect-video rounded-md bg-muted animate-pulse" />
+              <div
+                className={
+                  "w-full aspect-video bg-muted animate-pulse" +
+                  STYLE_ROUNDED_CARD
+                }
+              />
             )}
           </>
           <div className="pr-6">
@@ -71,7 +83,7 @@ export const GameGlance = ({
               {tags.map((item, index) => (
                 <span
                   key={index}
-                  className="bg-foreground/15 py-1 px-2 rounded capitalize"
+                  className="bg-foreground/15 py-1 px-2 rounded-lg capitalize"
                 >
                   {item}
                 </span>

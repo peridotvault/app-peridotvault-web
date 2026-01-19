@@ -104,7 +104,7 @@ export function CarouselWrapper<T>({
         <ButtonWithSound
           onClick={handlePrev}
           disabled={page === 0}
-          className="bg-card w-12 aspect-square rounded-full flex items-center justify-center disabled:opacity-30 hover:bg-accent duration-300"
+          className="bg-button w-12 aspect-square rounded-full flex items-center justify-center disabled:opacity-30 hover:bg-accent duration-300"
         >
           <FontAwesomeIcon icon={faAngleLeft} />
         </ButtonWithSound>
@@ -131,7 +131,7 @@ export function CarouselWrapper<T>({
         <ButtonWithSound
           onClick={handleNext}
           disabled={page >= totalPages - 1}
-          className="bg-card w-12 aspect-square rounded-full flex items-center justify-center disabled:opacity-30 hover:bg-accent duration-300"
+          className="bg-button w-12 aspect-square rounded-full flex items-center justify-center disabled:opacity-30 hover:bg-accent duration-300"
         >
           <FontAwesomeIcon icon={faAngleRight} />
         </ButtonWithSound>

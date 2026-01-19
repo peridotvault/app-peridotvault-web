@@ -9,7 +9,11 @@ interface UsePublishedGamesState {
   error: string | null;
 }
 
-export function usePublishedGames(): UsePublishedGamesState {
+export function usePublishedGames({ page, limit, category_id }: {
+  page?: number;
+  limit?: number;
+  category_id?: string;
+}): UsePublishedGamesState {
   const [games, setGames] = useState<GameCard[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -20,7 +24,7 @@ export function usePublishedGames(): UsePublishedGamesState {
         setIsLoading(true);
         setError(null);
 
-        const resAllGames = await getPublishedGames();
+        const resAllGames = await getPublishedGames({ page, limit, category_id });
 
         setGames(resAllGames.data.data);
       } catch {
@@ -32,7 +36,7 @@ export function usePublishedGames(): UsePublishedGamesState {
     }
 
     fetchData();
-  }, []);
+  }, [page, limit, category_id]);
 
   return { games, isLoading, error };
 }

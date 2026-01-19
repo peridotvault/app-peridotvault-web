@@ -1,4 +1,5 @@
 import { TypographyH2 } from "@/shared/components/ui/TypographyH2";
+import { STYLE_ROUNDED_CARD } from "@/shared/constants/style";
 
 export const SystemRequirement = () => {
   const list = [
@@ -26,7 +27,7 @@ export const SystemRequirement = () => {
   return (
     <section className="flex flex-col gap-4">
       <TypographyH2 text="System Requirements" />
-      <div className="bg-card p-10 rounded-lg">
+      <div className={"bg-card p-10 " + STYLE_ROUNDED_CARD}>
         <dl className="grid grid-cols-2 gap-6">
           {list.map((item, index) => (
             <div className="flex flex-col gap-1" key={index}>

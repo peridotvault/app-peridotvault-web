@@ -13,7 +13,7 @@ import { CategorySection } from "./_components/CategorySection";
 import { TypographyH2 } from "@/shared/components/ui/TypographyH2";
 
 export default function Vault() {
-  const { games: publishedGames } = usePublishedGames();
+  const { games: publishedGames } = usePublishedGames({ page: 1, limit: 15 });
   const {
     games: bannerGames,
     isLoading: isLoadingCarousel,

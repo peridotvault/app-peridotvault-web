@@ -5,6 +5,8 @@ import {
   BUTTON_COLOR,
   BUTTON_HIGHLIGHT_COLOR,
   SMALL_GRID,
+  STYLE_ROUNDED_BUTTON,
+  STYLE_ROUNDED_CARD,
 } from "@/shared/constants/style";
 import {
   faBookmark,
@@ -38,7 +40,7 @@ export const DetailContent = () => {
 
   return (
     <dl className={"flex flex-col gap-4 w-full " + SMALL_GRID}>
-      <div className="flex flex-col gap-3">
+      <div className={"flex flex-col gap-3 bg-card p-6" + STYLE_ROUNDED_CARD}>
         <PriceCoin amount={10000000000} tokenCanister={""} textSize="xl" />
         {purchaseState ? (
           <span
@@ -56,20 +58,26 @@ export const DetailContent = () => {
             onClick={handleBuyClick}
             disabled={buying}
             className={
-              "w-full rounded cursor-pointer " + BUTTON_HIGHLIGHT_COLOR
+              "w-full cursor-pointer " +
+              BUTTON_HIGHLIGHT_COLOR +
+              STYLE_ROUNDED_BUTTON
             }
           >
             Buy Now
           </button>
           <button
             className={
-              "aspect-square shrink-0 rounded cursor-pointer " + BUTTON_COLOR
+              "aspect-square shrink-0 cursor-pointer " +
+              BUTTON_COLOR +
+              STYLE_ROUNDED_BUTTON
             }
           >
             <FontAwesomeIcon icon={faBookmark} />
           </button>
         </div>
-        <button className={"rounded cursor-pointer " + BUTTON_COLOR}>
+        <button
+          className={"cursor-pointer " + BUTTON_COLOR + STYLE_ROUNDED_BUTTON}
+        >
           <FontAwesomeIcon icon={faShirt} />
           <span>Market</span>
         </button>
@@ -77,7 +85,7 @@ export const DetailContent = () => {
 
       <div
         aria-label="Rating Age from Global Rating"
-        className="bg-card rounded p-5 flex gap-4"
+        className={"bg-card p-5 flex gap-4 " + STYLE_ROUNDED_CARD}
       >
         <div className="w-18 shrink-0">
           <img
@@ -135,11 +143,15 @@ export const DetailContent = () => {
       </table>
 
       <div className="grid grid-cols-2 gap-4">
-        <button className={"rounded cursor-pointer " + BUTTON_COLOR}>
+        <button
+          className={"cursor-pointer " + BUTTON_COLOR + STYLE_ROUNDED_BUTTON}
+        >
           <FontAwesomeIcon icon={faShare} />
           <span>Share</span>
         </button>
-        <button className={"rounded cursor-pointer " + BUTTON_COLOR}>
+        <button
+          className={"cursor-pointer " + BUTTON_COLOR + STYLE_ROUNDED_BUTTON}
+        >
           <FontAwesomeIcon icon={faFlag} />
           <span>Report</span>
         </button>
