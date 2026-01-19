@@ -1,4 +1,4 @@
-import { PeridotRegistryAbi } from "@/shared/chains/evm/abis/abi.registry";
+import { PeridotRegistryAbi } from "@/shared/blockchain/evm/abis/abi.registry";
 
 
 

@@ -1,9 +1,9 @@
-import { PGC1Abi } from "@/shared/chains/evm/abis/abi.pgc1";
+import { PGC1Abi } from "@/shared/blockchain/evm/abis/abi.pgc1";
 import { getSession } from "@/features/auth/_db/db.service";
-import { publicClient } from "@/shared/chains/evm/viem";
+import { publicClient } from "@/shared/blockchain/evm/viem";
 import { getAddress, isAddress, parseAbiItem, type Hex } from "viem";
-import { PERIDOT_REGISTRY, PGC1_LICENSE_ID } from "./library.config";
-import { getLogsChunked } from "@/shared/chains/evm/services/service.registry";
+import { getLogsChunked } from "@/shared/blockchain/evm/services/service.registry";
+import { PERIDOT_REGISTRY, PGC1_LICENSE_ID } from "../configs/game.config";
 
 export type MyGameItem = {
     gameId: Hex;

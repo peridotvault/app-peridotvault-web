@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import { GameCard } from "@/features/game/published/published.type";
 import { EmbedLink } from "@/features/security/embed/embed.component";
 import { formatTitle } from "@/shared/utils/formatUrl";
 import Image from "next/image";
@@ -10,6 +9,7 @@ import { getAssetUrl } from "@/shared/utils/helper.url";
 import { CarouselWrapper } from "@/shared/components/CarouselWrapper";
 import { STYLE_ROUNDED_CARD } from "@/shared/constants/style";
 import { TypographyH2 } from "@/shared/components/ui/TypographyH2";
+import { GameCard } from "../types/game.type";
 
 type Props = {
   className?: string; // optional: untuk -mt overlap dari parent

@@ -1,13 +1,13 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-import { PriceCoin } from "./CoinWithAmmount";
-import { formatTitle } from "../utils/formatUrl";
-import { getAssetUrl } from "../utils/helper.url";
 import { EmbedLink } from "@/features/security/embed/embed.component";
-import { STYLE_ROUNDED_CARD } from "../constants/style";
+import { PriceCoin } from "@/shared/components/CoinWithAmmount";
+import { STYLE_ROUNDED_CARD } from "@/shared/constants/style";
+import { formatTitle } from "@/shared/utils/formatUrl";
+import { getAssetUrl } from "@/shared/utils/helper.url";
 
-export const HorizontalCard = ({
+export const GameVerticalCard = ({
   gameId,
   gameName,
   imgUrl,
@@ -31,7 +31,7 @@ export const HorizontalCard = ({
       href={`/${formatTitle(gameName)}/${gameId}`}
       className={`w-full group relative overflow-hidden  ${STYLE_ROUNDED_CARD}`}
     >
-      <div className="w-full aspect-video bg-muted">
+      <div className="w-full aspect-3/4 bg-muted">
         {/* IMAGE */}
         <img
           src={getAssetUrl(imgUrl)}
@@ -52,17 +52,17 @@ export const HorizontalCard = ({
           "
         style={{
           WebkitMaskImage:
-            "linear-gradient(to top, rgba(0,0,0,1) 70%, rgba(0,0,0,0) 100%)",
+            "linear-gradient(to top, rgba(0,0,0,1) 35%, rgba(0,0,0,0) 100%)",
           maskImage:
-            "linear-gradient(to top, rgba(0,0,0,1) 50%, rgba(0,0,0,0) 100%)",
+            "linear-gradient(to top, rgba(0,0,0,1) 40%, rgba(0,0,0,0) 100%)",
           background:
-            "linear-gradient(to top, rgba(0,0,0,0.70), rgba(0,0,0,0))",
+            "linear-gradient(to top, rgba(0,0,0,0.50), rgba(0,0,0,0))",
         }}
       />
 
       {/* CONTENT */}
       <div className="absolute inset-x-0 bottom-0 p-4 flex flex-col gap-2">
-        <p className="font-medium text-white line-clamp-1">{gameName}</p>
+        <p className="font-medium text-white line-clamp-2">{gameName}</p>
         <div className="flex justify-end">
           <div className="bg-card/40 px-3 py-1 rounded-lg">
             <PriceCoin

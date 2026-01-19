@@ -1,16 +1,23 @@
 "use client";
 
+import { GameCard } from "@/features/game/components/ui/GameCard";
 import {
+  MyGameItem,
+  LibraryErrorCode,
   getMyGamesForSession,
   isLibraryErrorCode,
-  type MyGameItem,
-  type LibraryErrorCode,
   LIBRARY_ERROR_CODES,
-} from "@/features/game/library/library.service";
-import { useEffect, useMemo, useState } from "react";
-import { GameCard } from "./_components/GameCard";
+} from "@/features/game/services/library.service";
+import { useState, useEffect, useMemo } from "react";
+
+/* ======================================================
+   PAGE — My Games
+====================================================== */
 
 export default function MyGames() {
+  /* =========================
+     DATA SOURCES
+  ========================= */
   const [games, setGames] = useState<MyGameItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [errorCode, setErrorCode] = useState<LibraryErrorCode | null>(null);
@@ -63,12 +70,21 @@ export default function MyGames() {
     }
   }, [errorCode]);
 
+  /* =========================
+     UI
+  ========================= */
   return (
     <main className="max-w-400 w-full mx-auto p-8 flex flex-col gap-8">
+      {/* ======================================================
+         HERO — Featured & Banner Games
+      ====================================================== */}
       <section>
         <h1 className="text-4xl font-medium">My Games</h1>
       </section>
 
+      {/* ======================================================
+         SECTION — My Games
+      ====================================================== */}
       <section className="grid grid-cols-4">
         {games.length > 0
           ? games.map((item, index) => {

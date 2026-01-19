@@ -1,10 +1,10 @@
-import { GameCard } from "@/features/game/published/published.type";
 import { CarouselWrapper } from "@/shared/components/CarouselWrapper";
-import { HorizontalCard } from "@/shared/components/HorizontalCard";
 import { ContainerPadding } from "@/shared/components/ui/ContainerPadding";
 import { TypographyH2 } from "@/shared/components/ui/TypographyH2";
 import { IMAGE_LOADING } from "@/shared/constants/image";
 import { STYLE_ROUNDED_CARD } from "@/shared/constants/style";
+import { GameCard } from "../../types/game.type";
+import { GameHorizontalCard } from "./GameHorizontalCard";
 
 type Props = {
   games: GameCard[];
@@ -28,7 +28,7 @@ export const GameRelated = ({ games }: Props) => {
             items={games}
             pageSize={4}
             renderItem={(item, index) => (
-              <HorizontalCard
+              <GameHorizontalCard
                 key={index}
                 gameId={item.game_id}
                 gameName={item.name}

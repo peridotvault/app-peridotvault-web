@@ -38,8 +38,6 @@ export default async function RootLayout({
         <Suspense fallback={null}>
           <EmbedLayout>{children}</EmbedLayout>
         </Suspense>
-        {/* <Navbar />
-        {children} */}
       </body>
     </html>
   );

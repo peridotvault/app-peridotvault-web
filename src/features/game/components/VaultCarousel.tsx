@@ -1,10 +1,11 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
-import { GameBanner } from "@/features/game/banner/banner.type";
+
 import { EmbedLink } from "@/features/security/embed/embed.component";
 import { ButtonWithSound } from "@/shared/components/ui/ButtonWithSound";
 import { formatTitle } from "@/shared/utils/formatUrl";
 import React, { useEffect } from "react";
+import { GameBanner } from "../types/game.type";
 
 type Props = {
   items: GameBanner[];
@@ -99,7 +100,7 @@ export function VaultCarousel({
   return (
     <section
       ref={hostRef}
-      className="relative flex w-full max-w-400 justify-center"
+      className="relative flex w-full max-w-7xl justify-center"
       aria-roledescription="carousel"
       aria-label="Game showcase"
     >

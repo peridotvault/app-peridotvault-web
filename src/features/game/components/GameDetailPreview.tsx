@@ -2,7 +2,6 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
-import { GamePriview } from "@/features/game/published/media.type";
 import { getAssetUrl } from "@/shared/utils/helper.url";
 import React, {
   ReactNode,
@@ -12,9 +11,10 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { GamePreview } from "../types/game.type";
 
-export interface CarouselPreviewProps {
-  items: GamePriview[];
+export interface GameDetailPreviewProps {
+  items: GamePreview[];
   initialIndex?: number;
   autoPlay?: boolean;
   showThumbnails?: boolean;
@@ -40,8 +40,8 @@ const Chevron = ({ dir = "left" }: { dir?: "left" | "right" }) => (
 );
 
 // Trim semua src dan buang yang kosong
-function sanitize(items: GamePriview[]): GamePriview[] {
-  const normalized: GamePriview[] = [];
+function sanitize(items: GamePreview[]): GamePreview[] {
+  const normalized: GamePreview[] = [];
   for (const it of items ?? []) {
     const src = (it.src ?? "").trim();
     if (!src) continue;
@@ -54,7 +54,7 @@ function sanitize(items: GamePriview[]): GamePriview[] {
   return normalized;
 }
 
-export default function CarouselPreview({
+export default function GameDetailPreview({
   items,
   initialIndex = 0,
   autoPlay = true,
@@ -62,7 +62,7 @@ export default function CarouselPreview({
   className,
   htmlElement,
   onIndexChange,
-}: CarouselPreviewProps) {
+}: GameDetailPreviewProps) {
   const normalized = useMemo(() => sanitize(items), [items]);
   const [index, setIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(autoPlay);
@@ -79,7 +79,7 @@ export default function CarouselPreview({
   useEffect(() => {
     const clamped = Math.min(
       Math.max(0, initialIndex),
-      Math.max(0, normalized.length - 1)
+      Math.max(0, normalized.length - 1),
     );
     setIndex((prev) => Math.min(prev, clamped));
   }, [normalized.length, initialIndex]);
@@ -122,7 +122,7 @@ export default function CarouselPreview({
       const next = ((i % n) + n) % n;
       setIndex(next);
     },
-    [normalized.length]
+    [normalized.length],
   );
 
   const goPrev = useCallback(() => goTo(index - 1), [goTo, index]);
@@ -206,7 +206,7 @@ export default function CarouselPreview({
           )}
         </div>
       )),
-    [normalized, index]
+    [normalized, index],
   );
 
   // Kalau tidak ada media sama sekali

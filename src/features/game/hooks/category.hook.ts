@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Category } from "../types/category";
-import { getCategories } from "@/app/(vault)/_services/getCategory";
+import { getCategories } from "@/features/game/services/category.service";
+import { Category } from "../types/category.type";
 
 interface UseCategoriesState {
     categories: Category[];

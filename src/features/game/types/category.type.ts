@@ -1,5 +1,5 @@
-import { ApiResponse } from "./api";
-import { PaginatedData } from "./pagination";
+import { ApiResponse } from "@/shared/types/api";
+import { PaginatedData } from "@/shared/types/pagination";
 
 export type CategoryListResponse = ApiResponse<PaginatedData<Category>>;
 
