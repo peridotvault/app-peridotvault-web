@@ -31,6 +31,8 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useParams } from "next/navigation";
 import { useState } from "react";
+import { BlockchainStack } from "@/features/blockchain/components/BlockchainStack";
+import { ChainConfig } from "@/shared/types/chain";
 
 /* ======================================================
    PAGE — Game Detail
@@ -340,6 +342,26 @@ export default function GameDetailPage(): React.ReactElement {
 
   function DetailContent() {
     const [buying, setBuying] = useState(false);
+    const chainSupport: ChainConfig[] = [
+      {
+        id: "base",
+        name: "Base Sepolia",
+        type: "evm",
+        icon: "/images/chains/base.svg",
+      },
+      {
+        id: "lisk",
+        name: "Lisk Sepolia",
+        type: "evm",
+        icon: "/images/chains/lisk.svg",
+      },
+      {
+        id: "solana",
+        name: "Solana Devnet",
+        type: "svm",
+        icon: "/images/chains/solana.svg",
+      },
+    ];
 
     const handleBuyClick = async () => {
       setBuying(true);
@@ -424,6 +446,12 @@ export default function GameDetailPage(): React.ReactElement {
 
         <table className="mb-4">
           <tbody>
+            <tr className="border-b border-white/15 flex justify-between items-center w-full py-3">
+              <td className="text-muted-foreground">Blockchains</td>
+              <td className="flex gap-1 text-lg">
+                <BlockchainStack chain={chainSupport} />
+              </td>
+            </tr>
             <tr className="border-b border-white/15 flex justify-between items-center w-full py-3">
               <td className="text-muted-foreground">Platform</td>
               <td className="flex gap-1 text-lg">

@@ -1,3 +1,5 @@
+import type { Abi } from "viem";
+
 export const PGC1FactoryAbi = [
   {
     "inputs": [
@@ -8,7 +10,7 @@ export const PGC1FactoryAbi = [
       },
       {
         "internalType": "address",
-        "name": "feeRecipient_",
+        "name": "treasuryRouter_",
         "type": "address"
       },
       {
@@ -58,7 +60,7 @@ export const PGC1FactoryAbi = [
   },
   {
     "inputs": [],
-    "name": "NotAllowedPublisher",
+    "name": "InvalidPlatformFeeBps",
     "type": "error"
   },
   {
@@ -108,19 +110,6 @@ export const PGC1FactoryAbi = [
     "inputs": [],
     "name": "ZeroAddress",
     "type": "error"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "bool",
-        "name": "enabled",
-        "type": "bool"
-      }
-    ],
-    "name": "AllowlistEnabledSet",
-    "type": "event"
   },
   {
     "anonymous": false,
@@ -197,31 +186,25 @@ export const PGC1FactoryAbi = [
     "inputs": [
       {
         "indexed": false,
-        "internalType": "uint256",
-        "name": "newFee",
-        "type": "uint256"
+        "internalType": "uint16",
+        "name": "newBps",
+        "type": "uint16"
       }
     ],
-    "name": "PublishFeeSet",
+    "name": "PlatformFeeBpsSet",
     "type": "event"
   },
   {
     "anonymous": false,
     "inputs": [
       {
-        "indexed": true,
-        "internalType": "address",
-        "name": "publisher",
-        "type": "address"
-      },
-      {
         "indexed": false,
-        "internalType": "bool",
-        "name": "allowed",
-        "type": "bool"
+        "internalType": "uint256",
+        "name": "newFee",
+        "type": "uint256"
       }
     ],
-    "name": "PublisherSet",
+    "name": "PublishFeeSet",
     "type": "event"
   },
   {
@@ -238,30 +221,17 @@ export const PGC1FactoryAbi = [
     "type": "event"
   },
   {
-    "inputs": [],
-    "name": "allowlistEnabled",
-    "outputs": [
+    "anonymous": false,
+    "inputs": [
       {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "feeRecipient",
-    "outputs": [
-      {
+        "indexed": true,
         "internalType": "address",
-        "name": "",
+        "name": "router",
         "type": "address"
       }
     ],
-    "stateMutability": "view",
-    "type": "function"
+    "name": "TreasuryRouterSet",
+    "type": "event"
   },
   {
     "inputs": [],
@@ -271,25 +241,6 @@ export const PGC1FactoryAbi = [
         "internalType": "address",
         "name": "",
         "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "name": "isPublisher",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
       }
     ],
     "stateMutability": "view",
@@ -316,6 +267,19 @@ export const PGC1FactoryAbi = [
         "internalType": "address",
         "name": "",
         "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "platformFeeBps",
+    "outputs": [
+      {
+        "internalType": "uint16",
+        "name": "",
+        "type": "uint16"
       }
     ],
     "stateMutability": "view",
@@ -372,21 +336,6 @@ export const PGC1FactoryAbi = [
             "internalType": "uint256",
             "name": "maxSupply",
             "type": "uint256"
-          },
-          {
-            "internalType": "address",
-            "name": "treasuryRouter",
-            "type": "address"
-          },
-          {
-            "internalType": "address",
-            "name": "developerRecipient",
-            "type": "address"
-          },
-          {
-            "internalType": "uint16",
-            "name": "platformFeeBps",
-            "type": "uint16"
           }
         ],
         "internalType": "struct PGC1Factory.PGC1Init",
@@ -428,38 +377,25 @@ export const PGC1FactoryAbi = [
   {
     "inputs": [
       {
-        "internalType": "bool",
-        "name": "enabled",
-        "type": "bool"
-      }
-    ],
-    "name": "setAllowlistEnabled",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "newRecipient",
-        "type": "address"
-      }
-    ],
-    "name": "setFeeRecipient",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "address",
         "name": "newToken",
         "type": "address"
       }
     ],
     "name": "setFeeToken",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint16",
+        "name": "newBps",
+        "type": "uint16"
+      }
+    ],
+    "name": "setPlatformFeeBps",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -481,34 +417,11 @@ export const PGC1FactoryAbi = [
     "inputs": [
       {
         "internalType": "address",
-        "name": "publisher",
+        "name": "registry_",
         "type": "address"
-      },
-      {
-        "internalType": "bool",
-        "name": "allowed",
-        "type": "bool"
       }
     ],
-    "name": "setPublisher",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address[]",
-        "name": "publishers",
-        "type": "address[]"
-      },
-      {
-        "internalType": "bool",
-        "name": "allowed",
-        "type": "bool"
-      }
-    ],
-    "name": "setPublishers",
+    "name": "setRegistry",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -517,11 +430,11 @@ export const PGC1FactoryAbi = [
     "inputs": [
       {
         "internalType": "address",
-        "name": "registry_",
+        "name": "newRouter",
         "type": "address"
       }
     ],
-    "name": "setRegistry",
+    "name": "setTreasuryRouter",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -538,5 +451,18 @@ export const PGC1FactoryAbi = [
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "treasuryRouter",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
   }
-];
+] as const satisfies Abi;
