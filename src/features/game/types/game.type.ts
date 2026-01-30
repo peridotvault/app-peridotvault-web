@@ -35,13 +35,30 @@ export interface WebDistribution {
 }
 
 export interface NativeDistribution {
-    os: string;
+    os: GamePlatform;
     memory: number;
     graphics: string;
     additionalNotes: string;
     storage: number;
     processor: string;
+    manifests: Manifest[];
+    liveVersion: string;
 }
+
+export type Manifest = {
+    version: string,
+    listing: string,
+    createdAt: string,
+    size_bytes: number,
+    checksum: string,
+    storageRef: string | null
+}
+
+export type GamePlatform =
+    | "web"
+    | "windows"
+    | "macos"
+    | "linux";
 
 /* ======================================================
    BANNER

@@ -5,7 +5,12 @@
 import GameDetailPreview from "@/features/game/components/GameDetailPreview";
 import { GameRelated } from "@/features/game/components/ui/GameRelated";
 import { useGameDetail, useRelatedGame } from "@/features/game/hooks/game.hook";
-import { GameDistribution, GamePreview } from "@/features/game/types/game.type";
+import {
+  GameDistribution,
+  GamePlatform,
+  GamePreview,
+  NativeDistribution,
+} from "@/features/game/types/game.type";
 import { PriceCoin } from "@/shared/components/CoinWithAmmount";
 import { ContainerPadding } from "@/shared/components/ui/ContainerPadding";
 import { TypographyH2 } from "@/shared/components/ui/TypographyH2";
@@ -23,19 +28,16 @@ import {
   faShirt,
   faShare,
   faFlag,
-  IconDefinition,
 } from "@fortawesome/free-solid-svg-icons";
-import {
-  faApple,
-  faLinux,
-  faWindows,
-} from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 import { BlockchainStack } from "@/blockchain/__core__/components/BlockchainStack";
 import { ChainConfig } from "@/shared/types/chain";
 import igrs from "@/shared/assets/rating/igrs.json";
+import { ButtonWithSound } from "@/shared/components/ui/ButtonWithSound";
+import { getSupportedPlatforms } from "@/features/game/utils/platform.helper";
+import { PLATFORM_ICON_MAP } from "@/features/game/constants/platform.const";
 
 /* ======================================================
    PAGE — Game Detail
@@ -108,6 +110,9 @@ export default function GameDetailPage(): React.ReactElement {
   // Cari distribusi web (kalau ada)
   const webDist = distributions.find((d) => "web" in d);
   const webSpec = webDist && "web" in webDist ? webDist.web : undefined;
+  const nativeDist = game.distributions.find(
+    (d): d is { native: NativeDistribution } => "native" in d,
+  )?.native;
 
   // Platform list sederhana untuk About
   const availablePlatforms: string[] = [];
@@ -152,8 +157,8 @@ export default function GameDetailPage(): React.ReactElement {
           ====================================================== */}
         <ContainerPadding className="flex gap-12 max-lg:flex-col">
           {/* left  */}
-          <div className="max-lg:order-2">
-            <SystemRequirement />
+          <div className="max-lg:order-2 w-full">
+            <SystemRequirement sysReq={nativeDist} />
           </div>
 
           {/* right  */}
@@ -163,9 +168,10 @@ export default function GameDetailPage(): React.ReactElement {
               CHAIN_CONFIGS["lisk-testnet"],
               // CHAIN_CONFIGS["solana-testnet"],
             ]}
-            platformSupport={[faApple, faWindows, faLinux]}
+            platformSupport={getSupportedPlatforms(game.distributions)}
             releaseDateMs={game.release_date}
             requiredAge={game.required_age}
+            price={game.price}
           />
         </ContainerPadding>
 
@@ -183,31 +189,35 @@ export default function GameDetailPage(): React.ReactElement {
   /* =========================
      UI FUNCTIONS
   ========================= */
-  function SystemRequirement() {
+  function SystemRequirement({
+    sysReq,
+  }: {
+    sysReq: NativeDistribution | undefined;
+  }) {
     const list = [
       {
         title: "OS",
-        description: "Windows 10",
+        description: sysReq ? sysReq.os : "Peridot",
       },
       {
         title: "CPU",
-        description: "Intel Core i5-4430 / AMD FX-6300",
+        description: sysReq ? sysReq.processor : "Peridot",
       },
       {
         title: "Memory",
-        description: "8 GB RAM",
+        description: sysReq ? sysReq.memory + " GB" : "Peridot",
       },
       {
         title: "GPU",
-        description: "NVIDIA GeForce GTX 960 2GB / AMD Radeon R7 370 2GB",
+        description: sysReq ? sysReq.graphics : "Peridot",
       },
       {
         title: "Storage",
-        description: "60 GB",
+        description: sysReq ? sysReq.storage + " GB" : "Peridot",
       },
     ];
     return (
-      <section className="flex flex-col gap-4">
+      <section className="flex flex-col gap-4 w-full">
         <TypographyH2 text="System Requirements" />
         <div className={"bg-card p-10 " + STYLE_ROUNDED_CARD}>
           <dl className="grid grid-cols-2 gap-6">
@@ -357,11 +367,13 @@ export default function GameDetailPage(): React.ReactElement {
     platformSupport,
     releaseDateMs,
     requiredAge,
+    price,
   }: {
     chainSupport: ChainConfig[];
-    platformSupport: IconDefinition[];
+    platformSupport: Set<GamePlatform>;
     releaseDateMs: number;
     requiredAge: number;
+    price: number;
   }) {
     const [buying, setBuying] = useState(false);
     const releaseDate = new Date(releaseDateMs).toLocaleDateString();
@@ -393,7 +405,7 @@ export default function GameDetailPage(): React.ReactElement {
     return (
       <dl className={"flex flex-col gap-4 w-full " + SMALL_GRID}>
         <div className={"flex flex-col gap-3 bg-card p-6" + STYLE_ROUNDED_CARD}>
-          <PriceCoin amount={10000000000} tokenCanister={""} textSize="xl" />
+          <PriceCoin amount={price} tokenCanister={""} textSize="xl" />
           {purchaseState ? (
             <span
               className={`text-sm font-medium ${
@@ -406,7 +418,7 @@ export default function GameDetailPage(): React.ReactElement {
             </span>
           ) : null}
           <div className="flex gap-4">
-            <button
+            <ButtonWithSound
               onClick={handleBuyClick}
               disabled={buying}
               className={
@@ -416,23 +428,27 @@ export default function GameDetailPage(): React.ReactElement {
               }
             >
               Buy Now
-            </button>
-            <button
+            </ButtonWithSound>
+            <ButtonWithSound
               className={
-                "aspect-square shrink-0 cursor-pointer " +
+                "aspect-square shrink-0 opacity-20 cursor-not-allowed " +
                 BUTTON_COLOR +
                 STYLE_ROUNDED_BUTTON
               }
             >
               <FontAwesomeIcon icon={faBookmark} />
-            </button>
+            </ButtonWithSound>
           </div>
-          <button
-            className={"cursor-pointer " + BUTTON_COLOR + STYLE_ROUNDED_BUTTON}
+          <ButtonWithSound
+            className={
+              "opacity-20 cursor-not-allowed " +
+              BUTTON_COLOR +
+              STYLE_ROUNDED_BUTTON
+            }
           >
             <FontAwesomeIcon icon={faShirt} />
             <span>Market</span>
-          </button>
+          </ButtonWithSound>
         </div>
 
         <div
@@ -469,8 +485,11 @@ export default function GameDetailPage(): React.ReactElement {
             <tr className="border-b border-white/15 flex justify-between items-center w-full py-3">
               <td className="text-muted-foreground">Platform</td>
               <td className="flex gap-1 text-lg">
-                {platformSupport.map((item, index) => (
-                  <FontAwesomeIcon key={index} icon={item} />
+                {[...platformSupport].map((p, index) => (
+                  <FontAwesomeIcon
+                    key={"Platform " + index}
+                    icon={PLATFORM_ICON_MAP[p]}
+                  />
                 ))}
               </td>
             </tr>
@@ -478,11 +497,11 @@ export default function GameDetailPage(): React.ReactElement {
               <td className="text-muted-foreground">
                 <dt>Developer</dt>
               </td>
-              <td>VOID Interactive</td>
+              <td>Antigane Studio</td>
             </tr>
             <tr className="border-b border-white/15 flex justify-between w-full py-3">
               <td className="text-muted-foreground">Publisher</td>
-              <td>VOID Interactive</td>
+              <td>Antigane Inc</td>
             </tr>
             <tr className="border-b border-white/15 flex justify-between w-full py-3">
               <td className="text-muted-foreground">Release Date</td>
@@ -500,18 +519,26 @@ export default function GameDetailPage(): React.ReactElement {
         </table>
 
         <div className="grid grid-cols-2 gap-4">
-          <button
-            className={"cursor-pointer " + BUTTON_COLOR + STYLE_ROUNDED_BUTTON}
+          <ButtonWithSound
+            className={
+              "opacity-20 cursor-not-allowed " +
+              BUTTON_COLOR +
+              STYLE_ROUNDED_BUTTON
+            }
           >
             <FontAwesomeIcon icon={faShare} />
             <span>Share</span>
-          </button>
-          <button
-            className={"cursor-pointer " + BUTTON_COLOR + STYLE_ROUNDED_BUTTON}
+          </ButtonWithSound>
+          <ButtonWithSound
+            className={
+              "opacity-20 cursor-not-allowed " +
+              BUTTON_COLOR +
+              STYLE_ROUNDED_BUTTON
+            }
           >
             <FontAwesomeIcon icon={faFlag} />
             <span>Report</span>
-          </button>
+          </ButtonWithSound>
         </div>
       </dl>
     );

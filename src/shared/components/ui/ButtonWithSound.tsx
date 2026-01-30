@@ -28,7 +28,7 @@ export const ButtonWithSound = React.forwardRef<
       <button
         ref={ref}
         {...rest}
-        className={"cursor-pointer " + rest.className}
+        className={" " + rest.className}
         disabled={disabled}
         onClick={(e) => {
           if (!disabled) play();

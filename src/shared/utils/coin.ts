@@ -5,7 +5,8 @@ import { PowerOfTen } from "./calculation";
 const DEFAULT_TOKEN: CoinDisplayInfo = {
     principal: '',
     symbol: 'IDRX',
-    decimals: 8,
+    decimals: 1,
+    // decimals: 8,
     logo: IMAGE_IDR_COIN,
     displayName: 'IDRX',
 };
