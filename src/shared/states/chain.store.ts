@@ -1,13 +1,14 @@
 import { create } from "zustand";
-import { ChainId } from "../types/chain";
+import { ChainKey } from "../types/chain";
+import { DEFAULT_CHAIN_KEY } from "../constants/chain";
 
 
 interface ChainState {
-    chain: ChainId;
-    setChain: (chain: ChainId) => void;
+    chainKey: ChainKey;
+    setChain: (chainKey: ChainKey) => void;
 }
 
 export const useChainStore = create<ChainState>((set) => ({
-    chain: "ethereum",
-    setChain: (chain) => set({ chain }),
+    chainKey: DEFAULT_CHAIN_KEY,
+    setChain: (chainKey) => set({ chainKey }),
 }));

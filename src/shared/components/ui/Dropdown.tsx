@@ -85,7 +85,7 @@ export function Dropdown({
             ) : (
               <span>{selected.label}</span>
             )
-          ) : placeholderImage && !placeholder ? (
+          ) : placeholderImage ? (
             <ChainComponent imgUrl={placeholderImage} />
           ) : (
             <span>{placeholder}</span>

@@ -8,6 +8,7 @@ import {
   isLibraryErrorCode,
   LIBRARY_ERROR_CODES,
 } from "@/features/game/services/library.service";
+import { useChainStore } from "@/shared/states/chain.store";
 import { useState, useEffect, useMemo } from "react";
 
 /* ======================================================
@@ -21,6 +22,7 @@ export default function MyGames() {
   const [games, setGames] = useState<MyGameItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [errorCode, setErrorCode] = useState<LibraryErrorCode | null>(null);
+  const chain = useChainStore((state) => state.chain);
 
   useEffect(() => {
     let mounted = true;
@@ -52,7 +54,7 @@ export default function MyGames() {
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [chain]);
 
   const errorMessage = useMemo(() => {
     if (!errorCode) return null;
@@ -62,6 +64,8 @@ export default function MyGames() {
         return "Please sign in to view your library.";
       case LIBRARY_ERROR_CODES.UnsupportedAccountType:
         return "Your account type is not supported for EVM games.";
+      case LIBRARY_ERROR_CODES.UnsupportedChain:
+        return "Selected chain does not support this EVM library view.";
       case LIBRARY_ERROR_CODES.InvalidAccount:
         return "Invalid wallet address found in your session.";
       case LIBRARY_ERROR_CODES.RpcFailed:

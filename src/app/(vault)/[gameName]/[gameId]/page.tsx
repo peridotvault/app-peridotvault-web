@@ -16,6 +16,7 @@ import {
   STYLE_ROUNDED_BUTTON,
   BUTTON_COLOR,
 } from "@/shared/constants/style";
+import { CHAIN_CONFIGS } from "@/shared/constants/chain";
 import { getAssetUrl } from "@/shared/utils/helper.url";
 import {
   faBookmark,
@@ -31,7 +32,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useParams } from "next/navigation";
 import { useState } from "react";
-import { BlockchainStack } from "@/features/blockchain/components/BlockchainStack";
+import { BlockchainStack } from "@/blockchain/__core__/components/BlockchainStack";
 import { ChainConfig } from "@/shared/types/chain";
 
 /* ======================================================
@@ -343,24 +344,9 @@ export default function GameDetailPage(): React.ReactElement {
   function DetailContent() {
     const [buying, setBuying] = useState(false);
     const chainSupport: ChainConfig[] = [
-      {
-        id: "base",
-        name: "Base Sepolia",
-        type: "evm",
-        icon: "/images/chains/base.svg",
-      },
-      {
-        id: "lisk",
-        name: "Lisk Sepolia",
-        type: "evm",
-        icon: "/images/chains/lisk.svg",
-      },
-      {
-        id: "solana",
-        name: "Solana Devnet",
-        type: "svm",
-        icon: "/images/chains/solana.svg",
-      },
+      CHAIN_CONFIGS["base-testnet"],
+      CHAIN_CONFIGS["lisk-testnet"],
+      CHAIN_CONFIGS["solana-testnet"],
     ];
 
     const handleBuyClick = async () => {

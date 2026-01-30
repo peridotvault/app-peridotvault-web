@@ -1,9 +1,9 @@
-import { PGC1Abi } from "@/features/blockchain/evm/abis/abi.pgc1";
+import { PGC1Abi } from "@/blockchain/evm/abis/abi.pgc1";
 import { getSession } from "@/features/auth/_db/db.service";
-import { publicClient } from "@/features/blockchain/evm/viem";
+import { getEvmPublicClient } from "@/blockchain/evm/viem";
 import { getAddress, isAddress, parseAbiItem, type Hex } from "viem";
-import { getLogsChunked } from "@/features/blockchain/evm/services/service.registry";
-import { PERIDOT_REGISTRY, PGC1_LICENSE_ID } from "../configs/game.config";
+import { getLogsChunked } from "@/blockchain/evm/services/service.registry";
+import { getPeridotRegistry, PGC1_LICENSE_ID } from "../configs/game.config";
 
 export type MyGameItem = {
     gameId: Hex;
@@ -23,6 +23,7 @@ type RegistryGame = {
 export const LIBRARY_ERROR_CODES = {
     MissingSession: "LIBRARY_MISSING_SESSION",
     UnsupportedAccountType: "LIBRARY_UNSUPPORTED_ACCOUNT_TYPE",
+    UnsupportedChain: "LIBRARY_UNSUPPORTED_CHAIN",
     InvalidAccount: "LIBRARY_INVALID_ACCOUNT",
     RpcFailed: "LIBRARY_RPC_FAILED",
 } as const;
@@ -120,6 +121,8 @@ export async function getMyGames(user: string, opts?: { fromBlock?: bigint }) {
     const address = getAddress(user);
 
     try {
+        const publicClient = getEvmPublicClient();
+        const registry = getPeridotRegistry();
         const gameIds = await getRegisteredGamesFromLogs({
             fromBlock: opts?.fromBlock,
         });
@@ -128,7 +131,7 @@ export async function getMyGames(user: string, opts?: { fromBlock?: bigint }) {
 
         for (const gameId of gameIds) {
             const gameRaw = await publicClient.readContract({
-                ...PERIDOT_REGISTRY,
+                ...registry,
                 functionName: "games",
                 args: [gameId],
             });
@@ -165,6 +168,19 @@ export async function getMyGames(user: string, opts?: { fromBlock?: bigint }) {
 
         return results;
     } catch (error) {
+        if (
+            error &&
+            typeof error === "object" &&
+            "code" in error &&
+            isLibraryErrorCode(String((error as LibraryError).code))
+        ) {
+            throw error as LibraryError;
+        }
+
+        if (error instanceof Error && error.message === "EVM_UNSUPPORTED_CHAIN") {
+            throw createLibraryError(LIBRARY_ERROR_CODES.UnsupportedChain, error);
+        }
+
         console.error(error);
         throw createLibraryError(LIBRARY_ERROR_CODES.RpcFailed, error);
     }

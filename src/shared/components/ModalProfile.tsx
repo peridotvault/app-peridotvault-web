@@ -14,6 +14,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { logoutEverywhere } from "@/features/auth/logout/logout.service";
 import { EmbedLink } from "@/features/security/embed/embed.component";
 import { ButtonWithSound } from "./ui/ButtonWithSound";
+import { SwitchButton } from "./ui/SwitchButton";
+import { useNetworkStore } from "@/shared/states/network.store";
+import { useChainStore } from "@/shared/states/chain.store";
+import { getChainKeyForNetwork } from "@/shared/constants/chain";
 
 type Props = {
   open: boolean;
@@ -22,6 +26,9 @@ type Props = {
 };
 
 export const ModalProfile = ({ open, onClose, accountId }: Props) => {
+  const { network, setNetwork } = useNetworkStore();
+  const { chain, setChain } = useChainStore();
+
   async function onLogout() {
     await logoutEverywhere();
     onClose();
@@ -104,12 +111,26 @@ export const ModalProfile = ({ open, onClose, accountId }: Props) => {
                 href={"https://studio.peridotvault.com"}
                 onClick={onClose}
                 className={
-                  "ring ring-white/20 w-full rounded-xl flex gap-1 items-center justify-center p-2 hover:bg-white/10 duration-300"
+                  "ring ring-white/20 w-full rounded-full flex gap-1 items-center justify-center p-2 hover:bg-white/10 duration-300"
                 }
               >
                 <span>Go To Studio</span>
                 <FontAwesomeIcon icon={faMicrophoneLines} />
               </Link>
+
+              <div className="flex items-center justify-between w-full py-2 px-4 rounded-xl opacity-50 cursor-not-allowed">
+                <span>Testnet Mode</span>
+                <SwitchButton
+                  id="testnet-mode"
+                  checked={network === "testnet"}
+                  disabled={true}
+                  onChange={(checked) => {
+                    const nextNetwork = checked ? "testnet" : "mainnet";
+                    setNetwork(nextNetwork);
+                    setChain(getChainKeyForNetwork(chain, nextNetwork));
+                  }}
+                />
+              </div>
             </motion.div>
           </div>
         </>
