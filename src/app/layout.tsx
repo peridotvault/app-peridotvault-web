@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Suspense } from "react";
 import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
+import "@/shared/styles/globals.css";
 import { UIEffects } from "./_effects/UIEffects";
 import { METADATA } from "./_seo/metadata";
 import { EmbedLayout } from "@/features/security/embed/embed.component";

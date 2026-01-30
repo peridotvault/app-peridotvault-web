@@ -23,6 +23,7 @@ import {
   faShirt,
   faShare,
   faFlag,
+  IconDefinition,
 } from "@fortawesome/free-solid-svg-icons";
 import {
   faApple,
@@ -34,6 +35,7 @@ import { useParams } from "next/navigation";
 import { useState } from "react";
 import { BlockchainStack } from "@/blockchain/__core__/components/BlockchainStack";
 import { ChainConfig } from "@/shared/types/chain";
+import igrs from "@/shared/assets/rating/igrs.json";
 
 /* ======================================================
    PAGE — Game Detail
@@ -155,7 +157,16 @@ export default function GameDetailPage(): React.ReactElement {
           </div>
 
           {/* right  */}
-          <DetailContent />
+          <DetailContent
+            chainSupport={[
+              CHAIN_CONFIGS["base-testnet"],
+              CHAIN_CONFIGS["lisk-testnet"],
+              // CHAIN_CONFIGS["solana-testnet"],
+            ]}
+            platformSupport={[faApple, faWindows, faLinux]}
+            releaseDateMs={game.release_date}
+            requiredAge={game.required_age}
+          />
         </ContainerPadding>
 
         {/* ======================================================
@@ -341,14 +352,19 @@ export default function GameDetailPage(): React.ReactElement {
     );
   }
 
-  function DetailContent() {
+  function DetailContent({
+    chainSupport,
+    platformSupport,
+    releaseDateMs,
+    requiredAge,
+  }: {
+    chainSupport: ChainConfig[];
+    platformSupport: IconDefinition[];
+    releaseDateMs: number;
+    requiredAge: number;
+  }) {
     const [buying, setBuying] = useState(false);
-    const chainSupport: ChainConfig[] = [
-      CHAIN_CONFIGS["base-testnet"],
-      CHAIN_CONFIGS["lisk-testnet"],
-      CHAIN_CONFIGS["solana-testnet"],
-    ];
-
+    const releaseDate = new Date(releaseDateMs).toLocaleDateString();
     const handleBuyClick = async () => {
       setBuying(true);
       setTimeout(() => {
@@ -360,6 +376,19 @@ export default function GameDetailPage(): React.ReactElement {
       status: "success" | "error";
       message: string;
     } | null>(null);
+
+    function getAgeRating(requiredAge: number) {
+      const sorted = [...igrs].sort((a, b) => a.age - b.age);
+
+      return (
+        sorted
+          .slice()
+          .reverse()
+          .find((rating) => requiredAge >= rating.age) ?? sorted[0]
+      );
+    }
+
+    const ageRating = getAgeRating(requiredAge);
 
     return (
       <dl className={"flex flex-col gap-4 w-full " + SMALL_GRID}>
@@ -410,22 +439,21 @@ export default function GameDetailPage(): React.ReactElement {
           aria-label="Rating Age from Global Rating"
           className={"bg-card p-5 flex gap-4 " + STYLE_ROUNDED_CARD}
         >
-          <div className="w-18 shrink-0">
+          <div className="w-18 shrink-0 ">
             <img
-              src="https://www.globalratings.com/images/ratings-guide/Generic_3_48.png"
-              alt=""
+              src={ageRating.imgUrl}
+              alt={ageRating.title + " Image"}
               className="w-full object-contain"
             />
           </div>
           <div className="flex flex-col gap-2">
             <dt className="sr-only">Age</dt>
-            <dd className="text-lg font-bold" aria-label="More than 7+">
-              7+
+            <dd className="text-lg font-bold" aria-label={ageRating.title}>
+              {ageRating.age + "+"}
             </dd>
             <hr className="border-white/20 mb-1" />
             <p className="text-sm text-foreground/50">
-              Violence involving fantasy characters and/or non-graphic violence
-              involving
+              {ageRating.description}
             </p>
           </div>
         </div>
@@ -441,9 +469,9 @@ export default function GameDetailPage(): React.ReactElement {
             <tr className="border-b border-white/15 flex justify-between items-center w-full py-3">
               <td className="text-muted-foreground">Platform</td>
               <td className="flex gap-1 text-lg">
-                <FontAwesomeIcon icon={faApple} />
-                <FontAwesomeIcon icon={faWindows} />
-                <FontAwesomeIcon icon={faLinux} />
+                {platformSupport.map((item, index) => (
+                  <FontAwesomeIcon key={index} icon={item} />
+                ))}
               </td>
             </tr>
             <tr className="border-b border-white/15 flex justify-between w-full py-3">
@@ -458,7 +486,7 @@ export default function GameDetailPage(): React.ReactElement {
             </tr>
             <tr className="border-b border-white/15 flex justify-between w-full py-3">
               <td className="text-muted-foreground">Release Date</td>
-              <td>12/13/23</td>
+              <td>{releaseDate}</td>
             </tr>
             <tr className="border-b border-white/15 flex justify-between w-full py-3">
               <td className="text-muted-foreground">Website</td>

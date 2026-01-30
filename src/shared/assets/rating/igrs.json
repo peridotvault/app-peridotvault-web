@@ -1,0 +1,37 @@
+[
+    {
+        "age": 3,
+        "title": "Age Rating 3 Years Above",
+        "description": "Safe for children; no violence, substances, horror, or online interaction.",
+        "webUrl": "https://igrs.id/rating-info",
+        "imgUrl": "/images/ratings/igrs/3.webp"
+    },
+    {
+        "age": 7,
+        "title": "Age Rating 7 Years Above",
+        "description": "Child-friendly content without violence, substances, horror, or online chat.",
+        "webUrl": "https://igrs.id/rating-info",
+        "imgUrl": "/images/ratings/igrs/7.webp"
+    },
+    {
+        "age": 13,
+        "title": "Age Rating 13 Years Above",
+        "description": "Mild animated violence, limited blood, filtered online interactions.",
+        "webUrl": "https://igrs.id/rating-info",
+        "imgUrl": "/images/ratings/igrs/13.webp"
+    },
+    {
+        "age": 15,
+        "title": "Age Rating 15 Years Above",
+        "description": "Moderate violence, blood elements, filtered chat, non-sexual adult humor.",
+        "webUrl": "https://igrs.id/rating-info",
+        "imgUrl": "/images/ratings/igrs/15.webp"
+    },
+    {
+        "age": 18,
+        "title": "Age Rating 18 Years Above",
+        "description": "Violence, blood, horror, adult themes, gambling, and online interaction.",
+        "webUrl": "https://igrs.id/rating-info",
+        "imgUrl": "/images/ratings/igrs/18.webp"
+    }
+]
