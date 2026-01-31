@@ -27,7 +27,7 @@ type Props = {
 
 export const ModalProfile = ({ open, onClose, accountId }: Props) => {
   const { network, setNetwork } = useNetworkStore();
-  const { chain, setChain } = useChainStore();
+  const { chainKey, setChain } = useChainStore();
 
   async function onLogout() {
     await logoutEverywhere();
@@ -127,7 +127,7 @@ export const ModalProfile = ({ open, onClose, accountId }: Props) => {
                   onChange={(checked) => {
                     const nextNetwork = checked ? "testnet" : "mainnet";
                     setNetwork(nextNetwork);
-                    setChain(getChainKeyForNetwork(chain, nextNetwork));
+                    setChain(getChainKeyForNetwork(chainKey, nextNetwork));
                   }}
                 />
               </div>
