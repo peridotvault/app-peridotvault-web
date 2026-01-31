@@ -16,11 +16,11 @@ import { useNetworkStore } from "@/shared/states/network.store";
 
 export const VaultNavbar = () => {
   const [query, setQuery] = useState("");
-  const { chain, setChain } = useChainStore();
+  const { chainKey, setChain } = useChainStore();
   const { network } = useNetworkStore();
   const options: OptionComponent[] = CHAIN_OPTIONS_BY_NETWORK[network];
   const selectedChain =
-    CHAIN_CONFIGS[getChainKeyForNetwork(chain, network)] ??
+    CHAIN_CONFIGS[getChainKeyForNetwork(chainKey, network)] ??
     CHAIN_CONFIGS[DEFAULT_CHAIN_KEYS[network]];
   return (
     <nav className={"border-y border-border bg-card py-2 " + STYLE_PADDING}>

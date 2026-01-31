@@ -2,22 +2,6 @@ import { ChainConfig, ChainKey, ChainNetwork } from "../types/chain";
 
 export const CHAIN_LIST: ChainConfig[] = [
     {
-        id: "lisk",
-        type: "evm",
-        name: "Lisk Mainnet",
-        network: "mainnet",
-        key: "lisk-mainnet",
-        icon: "/images/chains/lisk.svg",
-    },
-    {
-        id: "lisk",
-        type: "evm",
-        name: "Lisk Sepolia",
-        network: "testnet",
-        key: "lisk-testnet",
-        icon: "/images/chains/lisk.svg",
-    },
-    {
         id: "base",
         type: "evm",
         name: "Base Mainnet",
@@ -32,6 +16,22 @@ export const CHAIN_LIST: ChainConfig[] = [
         network: "testnet",
         key: "base-testnet",
         icon: "/images/chains/base.svg",
+    },
+    {
+        id: "lisk",
+        type: "evm",
+        name: "Lisk Mainnet",
+        network: "mainnet",
+        key: "lisk-mainnet",
+        icon: "/images/chains/lisk.svg",
+    },
+    {
+        id: "lisk",
+        type: "evm",
+        name: "Lisk Sepolia",
+        network: "testnet",
+        key: "lisk-testnet",
+        icon: "/images/chains/lisk.svg",
     },
     {
         id: "solana",

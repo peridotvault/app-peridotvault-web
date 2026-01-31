@@ -6,7 +6,7 @@ import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
 const baseURL =
     process.env.NEXT_PUBLIC_API_BASE_URL ??
     process.env.PUBLIC_API_BASE_URL ?? // fallback kalau Anda belum rename env
-    "https://api.peridotvault.com";
+    "https://api-dev.peridotvault.com";
 
 export const http = axios.create({
     baseURL,

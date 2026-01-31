@@ -1,9 +1,12 @@
 import { PGC1Abi } from "@/blockchain/evm/abis/abi.pgc1";
 import { getSession } from "@/features/auth/_db/db.service";
 import { getEvmPublicClient } from "@/blockchain/evm/viem";
-import { getAddress, isAddress, parseAbiItem, type Hex } from "viem";
-import { getLogsChunked } from "@/blockchain/evm/services/service.registry";
+import { getAddress, isAddress, type Hex } from "viem";
 import { getPeridotRegistry, PGC1_LICENSE_ID } from "../configs/game.config";
+
+/* ======================================================
+   TYPES
+====================================================== */
 
 export type MyGameItem = {
     gameId: Hex;
@@ -20,6 +23,10 @@ type RegistryGame = {
     active: boolean;
 };
 
+/* ======================================================
+   ERROR CODES
+====================================================== */
+
 export const LIBRARY_ERROR_CODES = {
     MissingSession: "LIBRARY_MISSING_SESSION",
     UnsupportedAccountType: "LIBRARY_UNSUPPORTED_ACCOUNT_TYPE",
@@ -35,7 +42,14 @@ export type LibraryError = Error & { code: LibraryErrorCode };
 
 const ZERO = BigInt(0);
 
-function createLibraryError(code: LibraryErrorCode, cause?: unknown): LibraryError {
+/* ======================================================
+   HELPERS
+====================================================== */
+
+function createLibraryError(
+    code: LibraryErrorCode,
+    cause?: unknown
+): LibraryError {
     const err = new Error(code) as LibraryError;
     err.code = code;
     err.cause = cause;
@@ -43,48 +57,28 @@ function createLibraryError(code: LibraryErrorCode, cause?: unknown): LibraryErr
 }
 
 function parseRegistryGame(value: unknown): RegistryGame | null {
-    if (!value) return null;
+    if (!Array.isArray(value)) return null;
 
-    if (Array.isArray(value)) {
-        const [pgc1, publisher, createdAt, active] = value;
-        if (typeof pgc1 !== "string" || typeof publisher !== "string")
-            return null;
-        if (!isAddress(pgc1) || !isAddress(publisher)) return null;
-        return {
-            pgc1: getAddress(pgc1),
-            publisher: getAddress(publisher),
-            createdAt:
-                typeof createdAt === "bigint"
-                    ? createdAt
-                    : BigInt(createdAt ?? 0),
-            active: Boolean(active),
-        };
+    const [pgc1, publisher, createdAt, active] = value;
+
+    if (
+        typeof pgc1 !== "string" ||
+        typeof publisher !== "string" ||
+        !isAddress(pgc1) ||
+        !isAddress(publisher)
+    ) {
+        return null;
     }
 
-    if (typeof value === "object") {
-        const game = value as Partial<RegistryGame> & {
-            pgc1?: string;
-            publisher?: string;
-            createdAt?: bigint | number;
-            active?: boolean;
-        };
-
-        if (typeof game.pgc1 !== "string" || typeof game.publisher !== "string")
-            return null;
-        if (!isAddress(game.pgc1) || !isAddress(game.publisher)) return null;
-
-        return {
-            pgc1: getAddress(game.pgc1),
-            publisher: getAddress(game.publisher),
-            createdAt:
-                typeof game.createdAt === "bigint"
-                    ? game.createdAt
-                    : BigInt(game.createdAt ?? 0),
-            active: Boolean(game.active),
-        };
-    }
-
-    return null;
+    return {
+        pgc1: getAddress(pgc1),
+        publisher: getAddress(publisher),
+        createdAt:
+            typeof createdAt === "bigint"
+                ? createdAt
+                : BigInt(createdAt ?? 0),
+        active: Boolean(active),
+    };
 }
 
 export function isLibraryErrorCode(value: string): value is LibraryErrorCode {
@@ -93,43 +87,38 @@ export function isLibraryErrorCode(value: string): value is LibraryErrorCode {
     );
 }
 
-// Typed event item (WAJIB cocok dengan ABI event-mu)
-const GameRegisteredEvent = parseAbiItem(
-    "event GameRegistered(bytes32 indexed gameId, address indexed pgc1, address indexed publisher)"
-);
+/* ======================================================
+   CORE — ENUMERATION-BASED
+====================================================== */
 
-export async function getRegisteredGamesFromLogs(opts?: { fromBlock?: bigint }) {
-    const fromBlock = opts?.fromBlock ?? ZERO;
-
-    const logs = await getLogsChunked(GameRegisteredEvent, fromBlock);
-
-    const gameIds = new Set<Hex>();
-    for (const log of logs) {
-        const gid = log.args.gameId;
-        if (gid !== undefined) gameIds.add(gid);
-    }
-
-    return Array.from(gameIds);
-}
-
-
-export async function getMyGames(user: string, opts?: { fromBlock?: bigint }) {
+export async function getMyGames(user: string): Promise<MyGameItem[]> {
     if (!isAddress(user)) {
         throw createLibraryError(LIBRARY_ERROR_CODES.InvalidAccount);
     }
 
     const address = getAddress(user);
+    const publicClient = getEvmPublicClient();
+    const registry = getPeridotRegistry();
 
     try {
-        const publicClient = getEvmPublicClient();
-        const registry = getPeridotRegistry();
-        const gameIds = await getRegisteredGamesFromLogs({
-            fromBlock: opts?.fromBlock,
-        });
+        // 1️⃣ total games
+        const gameCount = (await publicClient.readContract({
+            ...registry,
+            functionName: "gameCount",
+        })) as bigint;
+
+        if (gameCount === ZERO) return [];
 
         const results: MyGameItem[] = [];
 
-        for (const gameId of gameIds) {
+        // 2️⃣ iterate registry (ENUMERATION)
+        for (let i = BigInt(0); i < gameCount; i++) {
+            const gameId = (await publicClient.readContract({
+                ...registry,
+                functionName: "gameIdAt",
+                args: [i],
+            })) as Hex;
+
             const gameRaw = await publicClient.readContract({
                 ...registry,
                 functionName: "games",
@@ -138,12 +127,15 @@ export async function getMyGames(user: string, opts?: { fromBlock?: bigint }) {
 
             const game = parseRegistryGame(gameRaw);
             if (!game) {
-                throw createLibraryError(LIBRARY_ERROR_CODES.RpcFailed, gameRaw);
+                throw createLibraryError(
+                    LIBRARY_ERROR_CODES.RpcFailed,
+                    gameRaw
+                );
             }
 
             const { pgc1, publisher, createdAt, active } = game;
 
-            // balanceOf harus return bigint kalau ABI PGC1 benar (uint256)
+            // 3️⃣ ownership check
             const bal = (await publicClient.readContract({
                 address: pgc1,
                 abi: PGC1Abi,
@@ -151,10 +143,7 @@ export async function getMyGames(user: string, opts?: { fromBlock?: bigint }) {
                 args: [address, PGC1_LICENSE_ID],
             })) as bigint;
 
-            // bal typed -> bigint, jadi aman
-            const owns = bal > ZERO;
-
-            if (owns)
+            if (bal > ZERO) {
                 results.push({
                     gameId,
                     pgc1,
@@ -162,9 +151,8 @@ export async function getMyGames(user: string, opts?: { fromBlock?: bigint }) {
                     createdAt,
                     active,
                 });
+            }
         }
-
-        console.log("My games fetched:", results.length);
 
         return results;
     } catch (error) {
@@ -178,7 +166,10 @@ export async function getMyGames(user: string, opts?: { fromBlock?: bigint }) {
         }
 
         if (error instanceof Error && error.message === "EVM_UNSUPPORTED_CHAIN") {
-            throw createLibraryError(LIBRARY_ERROR_CODES.UnsupportedChain, error);
+            throw createLibraryError(
+                LIBRARY_ERROR_CODES.UnsupportedChain,
+                error
+            );
         }
 
         console.error(error);
@@ -186,20 +177,27 @@ export async function getMyGames(user: string, opts?: { fromBlock?: bigint }) {
     }
 }
 
-export async function getMyGamesForSession(opts?: { fromBlock?: bigint }) {
+/* ======================================================
+   SESSION WRAPPER
+====================================================== */
+
+export async function getMyGamesForSession(): Promise<MyGameItem[]> {
     const session = await getSession();
+
     if (!session) {
         throw createLibraryError(LIBRARY_ERROR_CODES.MissingSession);
     }
 
     const accountType = session.accountType?.toLowerCase();
     if (accountType !== "evm") {
-        throw createLibraryError(LIBRARY_ERROR_CODES.UnsupportedAccountType);
+        throw createLibraryError(
+            LIBRARY_ERROR_CODES.UnsupportedAccountType
+        );
     }
 
     if (!isAddress(session.accountId)) {
         throw createLibraryError(LIBRARY_ERROR_CODES.InvalidAccount);
     }
 
-    return getMyGames(session.accountId, opts);
+    return getMyGames(session.accountId);
 }
