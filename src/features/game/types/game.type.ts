@@ -1,4 +1,5 @@
 import { Category } from "./category.type";
+export type Timestamp = string;
 
 export interface Game {
     game_id: string,
@@ -18,47 +19,49 @@ export interface Game {
     tags: string[],
     previews: GamePreview[]
     distributions: GameDistribution[],
+    chains?: Array<ChainType>;
+    game_onchain_publishes?: Array<GameOnChainPublish>;
 }
 
 export type GameDistribution =
-    | { web: WebDistribution }
-    | { native: NativeDistribution };
+    | { web: WebBuild }
+    | { native: NativeBuild };
 
 
-export interface WebDistribution {
-    url: string,
-    memory: number,
-    graphics: string,
-    additionalNotes: string,
-    storage: number,
-    processor: string,
-}
-
-export interface NativeDistribution {
-    os: GamePlatform;
+export interface WebBuild {
+    url: string;
     memory: number;
     graphics: string;
     additionalNotes: string;
     storage: number;
     processor: string;
-    manifests: Manifest[];
-    liveVersion: string;
+}
+
+export interface NativeBuild {
+    os: string;
+    memory: number;
+    graphics: string;
+    additionalNotes: string;
+    storage: number;
+    manifests: Array<Manifest>;
+    processor: string;
+    liveVersion?: string;
 }
 
 export type Manifest = {
-    version: string,
-    listing: string,
-    createdAt: string,
-    size_bytes: number,
-    checksum: string,
-    storageRef: string | null
+    listing: string;
+    createdAt: Timestamp;
+    size_bytes: number;
+    version: string;
+    storageRef: StorageRef;
+    checksum: string;
+    status?: string;
 }
 
-export type GamePlatform =
-    | "web"
-    | "windows"
-    | "macos"
-    | "linux";
+export type StorageRef =
+    | { s3: { bucket: string; basePath: string } }
+    | { url: { url: string } }
+    | { ipfs: { cid: string; path: string } };
 
 /* ======================================================
    BANNER
@@ -87,4 +90,31 @@ export interface GameCard {
     cover_vertical_image: string,
     cover_horizontal_image: string,
     categories: Category[];
+}
+
+/* ======================================================
+   BLOCKCHAIN
+====================================================== */
+export interface ChainType {
+    caip_2_id: string;
+    name: string;
+    icon_url?: string;
+    native_symbol?: string;
+    is_testnet?: boolean;
+    namespace?: string;
+    reference?: string;
+}
+
+export interface GameOnChainPublish {
+    id: string;
+    game_id: string;
+    caip_2_id?: string;
+    publish_version: number;
+    pgc1_address: `0x${string}`;
+    publish_tx_hash: string;
+    payment_token: string;
+    token_uri_1155?: string;
+    contract_meta_uri?: string;
+    max_supply: string;
+    published_at: string;
 }

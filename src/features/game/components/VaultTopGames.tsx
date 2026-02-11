@@ -49,7 +49,7 @@ export const VaultTopGames: React.FC<Props> = ({
             renderItem={(item, idx) => (
               <EmbedLink
                 key={idx}
-                href={`/${formatTitle(item.name)}/${item.game_id}`}
+                href={`/game/${formatTitle(item.name)}/${item.game_id}`}
                 className="w-full aspect-video relative overflow-hidden flex justify-end"
               >
                 <span className="text-[10rem] font-bold absolute left-2 bottom-16 z-5">

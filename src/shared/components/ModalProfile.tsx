@@ -8,7 +8,7 @@ import {
   faMicrophoneLines,
   faPowerOff,
   faPuzzlePiece,
-  faShirt,
+  faUser,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { logoutEverywhere } from "@/features/auth/logout/logout.service";
@@ -98,14 +98,15 @@ export const ModalProfile = ({ open, onClose, accountId }: Props) => {
                   <FontAwesomeIcon icon={faPuzzlePiece} className="text-2xl" />
                   <span>My Games</span>
                 </EmbedLink>
-                <Link
-                  href={""}
-                  onClick={onClose}
+                <EmbedLink
+                  href={"#"}
+                  // href={"/my-profile"}
+                  // onClick={onClose}
                   className="bg-accent/20 text-highlight w-full rounded-xl p-4 font-medium opacity-50 cursor-not-allowed flex flex-col gap-2"
                 >
-                  <FontAwesomeIcon icon={faShirt} className="text-2xl" />
-                  <span>My Items</span>
-                </Link>
+                  <FontAwesomeIcon icon={faUser} className="text-2xl" />
+                  <span>My Profile</span>
+                </EmbedLink>
               </div>
               <Link
                 href={"https://studio.peridotvault.com"}

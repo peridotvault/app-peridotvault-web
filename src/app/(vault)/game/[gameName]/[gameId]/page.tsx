@@ -6,10 +6,11 @@ import GameDetailPreview from "@/features/game/components/GameDetailPreview";
 import { GameRelated } from "@/features/game/components/ui/GameRelated";
 import { useGameDetail, useRelatedGame } from "@/features/game/hooks/game.hook";
 import {
+  ChainType,
   GameDistribution,
-  GamePlatform,
+  GameOnChainPublish,
   GamePreview,
-  NativeDistribution,
+  NativeBuild,
 } from "@/features/game/types/game.type";
 import { PriceCoin } from "@/shared/components/CoinWithAmmount";
 import { ContainerPadding } from "@/shared/components/ui/ContainerPadding";
@@ -21,7 +22,6 @@ import {
   STYLE_ROUNDED_BUTTON,
   BUTTON_COLOR,
 } from "@/shared/constants/style";
-import { CHAIN_CONFIGS } from "@/shared/constants/chain";
 import { getAssetUrl } from "@/shared/utils/helper.url";
 import {
   faBookmark,
@@ -33,11 +33,13 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 import { BlockchainStack } from "@/blockchain/__core__/components/BlockchainStack";
-import { ChainConfig } from "@/shared/types/chain";
 import igrs from "@/shared/assets/rating/igrs.json";
 import { ButtonWithSound } from "@/shared/components/ui/ButtonWithSound";
 import { getSupportedPlatforms } from "@/features/game/utils/platform.helper";
 import { PLATFORM_ICON_MAP } from "@/features/game/constants/platform.const";
+import { formatStorageFromMB } from "@/features/game/utils/storage.helper";
+import { PurchaseService } from "@/features/game/services/purchase.service";
+import { EvmPurchaseService } from "@/blockchain/evm/services/service.purchase";
 
 /* ======================================================
    PAGE — Game Detail
@@ -111,7 +113,7 @@ export default function GameDetailPage(): React.ReactElement {
   const webDist = distributions.find((d) => "web" in d);
   const webSpec = webDist && "web" in webDist ? webDist.web : undefined;
   const nativeDist = game.distributions.find(
-    (d): d is { native: NativeDistribution } => "native" in d,
+    (d): d is { native: NativeBuild } => "native" in d,
   )?.native;
 
   // Platform list sederhana untuk About
@@ -163,11 +165,8 @@ export default function GameDetailPage(): React.ReactElement {
 
           {/* right  */}
           <DetailContent
-            chainSupport={[
-              CHAIN_CONFIGS["base-testnet"],
-              CHAIN_CONFIGS["lisk-testnet"],
-              // CHAIN_CONFIGS["solana-testnet"],
-            ]}
+            chainSupport={game.chains!}
+            game_onchain_publishes={game.game_onchain_publishes!}
             platformSupport={getSupportedPlatforms(game.distributions)}
             releaseDateMs={game.release_date}
             requiredAge={game.required_age}
@@ -189,11 +188,7 @@ export default function GameDetailPage(): React.ReactElement {
   /* =========================
      UI FUNCTIONS
   ========================= */
-  function SystemRequirement({
-    sysReq,
-  }: {
-    sysReq: NativeDistribution | undefined;
-  }) {
+  function SystemRequirement({ sysReq }: { sysReq: NativeBuild | undefined }) {
     const list = [
       {
         title: "OS",
@@ -205,7 +200,7 @@ export default function GameDetailPage(): React.ReactElement {
       },
       {
         title: "Memory",
-        description: sysReq ? sysReq.memory + " GB" : "Peridot",
+        description: sysReq && formatStorageFromMB(sysReq.memory),
       },
       {
         title: "GPU",
@@ -213,7 +208,7 @@ export default function GameDetailPage(): React.ReactElement {
       },
       {
         title: "Storage",
-        description: sysReq ? sysReq.storage + " GB" : "Peridot",
+        description: sysReq && formatStorageFromMB(sysReq.storage),
       },
     ];
     return (
@@ -367,21 +362,30 @@ export default function GameDetailPage(): React.ReactElement {
     platformSupport,
     releaseDateMs,
     requiredAge,
+    game_onchain_publishes,
     price,
   }: {
-    chainSupport: ChainConfig[];
-    platformSupport: Set<GamePlatform>;
+    chainSupport: ChainType[];
+    platformSupport: Set<string>;
     releaseDateMs: number;
     requiredAge: number;
+    game_onchain_publishes: Array<GameOnChainPublish>;
     price: number;
   }) {
     const [buying, setBuying] = useState(false);
     const releaseDate = new Date(releaseDateMs).toLocaleDateString();
     const handleBuyClick = async () => {
       setBuying(true);
-      setTimeout(() => {
+      try {
+        await EvmPurchaseService.buyGame({
+          pgc1_address: game_onchain_publishes[0].pgc1_address,
+          payment_token: game_onchain_publishes[0].payment_token,
+        });
         setBuying(false);
-      }, 800);
+      } catch (error) {
+        console.error(error);
+        setBuying(false);
+      }
     };
 
     const [purchaseState] = useState<{

@@ -5,7 +5,7 @@ import { Hex } from 'viem'
 // import { SvmPurchaseService } from '@/features/blockchain/svm/services/service.purchase'
 
 export class PurchaseService {
-    static async buyGame(input: { gameId: Hex }) {
+    static async buyGame(input: { pgc1_address: Hex, payment_token: string }) {
         const { chainKey } = useChainStore.getState()
 
         const resolved = resolveChainExecution(chainKey)

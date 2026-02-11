@@ -5,6 +5,7 @@ import "@/shared/styles/globals.css";
 import { UIEffects } from "./_effects/UIEffects";
 import { METADATA } from "./_seo/metadata";
 import { EmbedLayout } from "@/features/security/embed/embed.component";
+import { GoogleAnalytics } from "@next/third-parties/google";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -38,6 +39,7 @@ export default async function RootLayout({
         <Suspense fallback={null}>
           <EmbedLayout>{children}</EmbedLayout>
         </Suspense>
+        <GoogleAnalytics gaId="G-6J0BXZJNG5" />
       </body>
     </html>
   );

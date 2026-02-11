@@ -28,7 +28,7 @@ export const GameHorizontalCard = ({
 }) => {
   return (
     <EmbedLink
-      href={`/${formatTitle(gameName)}/${gameId}`}
+      href={`/game/${formatTitle(gameName)}/${gameId}`}
       className={`w-full group relative overflow-hidden  ${STYLE_ROUNDED_CARD}`}
     >
       <div className="w-full aspect-video bg-muted">

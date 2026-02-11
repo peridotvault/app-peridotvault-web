@@ -4,24 +4,22 @@ import {
     custom,
     http,
     type Address,
-    type Hex,
 } from 'viem'
 import { PGC1Abi } from '../abis/abi.pgc1'
 import { ERC20Abi } from '../abis/abi.erc20'
-// import { PeridotRegistryAbi } from '../abis/abi.registry'
 import { getViemChain } from '../viem/chain.config'
 import { getPeridotRegistry } from '../contracts/contract.registry'
 import { useChainStore } from '@/shared/states/chain.store'
 
-
-const ZERO = '0x0000000000000000000000000000000000000000' as const
 const LICENSE_ID = BigInt(1);
 
 export class EvmPurchaseService {
-    static async buyGame(input: { gameId: Hex }) {
+    static async buyGame(input: { pgc1_address: `0x${string}`, payment_token: string }) {
         if (!window.ethereum) {
             throw new Error('Wallet not found')
         }
+
+        /* ================= SETUP ================= */
 
         const { chainKey } = useChainStore.getState()
 
@@ -40,17 +38,36 @@ export class EvmPurchaseService {
 
         const [buyer] = await walletClient.getAddresses()
 
+        if (!buyer) {
+            throw new Error("Wallet not connected");
+        }
+
+        /* ================= ENSURE NETWORK ================= */
+
+        try {
+            await walletClient.switchChain({ id: chain.id });
+        } catch {
+            throw new Error("Please switch network in wallet");
+        }
+
         /* ================= REGISTRY ================= */
+
+        const gameId = await publicClient.readContract({
+            address: registry.address,
+            abi: registry.abi,
+            functionName: "gameIdOf",
+            args: [input.pgc1_address],
+        }) as `0x${string}`
 
         const [pgc1, , , active] =
             (await publicClient.readContract({
                 address: registry.address,
                 abi: registry.abi,
                 functionName: 'games',
-                args: [input.gameId],
+                args: [gameId],
             })) as readonly [Address, Address, bigint, boolean]
 
-        if (pgc1 === ZERO) throw new Error('Game not registered')
+        if (!pgc1) throw new Error('Game not registered')
         if (!active) throw new Error('Game inactive')
 
         /* ================= OWNERSHIP ================= */
@@ -83,7 +100,7 @@ export class EvmPurchaseService {
 
         /* ================= BUY ================= */
 
-        if (paymentToken === ZERO) {
+        if (paymentToken === input.payment_token) {
             await publicClient.simulateContract({
                 address: pgc1,
                 abi: PGC1Abi,
