@@ -6,6 +6,7 @@ import { UIEffects } from "./_effects/UIEffects";
 import { METADATA } from "./_seo/metadata";
 import { EmbedLayout } from "@/features/security/embed/embed.component";
 import { GoogleAnalytics } from "@next/third-parties/google";
+import { PeridotToaster } from "@/shared/components/ui/PeridotToaster";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -36,10 +37,11 @@ export default async function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col`}
       >
         <UIEffects />
+        <PeridotToaster />
         <Suspense fallback={null}>
           <EmbedLayout>{children}</EmbedLayout>
         </Suspense>
-        <GoogleAnalytics gaId="G-6J0BXZJNG5" />
+        <GoogleAnalytics gaId="G-XLWGE9Y254" />
       </body>
     </html>
   );

@@ -38,8 +38,9 @@ import { ButtonWithSound } from "@/shared/components/ui/ButtonWithSound";
 import { getSupportedPlatforms } from "@/features/game/utils/platform.helper";
 import { PLATFORM_ICON_MAP } from "@/features/game/constants/platform.const";
 import { formatStorageFromMB } from "@/features/game/utils/storage.helper";
-import { PurchaseService } from "@/features/game/services/purchase.service";
 import { EvmPurchaseService } from "@/blockchain/evm/services/service.purchase";
+import { toast } from "sonner";
+import { peridotToast } from "@/shared/components/ui/PeridotToaster";
 
 /* ======================================================
    PAGE — Game Detail
@@ -165,8 +166,8 @@ export default function GameDetailPage(): React.ReactElement {
 
           {/* right  */}
           <DetailContent
-            chainSupport={game.chains!}
-            game_onchain_publishes={game.game_onchain_publishes!}
+            chainSupport={game.chains}
+            game_onchain_publishes={game.game_onchain_publishes}
             platformSupport={getSupportedPlatforms(game.distributions)}
             releaseDateMs={game.release_date}
             requiredAge={game.required_age}
@@ -365,24 +366,36 @@ export default function GameDetailPage(): React.ReactElement {
     game_onchain_publishes,
     price,
   }: {
-    chainSupport: ChainType[];
+    chainSupport: ChainType[] | undefined;
+    game_onchain_publishes: Array<GameOnChainPublish> | undefined;
     platformSupport: Set<string>;
     releaseDateMs: number;
     requiredAge: number;
-    game_onchain_publishes: Array<GameOnChainPublish>;
     price: number;
   }) {
     const [buying, setBuying] = useState(false);
     const releaseDate = new Date(releaseDateMs).toLocaleDateString();
     const handleBuyClick = async () => {
+      const id = peridotToast.loading("Buying Game...");
       setBuying(true);
       try {
-        await EvmPurchaseService.buyGame({
-          pgc1_address: game_onchain_publishes[0].pgc1_address,
-          payment_token: game_onchain_publishes[0].payment_token,
+        if (game_onchain_publishes) {
+          await EvmPurchaseService.buyGame({
+            pgc1_address: game_onchain_publishes[0].pgc1_address,
+            payment_token: game_onchain_publishes[0].payment_token,
+          });
+        }
+        peridotToast.success("Game purchased", {
+          id,
+          desc: "License minted",
         });
+
         setBuying(false);
       } catch (error) {
+        peridotToast.error("Purchase failed", {
+          id,
+          desc: String(error),
+        });
         console.error(error);
         setBuying(false);
       }
@@ -434,6 +447,7 @@ export default function GameDetailPage(): React.ReactElement {
               Buy Now
             </ButtonWithSound>
             <ButtonWithSound
+              disabled={true}
               className={
                 "aspect-square shrink-0 opacity-20 cursor-not-allowed " +
                 BUTTON_COLOR +
@@ -444,6 +458,7 @@ export default function GameDetailPage(): React.ReactElement {
             </ButtonWithSound>
           </div>
           <ButtonWithSound
+            disabled={true}
             className={
               "opacity-20 cursor-not-allowed " +
               BUTTON_COLOR +
@@ -524,6 +539,7 @@ export default function GameDetailPage(): React.ReactElement {
 
         <div className="grid grid-cols-2 gap-4">
           <ButtonWithSound
+            disabled={true}
             className={
               "opacity-20 cursor-not-allowed " +
               BUTTON_COLOR +
@@ -534,6 +550,7 @@ export default function GameDetailPage(): React.ReactElement {
             <span>Share</span>
           </ButtonWithSound>
           <ButtonWithSound
+            disabled={true}
             className={
               "opacity-20 cursor-not-allowed " +
               BUTTON_COLOR +

@@ -1,7 +1,19 @@
 /* eslint-disable @next/next/no-img-element */
 import { ChainType } from "@/features/game/types/game.type";
 
-export const BlockchainStack = ({ chain }: { chain: ChainType[] }) => {
+export const BlockchainStack = ({
+  chain,
+}: {
+  chain: ChainType[] | undefined;
+}) => {
+  if (!chain) {
+    return (
+      <div className="flex -space-x-2 overflow-hidden">
+        Not Support Any Chain
+      </div>
+    );
+  }
+
   return (
     <div className="flex -space-x-2 overflow-hidden">
       {chain.map((item) => (
