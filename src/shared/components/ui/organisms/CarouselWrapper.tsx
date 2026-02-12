@@ -1,11 +1,11 @@
 "use client";
 
 import React from "react";
-import { ButtonWithSound } from "./ui/ButtonWithSound";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleLeft, faAngleRight } from "@fortawesome/free-solid-svg-icons";
-import { useBreakpoint } from "../hooks/useBreakpoint";
-import { STYLE_ROUNDED_CARD } from "../constants/style";
+import { STYLE_ROUNDED_CARD } from "@/shared/constants/style";
+import { useBreakpoint } from "@/shared/hooks/useBreakpoint";
+import { ButtonWithSound } from "../atoms/ButtonWithSound";
 
 /* =========================
    TYPES

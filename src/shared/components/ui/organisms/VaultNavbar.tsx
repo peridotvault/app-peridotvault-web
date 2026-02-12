@@ -1,7 +1,10 @@
 "use client";
 
-import { Dropdown, OptionComponent } from "@/shared/components/ui/Dropdown";
-import { SearchInput } from "@/shared/components/ui/SearchInput";
+import {
+  Dropdown,
+  OptionComponent,
+} from "@/shared/components/ui/atoms/Dropdown";
+import { SearchInput } from "@/shared/components/ui/molecules/SearchInput";
 import {
   CHAIN_CONFIGS,
   CHAIN_OPTIONS_BY_NETWORK,

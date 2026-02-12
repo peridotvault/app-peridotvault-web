@@ -1,4 +1,4 @@
-import { db } from "@/shared/db";
+import { db } from "@/shared/infra/db";
 import type { Table } from "dexie";
 import { AuthSessionRow } from "./db.table";
 

@@ -2,7 +2,7 @@
 "use client";
 
 import { EmbedLink } from "@/features/security/embed/embed.component";
-import { ButtonWithSound } from "@/shared/components/ui/ButtonWithSound";
+import { ButtonWithSound } from "@/shared/components/ui/atoms/ButtonWithSound";
 import { formatTitle } from "@/shared/utils/formatUrl";
 import React, { useEffect } from "react";
 import { GameBanner } from "../types/game.type";

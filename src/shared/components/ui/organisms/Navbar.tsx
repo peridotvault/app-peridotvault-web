@@ -4,13 +4,13 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ConnectButton, SignState } from "@antigane/wallet-adapters";
-import { ModalProfile } from "@/shared/components/ModalProfile";
-import { NotificationBar } from "@/shared/components/NotificationBar";
-import { useUIStore } from "@/shared/stores/ui";
+import { NotificationBar } from "@/shared/components/ui/molecules/NotificationBar";
+import { useUIStore } from "@/shared/infra/modal/ui";
 import { verifyAndCreateSession } from "@/features/auth/verify/verify.service";
 import { useAuthStore } from "@/features/auth/_store/auth.store";
 import { getSession } from "@/features/auth/_db/db.service";
 import { STYLE_PADDING } from "@/shared/constants/style";
+import { ModalProfile } from "@/features/user/components/ModalProfile";
 
 export default function Navbar() {
   const [state, setState] = useState<null | SignState>();

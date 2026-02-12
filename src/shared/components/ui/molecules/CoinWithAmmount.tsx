@@ -2,7 +2,7 @@ import {
   formatCoinAmountFromRaw,
   isZeroCoinAmount,
   resolveCoinInfo,
-} from "../utils/coin";
+} from "../../../utils/coin";
 
 type PriceCoinProps = {
   amount: number | string | bigint;

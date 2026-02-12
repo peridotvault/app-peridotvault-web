@@ -6,14 +6,34 @@ import {
   faSpinner,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Toaster, toast } from "sonner";
+import { Toaster } from "sonner";
 
-export function PeridotToaster() {
+export function ToasterComponent() {
   return (
     <Toaster
       position="bottom-right"
       richColors={false}
       visibleToasts={5}
+      icons={{
+        success: (
+          <FontAwesomeIcon
+            icon={faCheckCircle}
+            className="text-chart-2 text-lg"
+          />
+        ),
+        error: (
+          <FontAwesomeIcon
+            icon={faCircleXmark}
+            className="text-chart-5 text-lg"
+          />
+        ),
+        loading: (
+          <FontAwesomeIcon
+            icon={faSpinner}
+            className="text-border animate-spin text-lg"
+          />
+        ),
+      }}
       toastOptions={{
         unstyled: true,
 
@@ -55,58 +75,3 @@ export function PeridotToaster() {
     />
   );
 }
-
-export type ToastOpts = {
-  id?: string | number;
-  desc?: string;
-};
-
-const duration: number = 3000;
-export const peridotToast = {
-  success: (title: string, opts?: ToastOpts) =>
-    toast.success(title, {
-      id: opts?.id,
-      description: opts?.desc,
-      duration: duration,
-      icon: (
-        <FontAwesomeIcon
-          icon={faCheckCircle}
-          className="text-chart-2 text-lg"
-        />
-      ),
-      classNames: {
-        toast: `border-l-6 border-l-chart-2`,
-      },
-    }),
-
-  error: (title: string, opts?: ToastOpts) =>
-    toast.error(title, {
-      id: opts?.id,
-      description: opts?.desc,
-      duration: duration,
-      icon: (
-        <FontAwesomeIcon
-          icon={faCircleXmark}
-          className="text-chart-5 text-lg"
-        />
-      ),
-      classNames: {
-        toast: `border-l-6 border-l-chart-5`,
-      },
-    }),
-
-  loading: (title: string, desc?: string) =>
-    toast.loading(title, {
-      description: desc,
-      duration: Infinity,
-      icon: (
-        <FontAwesomeIcon
-          icon={faSpinner}
-          className="text-border animate-spin text-lg"
-        />
-      ),
-      classNames: {
-        toast: `border-l-6 border-l-border`,
-      },
-    }),
-};

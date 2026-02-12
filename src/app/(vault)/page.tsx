@@ -2,8 +2,7 @@
 "use client";
 
 import { IMAGE_LOADING } from "@/shared/constants/image";
-import { TypographyH2 } from "@/shared/components/ui/TypographyH2";
-import { CarouselWrapper } from "@/shared/components/CarouselWrapper";
+import { TypographyH2 } from "@/shared/components/ui/atoms/TypographyH2";
 import { Category } from "@/features/game/types/category.type";
 import { STYLE_ROUNDED_CARD } from "@/shared/constants/style";
 
@@ -17,6 +16,7 @@ import {
   usePublishedGames,
   useTopGames,
 } from "@/features/game/hooks/game.hook";
+import { CarouselWrapper } from "@/shared/components/ui/organisms/CarouselWrapper";
 
 /* ======================================================
    PAGE — Vault (Main Discovery Page)
@@ -26,7 +26,7 @@ export default function Vault() {
   /* =========================
      DATA SOURCES
   ========================= */
-  const { games: publishedGames } = usePublishedGames({ page: 1, limit: 15 });
+  const { games: publishedGames } = usePublishedGames({ page: 1, limit: 30 });
 
   const {
     games: bannerGames,

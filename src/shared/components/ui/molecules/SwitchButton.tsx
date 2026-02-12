@@ -1,5 +1,4 @@
 import { useClickSound } from "@/shared/hooks/useClickSound";
-import React from "react";
 
 type SwitchButtonProps = {
   checked: boolean;

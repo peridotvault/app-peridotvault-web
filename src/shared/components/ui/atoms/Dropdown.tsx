@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { ChainComponent } from "../ChainComponent";
+import { ChainComponent } from "../molecules/ChainComponent";
 import { STYLE_HOVER } from "@/shared/constants/style";
 import { ButtonWithSound } from "./ButtonWithSound";
 

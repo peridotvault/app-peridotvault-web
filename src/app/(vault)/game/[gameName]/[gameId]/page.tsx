@@ -12,9 +12,9 @@ import {
   GamePreview,
   NativeBuild,
 } from "@/features/game/types/game.type";
-import { PriceCoin } from "@/shared/components/CoinWithAmmount";
-import { ContainerPadding } from "@/shared/components/ui/ContainerPadding";
-import { TypographyH2 } from "@/shared/components/ui/TypographyH2";
+import { PriceCoin } from "@/shared/components/ui/molecules/CoinWithAmmount";
+import { ContainerPadding } from "@/shared/components/ContainerPadding";
+import { TypographyH2 } from "@/shared/components/ui/atoms/TypographyH2";
 import {
   STYLE_ROUNDED_CARD,
   SMALL_GRID,
@@ -34,13 +34,12 @@ import { useParams } from "next/navigation";
 import { useState } from "react";
 import { BlockchainStack } from "@/blockchain/__core__/components/BlockchainStack";
 import igrs from "@/shared/assets/rating/igrs.json";
-import { ButtonWithSound } from "@/shared/components/ui/ButtonWithSound";
+import { ButtonWithSound } from "@/shared/components/ui/atoms/ButtonWithSound";
 import { getSupportedPlatforms } from "@/features/game/utils/platform.helper";
 import { PLATFORM_ICON_MAP } from "@/features/game/constants/platform.const";
 import { formatStorageFromMB } from "@/features/game/utils/storage.helper";
 import { EvmPurchaseService } from "@/blockchain/evm/services/service.purchase";
-import { toast } from "sonner";
-import { peridotToast } from "@/shared/components/ui/PeridotToaster";
+import { toastService } from "@/shared/infra/toast/toast.service";
 
 /* ======================================================
    PAGE — Game Detail
@@ -376,7 +375,7 @@ export default function GameDetailPage(): React.ReactElement {
     const [buying, setBuying] = useState(false);
     const releaseDate = new Date(releaseDateMs).toLocaleDateString();
     const handleBuyClick = async () => {
-      const id = peridotToast.loading("Buying Game...");
+      const id = toastService.loading("Buying Game...");
       setBuying(true);
       try {
         if (game_onchain_publishes) {
@@ -385,14 +384,14 @@ export default function GameDetailPage(): React.ReactElement {
             payment_token: game_onchain_publishes[0].payment_token,
           });
         }
-        peridotToast.success("Game purchased", {
+        toastService.success("Game purchased", {
           id,
           desc: "License minted",
         });
 
         setBuying(false);
       } catch (error) {
-        peridotToast.error("Purchase failed", {
+        toastService.error("Purchase failed", {
           id,
           desc: String(error),
         });

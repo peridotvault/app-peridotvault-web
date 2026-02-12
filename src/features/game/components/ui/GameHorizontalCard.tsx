@@ -2,7 +2,7 @@
 "use client";
 
 import { EmbedLink } from "@/features/security/embed/embed.component";
-import { PriceCoin } from "@/shared/components/CoinWithAmmount";
+import { PriceCoin } from "@/shared/components/ui/molecules/CoinWithAmmount";
 import { STYLE_ROUNDED_CARD } from "@/shared/constants/style";
 import { formatTitle } from "@/shared/utils/formatUrl";
 import { getAssetUrl } from "@/shared/utils/helper.url";

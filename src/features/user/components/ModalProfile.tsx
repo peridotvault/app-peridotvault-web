@@ -1,7 +1,6 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { short } from "../utils/customAccountId";
 import Link from "next/link";
 import {
   faGear,
@@ -13,11 +12,12 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { logoutEverywhere } from "@/features/auth/logout/logout.service";
 import { EmbedLink } from "@/features/security/embed/embed.component";
-import { ButtonWithSound } from "./ui/ButtonWithSound";
-import { SwitchButton } from "./ui/SwitchButton";
 import { useNetworkStore } from "@/shared/states/network.store";
 import { useChainStore } from "@/shared/states/chain.store";
 import { getChainKeyForNetwork } from "@/shared/constants/chain";
+import { ButtonWithSound } from "@/shared/components/ui/atoms/ButtonWithSound";
+import { SwitchButton } from "@/shared/components/ui/molecules/SwitchButton";
+import { short } from "@/shared/utils/customAccountId";
 
 type Props = {
   open: boolean;
