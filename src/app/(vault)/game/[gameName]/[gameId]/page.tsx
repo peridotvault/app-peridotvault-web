@@ -367,7 +367,6 @@ export default function GameDetailPage(): React.ReactElement {
     platformSupport,
     releaseDateMs,
     requiredAge,
-    game_onchain_publishes,
     price,
   }: {
     chainSupport: ChainType[] | undefined;
@@ -401,6 +400,7 @@ export default function GameDetailPage(): React.ReactElement {
       useModal.getState().open((id) => (
         <ModalShell id={id}>
           <SelectPaymentToken
+            modalId={id}
             chainSupports={game?.chains}
             game_onchain_publishes={game?.game_onchain_publishes}
             price={game?.price}
