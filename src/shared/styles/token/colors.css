@@ -1,0 +1,70 @@
+:root {
+  /* =========================
+     Brand tokens (identity)
+    ========================= */
+  --brand-1: #349b65;
+  --brand-2: #87ee83;
+  --brand-3: #349b6650;
+
+  /* =========================
+     Semantic tokens (UI)
+    ========================= */
+  --background: #1c1f1d;
+  --foreground: white;
+
+  --surface: #1a1a1a; /* background_secondary */
+  --surface-foreground: white;
+  --card: #0a0c0b; /* background_secondary */
+  --card-foreground: white;
+
+  --accent: var(--brand-1);
+  --highlight: var(--brand-2);
+  --accent-card: var(--brand-3);
+  --accent-foreground: #87ee83;
+  --button: #414141;
+  --border: #ffffff28;
+
+  --label: #ffffff60;
+
+  --muted: #363636; /* background_disabled */
+  --muted-foreground: rgb(125, 125, 125); /* text_disabled */
+
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+
+  /* =========================
+     Store
+    ========================= */
+  background: var(--background);
+  color: var(--foreground);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-surface: var(--surface);
+  --color-surface-foreground: var(--surface-foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+
+  --color-accent: var(--accent);
+  --color-highlight: var(--highlight);
+  --color-accent-card: var(--accent-card);
+  --color-button: var(--button);
+  --color-border: var(--border);
+
+  --color-label: var(--label);
+
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+}

@@ -1,0 +1,1 @@
+export const DURATION_ANIMATE_MS = 220
