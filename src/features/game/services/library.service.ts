@@ -3,25 +3,7 @@ import { getSession } from "@/features/auth/_db/db.service";
 import { getEvmPublicClient } from "@/blockchain/evm/viem";
 import { getAddress, isAddress, type Hex } from "viem";
 import { getPeridotRegistry, PGC1_LICENSE_ID } from "../configs/game.config";
-
-/* ======================================================
-   TYPES
-====================================================== */
-
-export type MyGameItem = {
-    gameId: Hex;
-    pgc1: `0x${string}`;
-    publisher: string;
-    createdAt: bigint;
-    active: boolean;
-};
-
-type RegistryGame = {
-    pgc1: `0x${string}`;
-    publisher: `0x${string}`;
-    createdAt: bigint;
-    active: boolean;
-};
+import { MyGameItem, RegistryGame } from "../types/library.type";
 
 /* ======================================================
    ERROR CODES
@@ -101,7 +83,6 @@ export async function getMyGames(user: string): Promise<MyGameItem[]> {
     const registry = getPeridotRegistry();
 
     try {
-        // 1️⃣ total games
         const gameCount = (await publicClient.readContract({
             ...registry,
             functionName: "gameCount",
@@ -109,73 +90,190 @@ export async function getMyGames(user: string): Promise<MyGameItem[]> {
 
         if (gameCount === ZERO) return [];
 
-        const results: MyGameItem[] = [];
+        /* ======================================================
+           STEP 1 — GET ALL GAME IDS
+        ====================================================== */
 
-        // 2️⃣ iterate registry (ENUMERATION)
-        for (let i = BigInt(0); i < gameCount; i++) {
-            const gameId = (await publicClient.readContract({
-                ...registry,
-                functionName: "gameIdAt",
-                args: [i],
-            })) as Hex;
+        const gameIdResults = await publicClient.multicall({
+            contracts: Array.from({ length: Number(gameCount) }).map(
+                (_, i) => ({
+                    ...registry,
+                    functionName: "gameIdAt",
+                    args: [BigInt(i)],
+                })
+            ),
+            allowFailure: true,
+        });
 
-            const gameRaw = await publicClient.readContract({
+        const gameIds: Hex[] = [];
+
+        for (const result of gameIdResults) {
+            if (result.status === "success" && result.result) {
+                gameIds.push(result.result as Hex);
+            }
+        }
+
+        if (gameIds.length === 0) return [];
+
+        /* ======================================================
+           STEP 2 — GET GAME STRUCTS
+        ====================================================== */
+
+        const gameStructResults = await publicClient.multicall({
+            contracts: gameIds.map((id) => ({
                 ...registry,
                 functionName: "games",
-                args: [gameId],
+                args: [id],
+            })),
+            allowFailure: true,
+        });
+
+        const parsedGames: Array<{
+            gameId: Hex;
+            pgc1: `0x${string}`;
+            publisher: string;
+            createdAt: bigint;
+            active: boolean;
+        }> = [];
+
+        for (let i = 0; i < gameStructResults.length; i++) {
+            const result = gameStructResults[i];
+
+            if (result.status !== "success") continue;
+
+            const parsed = parseRegistryGame(result.result);
+            if (!parsed) continue;
+
+            parsedGames.push({
+                gameId: gameIds[i],
+                ...parsed,
             });
+        }
 
-            const game = parseRegistryGame(gameRaw);
-            if (!game) {
-                throw createLibraryError(
-                    LIBRARY_ERROR_CODES.RpcFailed,
-                    gameRaw
-                );
-            }
+        if (parsedGames.length === 0) return [];
 
-            const { pgc1, publisher, createdAt, active } = game;
+        /* ======================================================
+           STEP 3 — BALANCE CHECK
+        ====================================================== */
 
-            // 3️⃣ ownership check
-            const bal = (await publicClient.readContract({
-                address: pgc1,
+        const balanceResults = await publicClient.multicall({
+            contracts: parsedGames.map((g) => ({
+                address: g.pgc1,
                 abi: PGC1Abi,
                 functionName: "balanceOf",
                 args: [address, PGC1_LICENSE_ID],
-            })) as bigint;
+            })),
+            allowFailure: true,
+        });
 
-            if (bal > ZERO) {
-                results.push({
-                    gameId,
-                    pgc1,
-                    publisher,
-                    createdAt,
-                    active,
-                });
+        const ownedGames: typeof parsedGames = [];
+
+        for (let i = 0; i < balanceResults.length; i++) {
+            const result = balanceResults[i];
+
+            if (result.status !== "success") continue;
+
+            const balance = result.result as bigint;
+
+            if (balance > ZERO) {
+                ownedGames.push(parsedGames[i]);
             }
         }
 
-        return results;
+        if (ownedGames.length === 0) return [];
+
+        /* ======================================================
+   STEP 4 — CONTRACT METADATA (HEAD VERSION)
+====================================================== */
+
+        const contractMetaVersionResults = await publicClient.multicall({
+            contracts: ownedGames.map((g) => ({
+                address: g.pgc1,
+                abi: PGC1Abi,
+                functionName: "contractMetaHeadVersion",
+            })),
+            allowFailure: true,
+        });
+
+        type MetadataCommit = {
+            hash: Hex;
+            parentHash: Hex;
+            timestamp: bigint;
+            uri: string;
+        };
+
+        const metadataContracts: {
+            address: `0x${string}`;
+            abi: typeof PGC1Abi;
+            functionName: "contractMetadataAt";
+            args: [bigint];
+        }[] = [];
+
+        const metadataIndexMap: number[] = [];
+
+        for (let i = 0; i < contractMetaVersionResults.length; i++) {
+            const result = contractMetaVersionResults[i];
+            if (result.status !== "success") continue;
+
+            const version = result.result as number;
+
+            if (version === 0) continue;
+
+            metadataContracts.push({
+                address: ownedGames[i].pgc1,
+                abi: PGC1Abi,
+                functionName: "contractMetadataAt",
+                args: [BigInt(version - 1)], // version starts at 1
+            });
+
+            metadataIndexMap.push(i);
+        }
+
+        const metadataResults =
+            metadataContracts.length > 0
+                ? await publicClient.multicall({
+                    contracts: metadataContracts,
+                    allowFailure: true,
+                })
+                : [];
+
+        /* ======================================================
+           STEP 5 — MERGE RESULTS
+        ====================================================== */
+
+        const metadataUriMap = new Map<number, string | null>();
+
+        for (let i = 0; i < metadataResults.length; i++) {
+            const result = metadataResults[i];
+            const gameIndex = metadataIndexMap[i];
+
+            if (result.status !== "success") {
+                metadataUriMap.set(gameIndex, null);
+                continue;
+            }
+
+            const meta = result.result as MetadataCommit;
+            metadataUriMap.set(gameIndex, meta.uri);
+        }
+
+        const finalResults: MyGameItem[] = ownedGames.map((game, index) => ({
+            gameId: game.gameId,
+            pgc1: game.pgc1,
+            publisher: game.publisher,
+            createdAt: game.createdAt,
+            active: game.active,
+            metadataUri: metadataUriMap.get(index) ?? null,
+        }));
+
+        return finalResults;
+
     } catch (error) {
-        if (
-            error &&
-            typeof error === "object" &&
-            "code" in error &&
-            isLibraryErrorCode(String((error as LibraryError).code))
-        ) {
-            throw error as LibraryError;
-        }
-
-        if (error instanceof Error && error.message === "EVM_UNSUPPORTED_CHAIN") {
-            throw createLibraryError(
-                LIBRARY_ERROR_CODES.UnsupportedChain,
-                error
-            );
-        }
-
         console.error(error);
         throw createLibraryError(LIBRARY_ERROR_CODES.RpcFailed, error);
     }
 }
+
+
 
 /* ======================================================
    SESSION WRAPPER

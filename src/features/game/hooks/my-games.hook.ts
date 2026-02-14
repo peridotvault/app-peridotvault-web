@@ -2,13 +2,13 @@
 
 import { useEffect, useMemo, useState } from "react";
 import {
-    MyGameItem,
     LibraryErrorCode,
     getMyGamesForSession,
     isLibraryErrorCode,
     LIBRARY_ERROR_CODES,
 } from "@/features/game/services/library.service";
 import { useChainStore } from "@/shared/states/chain.store";
+import { MyGameItem } from "../types/library.type";
 
 type UseMyGamesResult = {
     games: MyGameItem[];
@@ -36,6 +36,7 @@ export function useMyGames(): UseMyGamesResult {
                 setErrorCode(null);
 
                 const myGames = await getMyGamesForSession();
+                console.log(myGames);
 
                 if (!mounted) return;
                 setGames(myGames);
