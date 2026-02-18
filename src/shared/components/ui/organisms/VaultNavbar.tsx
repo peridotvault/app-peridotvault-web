@@ -16,6 +16,7 @@ import { ChainKey } from "@/shared/types/chain";
 import { useState } from "react";
 import { useChainStore } from "@/shared/states/chain.store";
 import { useNetworkStore } from "@/shared/states/network.store";
+import { useGetChain } from "@/blockchain/__core__/hooks/chain.hook";
 
 export const VaultNavbar = () => {
   const [query, setQuery] = useState("");
@@ -25,6 +26,8 @@ export const VaultNavbar = () => {
   const selectedChain =
     CHAIN_CONFIGS[getChainKeyForNetwork(chainKey, network)] ??
     CHAIN_CONFIGS[DEFAULT_CHAIN_KEYS[network]];
+
+  const { chains } = useGetChain({ network_type: "testnet" });
   return (
     <nav className={"border-y border-border bg-card py-2 " + STYLE_PADDING}>
       <div className="flex justify-between max-w-400 mx-auto">
