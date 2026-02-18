@@ -40,6 +40,7 @@
     ========================= */
   background: var(--background);
   color: var(--foreground);
+  border-color: var(--border);
 }
 
 @theme inline {
@@ -67,4 +68,10 @@
   --color-chart-3: var(--chart-3);
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
+}
+
+*,
+::before,
+::after {
+  border-color: var(--border);
 }
