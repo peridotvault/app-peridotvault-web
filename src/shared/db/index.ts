@@ -22,4 +22,44 @@ class AppDB extends Dexie {
     }
 }
 
-export const db = new AppDB();
+// Lazy singleton pattern to prevent multiple instances
+let dbInstance: AppDB | null = null;
+let initializationError: Error | null = null;
+
+export function getDB(): AppDB {
+    // Return existing instance if already created
+    if (dbInstance) {
+        return dbInstance;
+    }
+
+    // If previous initialization failed, throw the cached error
+    if (initializationError) {
+        throw initializationError;
+    }
+
+    // Check if we're in browser environment
+    if (typeof window === "undefined") {
+        const error = new Error("IndexedDB is only available in browser environment");
+        initializationError = error;
+        throw error;
+    }
+
+    try {
+        // Create new instance with error handling for SES lockdown
+        dbInstance = new AppDB();
+        return dbInstance;
+    } catch (error) {
+        // Cache the error to avoid repeated initialization attempts
+        initializationError = error instanceof Error ? error : new Error(String(error));
+        console.error("[Dexie] Failed to initialize database:", initializationError);
+        throw initializationError;
+    }
+}
+
+// Backward compatibility: export db for legacy code
+export const db = new Proxy({} as AppDB, {
+    get(_target, prop) {
+        const instance = getDB();
+        return instance[prop as keyof AppDB];
+    }
+});

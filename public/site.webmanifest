@@ -1,0 +1,33 @@
+{
+  "name": "PeridotVault",
+  "short_name": "PeridotVault",
+  "description": "Intelligent Decentralized Gaming Platform — discover, license, and manage games across chains.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0b0f14",
+  "theme_color": "#0b0f14",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/brand/logo-peridot.png",
+      "sizes": "any",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["gaming", "entertainment", "web3"],
+  "shortcuts": [
+    {
+      "name": "Browse Games",
+      "short_name": "Games",
+      "description": "Browse available games",
+      "url": "/",
+      "icons": [
+        {
+          "src": "/brand/logo-peridot.png",
+          "sizes": "any"
+        }
+      ]
+    }
+  ]
+}
