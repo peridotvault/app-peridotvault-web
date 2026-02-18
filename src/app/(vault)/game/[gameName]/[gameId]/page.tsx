@@ -38,8 +38,6 @@ import { ButtonWithSound } from "@/shared/components/ui/atoms/ButtonWithSound";
 import { getSupportedPlatforms } from "@/features/game/utils/platform.helper";
 import { PLATFORM_ICON_MAP } from "@/features/game/constants/platform.const";
 import { formatStorageFromMB } from "@/features/game/utils/storage.helper";
-import { EvmPurchaseService } from "@/blockchain/evm/services/service.purchase";
-import { toastService } from "@/shared/infra/toast/toast.service";
 import { useModal } from "@/shared/infra/modal/modal.store";
 import ModalShell from "@/shared/infra/modal/ModalShell";
 import clsx from "clsx";

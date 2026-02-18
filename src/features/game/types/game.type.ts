@@ -90,6 +90,7 @@ export interface GameCard {
     cover_vertical_image: string,
     cover_horizontal_image: string,
     categories: Category[];
+    chains: ChainType[] | undefined;
 }
 
 /* ======================================================

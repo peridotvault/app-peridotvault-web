@@ -2,7 +2,6 @@
 
 import React from "react";
 import { EmbedLink } from "@/features/security/embed/embed.component";
-import { formatTitle } from "@/shared/utils/formatUrl";
 import Image from "next/image";
 import { IMAGE_LOADING } from "@/shared/constants/image";
 import { getAssetUrl } from "@/shared/utils/helper.url";
@@ -10,6 +9,7 @@ import { STYLE_ROUNDED_CARD } from "@/shared/constants/style";
 import { TypographyH2 } from "@/shared/components/ui/atoms/TypographyH2";
 import { GameCard } from "../types/game.type";
 import { CarouselWrapper } from "@/shared/components/ui/organisms/CarouselWrapper";
+import { urlGameDetail } from "../configs/url.config";
 
 type Props = {
   className?: string; // optional: untuk -mt overlap dari parent
@@ -49,7 +49,10 @@ export const VaultTopGames: React.FC<Props> = ({
             renderItem={(item, idx) => (
               <EmbedLink
                 key={idx}
-                href={`/game/${formatTitle(item.name)}/${item.game_id}`}
+                href={urlGameDetail({
+                  name: item.name,
+                  game_id: item.game_id,
+                })}
                 className="w-full aspect-video relative overflow-hidden flex justify-end"
               >
                 <span className="text-[10rem] font-bold absolute left-2 bottom-16 z-5">

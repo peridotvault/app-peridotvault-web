@@ -83,6 +83,7 @@ export default function Vault() {
                 gameName={item.name}
                 imgUrl={item.cover_vertical_image ?? IMAGE_LOADING}
                 price={item.price ?? 0}
+                chain={item.chains}
               />
             )}
           />
@@ -109,6 +110,7 @@ export default function Vault() {
                 gameName={item.name}
                 imgUrl={item.cover_vertical_image ?? IMAGE_LOADING}
                 price={item.price ?? 0}
+                chain={item.chains}
               />
             ))}
           </div>

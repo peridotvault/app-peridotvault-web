@@ -1,11 +1,13 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
+import { BlockchainStack } from "@/blockchain/__core__/components/BlockchainStack";
 import { EmbedLink } from "@/features/security/embed/embed.component";
 import { PriceCoin } from "@/shared/components/ui/molecules/CoinWithAmmount";
 import { STYLE_ROUNDED_CARD } from "@/shared/constants/style";
-import { formatTitle } from "@/shared/utils/formatUrl";
 import { getAssetUrl } from "@/shared/utils/helper.url";
+import { ChainType } from "../../types/game.type";
+import { urlGameDetail } from "../../configs/url.config";
 
 export const GameVerticalCard = ({
   gameId,
@@ -16,6 +18,7 @@ export const GameVerticalCard = ({
   tokenSymbol,
   tokenDecimals,
   tokenLogo,
+  chain,
 }: {
   gameId: string;
   gameName: string;
@@ -25,10 +28,14 @@ export const GameVerticalCard = ({
   tokenSymbol?: string;
   tokenDecimals?: number;
   tokenLogo?: string | null;
+  chain: ChainType[] | undefined;
 }) => {
   return (
     <EmbedLink
-      href={`/game/${formatTitle(gameName)}/${gameId}`}
+      href={urlGameDetail({
+        name: gameName,
+        game_id: gameId,
+      })}
       className={`w-full group relative overflow-hidden  ${STYLE_ROUNDED_CARD}`}
     >
       <div className="w-full aspect-3/4 bg-muted">
@@ -63,7 +70,8 @@ export const GameVerticalCard = ({
       {/* CONTENT */}
       <div className="absolute inset-x-0 bottom-0 p-4 flex flex-col gap-2">
         <p className="font-medium text-white line-clamp-2">{gameName}</p>
-        <div className="flex justify-end">
+        <div className="flex justify-between">
+          <BlockchainStack chain={chain} />
           <div className="bg-card/40 px-3 py-1 rounded-lg">
             <PriceCoin
               amount={price ?? 0}

@@ -26,6 +26,8 @@ export function usePublishedGames({ page, limit, category_id }: {
 
                 const resAllGames = await getPublishedGames({ page, limit, category_id });
 
+                console.log(resAllGames);
+
                 setGames(resAllGames.data.data);
             } catch {
                 setError("Failed to fetch games");

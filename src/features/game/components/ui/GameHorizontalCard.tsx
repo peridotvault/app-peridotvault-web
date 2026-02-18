@@ -4,8 +4,8 @@
 import { EmbedLink } from "@/features/security/embed/embed.component";
 import { PriceCoin } from "@/shared/components/ui/molecules/CoinWithAmmount";
 import { STYLE_ROUNDED_CARD } from "@/shared/constants/style";
-import { formatTitle } from "@/shared/utils/formatUrl";
 import { getAssetUrl } from "@/shared/utils/helper.url";
+import { urlGameDetail } from "../../configs/url.config";
 
 export const GameHorizontalCard = ({
   gameId,
@@ -28,7 +28,10 @@ export const GameHorizontalCard = ({
 }) => {
   return (
     <EmbedLink
-      href={`/game/${formatTitle(gameName)}/${gameId}`}
+      href={urlGameDetail({
+        name: gameName,
+        game_id: gameId,
+      })}
       className={`w-full group relative overflow-hidden  ${STYLE_ROUNDED_CARD}`}
     >
       <div className="w-full aspect-video bg-muted">

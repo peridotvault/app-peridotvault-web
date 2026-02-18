@@ -3,9 +3,9 @@
 
 import { EmbedLink } from "@/features/security/embed/embed.component";
 import { ButtonWithSound } from "@/shared/components/ui/atoms/ButtonWithSound";
-import { formatTitle } from "@/shared/utils/formatUrl";
 import React, { useEffect } from "react";
 import { GameBanner } from "../types/game.type";
+import { urlGameDetail } from "../configs/url.config";
 
 type Props = {
   items: GameBanner[];
@@ -120,7 +120,10 @@ export function VaultCarousel({
             <div className="flex">
               <div className="flex flex-col gap-3">
                 <EmbedLink
-                  href={`/${formatTitle(active.name)}/${active.game_id}`}
+                  href={urlGameDetail({
+                    name: active.name,
+                    game_id: active.game_id,
+                  })}
                   className="px-4 py-2 rounded-lg border border-foreground/15 bg-foreground/10 hover:bg-foreground/15 transition"
                 >
                   View Game

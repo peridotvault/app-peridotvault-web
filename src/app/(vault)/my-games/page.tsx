@@ -46,7 +46,7 @@ export default function MyGames() {
           ? games.map((item, index) => {
               return <GameCard key={index} item={item} loading={loading} />;
             })
-          : Array.from({ length: 5 }).map((_, index) => {
+          : Array.from({ length: 10 }).map((_, index) => {
               return <GameCard key={index} loading={loading} />;
             })}
       </section>
