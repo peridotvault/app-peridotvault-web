@@ -5,29 +5,34 @@ import {
   OptionComponent,
 } from "@/shared/components/ui/atoms/Dropdown";
 import { SearchInput } from "@/shared/components/ui/molecules/SearchInput";
-import {
-  CHAIN_CONFIGS,
-  CHAIN_OPTIONS_BY_NETWORK,
-  DEFAULT_CHAIN_KEYS,
-  getChainKeyForNetwork,
-} from "@/shared/constants/chain";
 import { STYLE_PADDING } from "@/shared/constants/style";
-import { ChainKey } from "@/shared/types/chain";
 import { useState } from "react";
-import { useChainStore } from "@/shared/states/chain.store";
-import { useNetworkStore } from "@/shared/states/network.store";
-import { useGetChain } from "@/core/blockchain/__core__/hooks/chain.hook";
+import { useGetChains } from "@/features/chain/hooks/useGetChain";
+import { useNetwork } from "@/features/setting/hooks/useNetwork";
+import { useSelectedChain } from "@/features/setting/hooks/useSelectedChain";
 
 export const VaultNavbar = () => {
   const [query, setQuery] = useState("");
-  const { chainKey, setChain } = useChainStore();
-  const { network } = useNetworkStore();
-  const options: OptionComponent[] = CHAIN_OPTIONS_BY_NETWORK[network];
-  const selectedChain =
-    CHAIN_CONFIGS[getChainKeyForNetwork(chainKey, network)] ??
-    CHAIN_CONFIGS[DEFAULT_CHAIN_KEYS[network]];
 
-  const { chains } = useGetChain({ network_type: "testnet" });
+  const { network } = useNetwork();
+  const { chains } = useGetChains();
+  const { chainId, setSelectedChain } = useSelectedChain();
+
+  const filteredChains = chains.filter((c) => {
+    if (network === "testnet") return c.is_testnet;
+    if (network === "mainnet") return !c.is_testnet;
+    return true;
+  });
+
+  const selectedChain =
+    filteredChains.find((c) => c.caip_2_id === chainId) ?? filteredChains[0];
+
+  const options: OptionComponent[] = filteredChains.map((c) => ({
+    value: c.caip_2_id,
+    label: c.name,
+    imageUrl: c.icon_url,
+  }));
+
   return (
     <nav className={"border-y border-border bg-card py-2 " + STYLE_PADDING}>
       <div className="flex justify-between max-w-400 mx-auto">
@@ -41,10 +46,10 @@ export const VaultNavbar = () => {
           <div>
             <Dropdown
               options={options}
-              placeholder={selectedChain.name}
-              placeholderImage={selectedChain.icon}
+              placeholder={selectedChain?.name}
+              placeholderImage={selectedChain?.icon_url}
               onChange={(option) => {
-                setChain(option.value as ChainKey);
+                setSelectedChain(option.value);
               }}
             />
           </div>

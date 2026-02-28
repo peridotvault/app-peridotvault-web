@@ -1,4 +1,4 @@
-import { ApiResponse } from "@/shared/types/api";
+import { ApiResponse } from "@/core/api/types/response.type";
 
 export type LogoutRequest = {
     refreshToken: string;

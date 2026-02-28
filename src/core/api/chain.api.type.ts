@@ -1,4 +1,12 @@
-export type ChainRow = {
+export type ChainApi = {
+    caip_2_id: string;
+    name: string;
+    native_symbol: string;
+    icon_url: string;
+    is_testnet: boolean;
+}
+
+export type ChainDetailsApi = {
     caip_2_id: string;
     reference: string;
 
@@ -15,3 +23,5 @@ export type ChainRow = {
     updated_at: string;
 }
 
+
+export type NetworkTypeApi = "testnet" | "mainnet" | "all" | null;
