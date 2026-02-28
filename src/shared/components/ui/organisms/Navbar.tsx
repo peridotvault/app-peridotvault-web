@@ -5,12 +5,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { ConnectButton, SignState } from "@antigane/wallet-adapters";
 import { NotificationBar } from "@/shared/components/ui/molecules/NotificationBar";
-import { useUIStore } from "@/shared/infra/modal/ui";
+import { useUIStore } from "@/core/ui-system/modal/ui";
 import { verifyAndCreateSession } from "@/features/auth/verify/verify.service";
 import { useAuthStore } from "@/features/auth/_store/auth.store";
-import { getSession } from "@/features/auth/_db/db.service";
 import { STYLE_PADDING } from "@/shared/constants/style";
 import { ModalProfile } from "@/features/user/components/ModalProfile";
+import { authRepo } from "@/core/db/repositories/auth.repo";
 
 export default function Navbar() {
   const [state, setState] = useState<null | SignState>();
@@ -22,12 +22,12 @@ export default function Navbar() {
 
   useEffect(() => {
     (async () => {
-      const session = await getSession();
+      const session = await authRepo.getSession();
       if (!session) return;
 
       setState({
-        accountId: session.accountId,
-        accountType: session.accountType,
+        accountId: session.account_id,
+        accountType: session.account_type,
       } as SignState);
     })();
   }, []);

@@ -1,5 +1,5 @@
-import { resolveChainExecution } from '@/blockchain/__core__/utils/chain.resolver'
-import { EvmPurchaseService } from '@/blockchain/evm/services/service.purchase'
+import { resolveChainExecution } from '@/core/blockchain/__core__/utils/chain.resolver'
+import { EvmPurchaseService } from '@/core/blockchain/evm/services/service.purchase'
 import { useChainStore } from '@/shared/states/chain.store'
 import { Hex } from 'viem'
 // import { SvmPurchaseService } from '@/features/blockchain/svm/services/service.purchase'

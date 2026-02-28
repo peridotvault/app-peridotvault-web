@@ -1,9 +1,9 @@
 import { TokenWithPrice } from "@/shared/components/ui/molecules/TokenWithPrice";
 import { ChainType, GameOnChainPublish } from "../types/game.type";
 import { ButtonWithSound } from "@/shared/components/ui/atoms/ButtonWithSound";
-import { toastService } from "@/shared/infra/toast/toast.service";
-import { EvmPurchaseService } from "@/blockchain/evm/services/service.purchase";
-import { useModal } from "@/shared/infra/modal/modal.store";
+import { toastService } from "@/core/ui-system/toast/toast.service";
+import { EvmPurchaseService } from "@/core/blockchain/evm/services/service.purchase";
+import { useModal } from "@/core/ui-system/modal/modal.store";
 
 export const SelectPaymentToken = ({
   modalId,

@@ -1,15 +1,15 @@
 import { logoutApi } from "./logout.api";
 import { useAuthStore } from "../_store/auth.store";
-import { clearSession, getSession } from "../_db/db.service";
+import { authRepo } from "@/core/db/repositories/auth.repo";
 
 export async function logoutEverywhere() {
     // 1) ambil refreshToken dari Dexie
-    const session = await getSession();
+    const session = await authRepo.getSession();
 
     // 2) best effort revoke di server (jangan bikin user “gagal logout” hanya karena server error)
-    if (session?.refreshToken) {
+    if (session?.refresh_token) {
         try {
-            const res = await logoutApi({ refreshToken: session.refreshToken });
+            const res = await logoutApi({ refreshToken: session.refresh_token });
             // optional: bisa cek res.success, tapi tetap lanjut clear local
             void res;
         } catch {
@@ -18,7 +18,7 @@ export async function logoutEverywhere() {
     }
 
     // 3) clear local
-    await clearSession();
+    await authRepo.clearSession();
 
     // 4) reset in-memory auth state
     useAuthStore.getState().setToken(null);

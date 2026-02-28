@@ -1,9 +1,9 @@
-import { PGC1Abi } from "@/blockchain/evm/abis/abi.pgc1";
-import { getSession } from "@/features/auth/_db/db.service";
-import { getEvmPublicClient } from "@/blockchain/evm/viem";
+import { PGC1Abi } from "@/core/blockchain/evm/abis/abi.pgc1";
+import { getEvmPublicClient } from "@/core/blockchain/evm/viem";
 import { getAddress, isAddress, type Hex } from "viem";
 import { getPeridotRegistry, PGC1_LICENSE_ID } from "../configs/game.config";
 import { MyGameItem, RegistryGame } from "../types/library.type";
+import { authRepo } from "@/core/db/repositories/auth.repo";
 
 /* ======================================================
    ERROR CODES
@@ -280,22 +280,22 @@ export async function getMyGames(user: string): Promise<MyGameItem[]> {
 ====================================================== */
 
 export async function getMyGamesForSession(): Promise<MyGameItem[]> {
-    const session = await getSession();
+    const session = await authRepo.getSession();
 
     if (!session) {
         throw createLibraryError(LIBRARY_ERROR_CODES.MissingSession);
     }
 
-    const accountType = session.accountType?.toLowerCase();
+    const accountType = session.account_type?.toLowerCase();
     if (accountType !== "evm") {
         throw createLibraryError(
             LIBRARY_ERROR_CODES.UnsupportedAccountType
         );
     }
 
-    if (!isAddress(session.accountId)) {
+    if (!isAddress(session.account_id)) {
         throw createLibraryError(LIBRARY_ERROR_CODES.InvalidAccount);
     }
 
-    return getMyGames(session.accountId);
+    return getMyGames(session.account_id);
 }

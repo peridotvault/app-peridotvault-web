@@ -1,6 +1,6 @@
 "use client";
 
-import { useUIStore } from "@/shared/infra/modal/ui";
+import { useUIStore } from "@/core/ui-system/modal/ui";
 import { useEffect } from "react";
 
 function getScrollbarWidth() {

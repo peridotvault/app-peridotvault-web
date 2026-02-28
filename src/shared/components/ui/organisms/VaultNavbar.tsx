@@ -16,7 +16,7 @@ import { ChainKey } from "@/shared/types/chain";
 import { useState } from "react";
 import { useChainStore } from "@/shared/states/chain.store";
 import { useNetworkStore } from "@/shared/states/network.store";
-import { useGetChain } from "@/blockchain/__core__/hooks/chain.hook";
+import { useGetChain } from "@/core/blockchain/__core__/hooks/chain.hook";
 
 export const VaultNavbar = () => {
   const [query, setQuery] = useState("");

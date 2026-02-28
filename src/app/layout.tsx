@@ -6,8 +6,8 @@ import { UIEffects } from "./_effects/UIEffects";
 import { METADATA } from "./_seo/metadata";
 import { EmbedLayout } from "@/features/security/embed/embed.component";
 import { GoogleAnalytics } from "@next/third-parties/google";
-import { ToasterComponent } from "@/shared/infra/toast/ToastComponent";
-import ModalRoot from "@/shared/infra/modal/ModalRoot";
+import { ToasterComponent } from "@/core/ui-system/toast/ToastComponent";
+import ModalRoot from "@/core/ui-system/modal/ModalRoot";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

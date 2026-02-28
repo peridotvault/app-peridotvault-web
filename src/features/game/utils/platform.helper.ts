@@ -1,9 +1,9 @@
-import { GameDistribution, GamePlatform } from "@/features/game/types/game.type";
+import { GameDistribution } from "@/features/game/types/game.type";
 
 export function getSupportedPlatforms(
     distributions: GameDistribution[],
-): Set<GamePlatform> {
-    const platforms = new Set<GamePlatform>();
+): Set<string> {
+    const platforms = new Set<string>();
 
     for (const dist of distributions) {
         if ("web" in dist) {

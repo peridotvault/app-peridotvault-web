@@ -32,14 +32,14 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useParams } from "next/navigation";
 import { useState } from "react";
-import { BlockchainStack } from "@/blockchain/__core__/components/BlockchainStack";
+import { BlockchainStack } from "@/core/blockchain/__core__/components/BlockchainStack";
 import igrs from "@/shared/assets/rating/igrs.json";
 import { ButtonWithSound } from "@/shared/components/ui/atoms/ButtonWithSound";
 import { getSupportedPlatforms } from "@/features/game/utils/platform.helper";
 import { PLATFORM_ICON_MAP } from "@/features/game/constants/platform.const";
 import { formatStorageFromMB } from "@/features/game/utils/storage.helper";
-import { useModal } from "@/shared/infra/modal/modal.store";
-import ModalShell from "@/shared/infra/modal/ModalShell";
+import { useModal } from "@/core/ui-system/modal/modal.store";
+import ModalShell from "@/core/ui-system/modal/ModalShell";
 import clsx from "clsx";
 import { Share } from "@/shared/components/ui/organisms/Share";
 import { SelectPaymentToken } from "@/features/game/components/SelectPaymentToken";

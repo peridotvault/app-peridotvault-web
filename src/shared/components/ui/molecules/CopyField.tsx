@@ -1,4 +1,4 @@
-import { toastService } from "@/shared/infra/toast/toast.service";
+import { toastService } from "@/core/ui-system/toast/toast.service";
 import { ButtonWithSound } from "../atoms/ButtonWithSound";
 
 export const CopyField = ({ text }: { text: string }) => {
