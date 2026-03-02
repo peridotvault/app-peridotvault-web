@@ -27,7 +27,6 @@ const ZERO = BigInt(0);
 /* ======================================================
    HELPERS
 ====================================================== */
-
 function createLibraryError(
     code: LibraryErrorCode,
     cause?: unknown

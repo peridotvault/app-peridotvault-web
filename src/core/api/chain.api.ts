@@ -1,14 +1,13 @@
 import { http } from "@/shared/lib/http";
 import { ChainApi, ChainDetailsApi, NetworkTypeApi } from "./chain.api.type";
-import { PaginatedData } from "./types/pagination.type";
-import { ApiResponse } from "./types/response.type";
+import { ApiResponse, ApiResponseWithPagination } from "./types/response.type";
 
 export async function getAllChainsApi(params?: {
     page?: number;
     limit?: number;
     network_type?: NetworkTypeApi;
 }): Promise<ChainApi[]> {
-    const res = await http.get<ApiResponse<PaginatedData<ChainApi>>>("/api/chains", {
+    const res = await http.get<ApiResponseWithPagination<ChainApi>>("/api/chains", {
         params,
     });
 

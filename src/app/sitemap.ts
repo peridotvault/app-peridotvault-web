@@ -1,4 +1,4 @@
-import { getPublishedGames } from '@/features/game/services/game.service';
+import { getPublishedGames } from '@/core/api/game.api';
 import { formatTitle } from '@/shared/utils/formatUrl';
 import type { MetadataRoute } from 'next'
 

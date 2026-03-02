@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getCategories } from "@/features/game/services/category.service";
 import { Category } from "../types/category.type";
+import { getCategoriesApi } from "@/core/api/category.api";
 
 interface UseCategoriesState {
     categories: Category[];
@@ -21,9 +21,9 @@ export function useGetCategories(): UseCategoriesState {
                 setIsLoading(true);
                 setError(null);
 
-                const resAllCategories = await getCategories({ page: 1, limit: 12 });
+                const resAllCategories = await getCategoriesApi({ page: 1, limit: 12 });
 
-                setCategories(resAllCategories.data.data);
+                setCategories(resAllCategories);
             } catch {
                 setError("Failed to fetch games");
                 // setError(err?.message ?? "Failed to fetch games");
