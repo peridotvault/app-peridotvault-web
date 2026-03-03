@@ -6,7 +6,7 @@ import {
     getMyGamesForSession,
     isLibraryErrorCode,
     LIBRARY_ERROR_CODES,
-} from "@/features/game/services/library.service";
+} from "../services/library.service";
 import { useChainStore } from "@/shared/states/chain.store";
 import { MyGameItem } from "../types/library.type";
 

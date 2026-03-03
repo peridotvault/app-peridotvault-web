@@ -1,7 +1,7 @@
 import { PGC1Abi } from "@/core/blockchain/evm/abis/abi.pgc1";
 import { getEvmPublicClient } from "@/core/blockchain/evm/viem";
 import { getAddress, isAddress, type Hex } from "viem";
-import { getPeridotRegistry, PGC1_LICENSE_ID } from "../configs/game.config";
+import { getPeridotRegistry, PGC1_LICENSE_ID } from "../config/game.config";
 import { MyGameItem, RegistryGame } from "../types/library.type";
 import { authRepo } from "@/core/db/repositories/auth.repo";
 

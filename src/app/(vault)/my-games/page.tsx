@@ -1,7 +1,7 @@
 "use client";
 
 import { GameCard } from "@/features/game/components/ui/GameCard";
-import { useMyGames } from "@/features/game/hooks/my-games.hook";
+import { useMyGames } from "@/features/library/hooks/my-games.hook";
 
 /* ======================================================
    PAGE — My Games
@@ -41,7 +41,7 @@ export default function MyGames() {
       {/* ======================================================
          SECTION — My Games
          ====================================================== */}
-      <section className="grid grid-cols-4">
+      <section className="grid lg:grid-cols-4 md:grid-cols-3 grid-cols-2">
         {games.length > 0
           ? games.map((item, index) => {
               return <GameCard key={index} item={item} loading={loading} />;

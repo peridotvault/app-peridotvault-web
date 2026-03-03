@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 import { IMAGE_LOADING } from "@/shared/constants/image";
-import { MyGameItem } from "../../types/library.type";
+import { MyGameItem } from "../../../library/types/library.type";
 
 type Props = {
   item?: MyGameItem;
