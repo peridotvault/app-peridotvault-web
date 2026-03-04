@@ -1,4 +1,5 @@
-import { clearSession, getSession, updateToken } from "@/features/auth/_db/db.service";
+
+import { authRepo } from "@/core/db/repositories/auth.repo";
 import { useAuthStore } from "@/features/auth/_store/auth.store";
 import { refreshApi } from "@/features/auth/refresh/refresh.api";
 import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
@@ -28,7 +29,7 @@ http.interceptors.request.use(async (config: InternalAxiosRequestConfig) => {
         return config;
     }
 
-    const session = await getSession();
+    const session = await authRepo.getSession();
     if (session?.token) {
         config.headers.Authorization = `Bearer ${session.token}`;
         // hydrate memory agar request berikutnya cepat
@@ -46,12 +47,12 @@ async function refreshTokenSingleFlight(): Promise<string> {
     if (refreshPromise) return refreshPromise;
 
     refreshPromise = (async () => {
-        const session = await getSession();
-        if (!session?.refreshToken) throw new Error("NO_REFRESH_TOKEN");
+        const session = await authRepo.getSession();
+        if (!session?.refresh_token) throw new Error("NO_REFRESH_TOKEN");
 
-        const refreshed = await refreshApi({ refreshToken: session.refreshToken });
+        const refreshed = await refreshApi({ refreshToken: session.refresh_token });
         // refresh response Anda: data.token + data.expiresAt
-        await updateToken(refreshed.token, refreshed.expiresAt);
+        await authRepo.updateToken(refreshed.token, refreshed.expiresAt);
         useAuthStore.getState().setToken(refreshed.token);
         useAuthStore.getState().setStatus("authenticated");
 
@@ -78,7 +79,7 @@ http.interceptors.response.use(
 
         // hindari loop retry
         if (original._retry) {
-            await clearSession();
+            await authRepo.clearSession();
             useAuthStore.getState().setToken(null);
             useAuthStore.getState().setStatus("anonymous");
             return Promise.reject(error);
@@ -91,8 +92,8 @@ http.interceptors.response.use(
             original.headers.Authorization = `Bearer ${newToken}`;
 
             return http.request(original);
-        } catch (e) {
-            await clearSession();
+        } catch (_e) {
+            await authRepo.clearSession();
             useAuthStore.getState().setToken(null);
             useAuthStore.getState().setStatus("anonymous");
             return Promise.reject(error);

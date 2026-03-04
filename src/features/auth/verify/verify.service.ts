@@ -1,4 +1,4 @@
-import { setSession } from "../_db/db.service";
+import { authRepo } from "@/core/db/repositories/auth.repo";
 import { useAuthStore } from "../_store/auth.store";
 import { verifyApi } from "./verify.api";
 import { VerifyRequest } from "./verify.type";
@@ -12,13 +12,13 @@ export async function verifyAndCreateSession(payload: VerifyRequest) {
         throw new Error(res.error ?? "VERIFY_FAILED");
     }
 
-    await setSession({
+    await authRepo.setSession({
         token: res.data.token,
-        refreshToken: res.data.refreshToken,
-        expiresAt: res.data.expiresAt,
+        refresh_token: res.data.refreshToken,
+        expires_at: res.data.expiresAt,
 
-        accountId: payload.accountId,
-        accountType: payload.accountType,
+        account_id: payload.accountId,
+        account_type: payload.accountType,
     });
 
     useAuthStore.getState().setToken(res.data.token);

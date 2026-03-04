@@ -1,4 +1,4 @@
-import { VaultNavbar } from "../../shared/components/layouts/VaultNavbar";
+import { VaultNavbar } from "../../shared/components/ui/organisms/VaultNavbar";
 
 export default function VaultLayout({
   children,

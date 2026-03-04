@@ -1,0 +1,9 @@
+Component
+  ↓
+Hook (feature)
+  ↓
+Service (feature)
+  ↓
+Repository (core/db)
+  ↓
+Dexie (actual DB)

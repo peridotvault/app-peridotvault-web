@@ -3,7 +3,7 @@
 import React from "react";
 import Link, { LinkProps } from "next/link";
 // import type { UrlObject } from "url";
-import Navbar from "@/shared/components/layouts/Navbar";
+import Navbar from "@/shared/components/ui/organisms/Navbar";
 import { useEmbedMode } from "./embed.hook";
 
 type EmbedLayoutProps = {

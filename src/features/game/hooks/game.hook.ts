@@ -2,19 +2,20 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { getPublishedGames, getBannerGames, getTopGames, getGameRelated, getGameDetail } from "../services/game.service";
-import { GameCard, GameBanner, Game } from "../types/game.type";
+import { getGamesApi, getBannerGamesApi, getTopGamesApi, getGameRelatedApi, getGameDetailApi } from "../../../core/api/game.api";
+import { GameBanner, Game } from "../types/game.type";
+import { GameApi } from "@/core/api/game.api.type";
 
 export function usePublishedGames({ page, limit, category_id }: {
     page?: number;
     limit?: number;
     category_id?: string;
 }): {
-    games: GameCard[];
+    games: GameApi[];
     isLoading: boolean;
     error: string | null;
 } {
-    const [games, setGames] = useState<GameCard[]>([]);
+    const [games, setGames] = useState<GameApi[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -24,9 +25,11 @@ export function usePublishedGames({ page, limit, category_id }: {
                 setIsLoading(true);
                 setError(null);
 
-                const resAllGames = await getPublishedGames({ page, limit, category_id });
+                const resAllGames = await getGamesApi({ page, limit, category_id });
 
-                setGames(resAllGames.data.data);
+                console.log(resAllGames);
+
+                setGames(resAllGames);
             } catch {
                 setError("Failed to fetch games");
                 // setError(err?.message ?? "Failed to fetch games");
@@ -57,9 +60,9 @@ export function useBannerGames(): {
                 setIsLoading(true);
                 setError(null);
 
-                const resAllGames = await getBannerGames();
+                const resAllGames = await getBannerGamesApi();
 
-                setGames(resAllGames.data.data);
+                setGames(resAllGames);
             } catch {
                 setError("Failed to fetch games");
                 // setError(err?.message ?? "Failed to fetch games");
@@ -75,11 +78,11 @@ export function useBannerGames(): {
 }
 
 export function useTopGames(): {
-    games: GameCard[];
+    games: GameApi[];
     isLoading: boolean;
     error: string | null;
 } {
-    const [games, setGames] = useState<GameCard[]>([]);
+    const [games, setGames] = useState<GameApi[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -89,9 +92,9 @@ export function useTopGames(): {
                 setIsLoading(true);
                 setError(null);
 
-                const resAllGames = await getTopGames();
+                const resAllGames = await getTopGamesApi();
 
-                setGames(resAllGames.data.data);
+                setGames(resAllGames);
             } catch {
                 setError("Failed to fetch games");
                 // setError(err?.message ?? "Failed to fetch games");
@@ -113,11 +116,11 @@ export function useRelatedGame({
     gameId: string,
     limit?: number;
 }): {
-    games: GameCard[];
+    games: GameApi[];
     isLoading: boolean;
     error: string | null;
 } {
-    const [games, setGames] = useState<GameCard[]>([]);
+    const [games, setGames] = useState<GameApi[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -131,8 +134,8 @@ export function useRelatedGame({
                 setIsLoading(true);
                 setError(null);
 
-                const res = await getGameRelated(gameId, { limit });
-                if (!cancelled) setGames(res.data.data);
+                const res = await getGameRelatedApi(gameId, { limit });
+                if (!cancelled) setGames(res);
             } catch (e: any) {
                 if (!cancelled) setError(e?.message ?? "Failed to load games");
             } finally {
@@ -171,9 +174,9 @@ export function useGameDetail({ gameId }: { gameId: string }): {
                 setIsLoading(true);
                 setError(null);
 
-                const res = await getGameDetail(gameId);
-                console.log(res.data);
-                setGame(res.data ?? null);
+                const res = await getGameDetailApi(gameId);
+                console.log(res);
+                setGame(res ?? null);
             } catch (e: any) {
                 setError(e?.message ?? "Failed to load game");
             } finally {

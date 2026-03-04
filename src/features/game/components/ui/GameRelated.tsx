@@ -1,10 +1,10 @@
-import { CarouselWrapper } from "@/shared/components/CarouselWrapper";
-import { ContainerPadding } from "@/shared/components/ui/ContainerPadding";
-import { TypographyH2 } from "@/shared/components/ui/TypographyH2";
+import { ContainerPadding } from "@/shared/components/ContainerPadding";
+import { TypographyH2 } from "@/shared/components/ui/atoms/TypographyH2";
 import { IMAGE_LOADING } from "@/shared/constants/image";
 import { STYLE_ROUNDED_CARD } from "@/shared/constants/style";
 import { GameCard } from "../../types/game.type";
 import { GameHorizontalCard } from "./GameHorizontalCard";
+import { CarouselWrapper } from "@/shared/components/ui/organisms/CarouselWrapper";
 
 type Props = {
   games: GameCard[];
