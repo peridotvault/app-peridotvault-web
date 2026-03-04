@@ -5,10 +5,25 @@ import { PowerOfTen } from "./calculation";
 const DEFAULT_TOKEN: CoinDisplayInfo = {
     principal: '',
     symbol: 'IDRX',
-    decimals: 1,
+    decimals: 3,
     // decimals: 8,
     logo: IMAGE_IDR_COIN,
     displayName: 'IDRX',
+};
+
+export const formatCoinAmount = (
+    value: bigint | number | string | null | undefined,
+    decimals: number,
+): string => {
+    const numeric = toNumber(value); // ❗ no subunit conversion
+
+    if (numeric === 0) return "0";
+
+    const maximumFractionDigits = clampFractionDigits(decimals);
+
+    return numeric.toLocaleString("en-US", {
+        maximumFractionDigits,
+    });
 };
 
 export const formatCoinAmountFromRaw = (

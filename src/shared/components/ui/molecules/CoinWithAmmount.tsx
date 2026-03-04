@@ -1,5 +1,5 @@
 import {
-  formatCoinAmountFromRaw,
+  formatCoinAmount,
   isZeroCoinAmount,
   resolveCoinInfo,
 } from "../../../utils/coin";
@@ -42,7 +42,7 @@ export const PriceCoin = ({
     );
   }
 
-  const formatted = formatCoinAmountFromRaw(amount, decimals);
+  const formatted = formatCoinAmount(amount, decimals);
 
   return (
     <div className={`${textSizeClass} flex gap-2 items-center text-start`}>
