@@ -1,9 +1,9 @@
 /* eslint-disable @next/next/no-img-element */
-import { ChainType } from "@/features/game/types/game.type";
+import { ChainApi } from "@/core/api/chain.api.type";
 import Image from "next/image";
 
 type Props = {
-  chain: ChainType | undefined;
+  chain: ChainApi | undefined;
   price: number | undefined;
 };
 

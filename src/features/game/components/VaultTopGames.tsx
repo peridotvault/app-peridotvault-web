@@ -7,13 +7,13 @@ import { IMAGE_LOADING } from "@/shared/constants/image";
 import { getAssetUrl } from "@/shared/utils/helper.url";
 import { STYLE_ROUNDED_CARD } from "@/shared/constants/style";
 import { TypographyH2 } from "@/shared/components/ui/atoms/TypographyH2";
-import { GameCard } from "../types/game.type";
 import { CarouselWrapper } from "@/shared/components/ui/organisms/CarouselWrapper";
 import { urlGameDetail } from "../configs/url.config";
+import { GameApi } from "@/core/api/game.api.type";
 
 type Props = {
   className?: string; // optional: untuk -mt overlap dari parent
-  games: GameCard[];
+  games: GameApi[];
   isLoading: boolean;
   isError?: string | null;
 };

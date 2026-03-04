@@ -1,9 +1,10 @@
 import { TokenWithPrice } from "@/shared/components/ui/molecules/TokenWithPrice";
-import { ChainType, GameOnChainPublish } from "../types/game.type";
+import { GameOnChainPublish } from "../types/game.type";
 import { ButtonWithSound } from "@/shared/components/ui/atoms/ButtonWithSound";
 import { toastService } from "@/core/ui-system/toast/toast.service";
 import { EvmPurchaseService } from "@/core/blockchain/evm/services/service.purchase";
 import { useModal } from "@/core/ui-system/modal/modal.store";
+import { ChainApi } from "@/core/api/chain.api.type";
 
 export const SelectPaymentToken = ({
   modalId,
@@ -12,7 +13,7 @@ export const SelectPaymentToken = ({
   price,
 }: {
   modalId: string;
-  chainSupports: ChainType[] | undefined;
+  chainSupports: ChainApi[] | undefined;
   game_onchain_publishes: GameOnChainPublish[] | undefined;
   price: number | undefined;
 }) => {

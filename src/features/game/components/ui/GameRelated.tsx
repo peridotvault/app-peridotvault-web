@@ -2,12 +2,12 @@ import { ContainerPadding } from "@/shared/components/ContainerPadding";
 import { TypographyH2 } from "@/shared/components/ui/atoms/TypographyH2";
 import { IMAGE_LOADING } from "@/shared/constants/image";
 import { STYLE_ROUNDED_CARD } from "@/shared/constants/style";
-import { GameCard } from "../../types/game.type";
 import { GameHorizontalCard } from "./GameHorizontalCard";
 import { CarouselWrapper } from "@/shared/components/ui/organisms/CarouselWrapper";
+import { GameApi } from "@/core/api/game.api.type";
 
 type Props = {
-  games: GameCard[];
+  games: GameApi[];
 };
 
 export const GameRelated = ({ games }: Props) => {

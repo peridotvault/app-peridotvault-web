@@ -1,10 +1,10 @@
 /* eslint-disable @next/next/no-img-element */
-import { ChainType } from "@/features/game/types/game.type";
+import { ChainApi } from "@/core/api/chain.api.type";
 
 export const BlockchainStack = ({
   chain,
 }: {
-  chain: ChainType[] | undefined;
+  chain: ChainApi[] | undefined;
 }) => {
   if (!chain) {
     return <div></div>;
@@ -19,7 +19,7 @@ export const BlockchainStack = ({
         >
           <img
             src={item.icon_url}
-            alt={item.name + " Image"}
+            alt={item.caip_2_id + " Image"}
             className="w-full h-full"
           />
         </div>

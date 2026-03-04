@@ -3,8 +3,8 @@
 
 import { useState, useEffect } from "react";
 import { getGamesApi, getBannerGamesApi, getTopGamesApi, getGameRelatedApi, getGameDetailApi } from "../../../core/api/game.api";
-import { GameBanner, Game } from "../types/game.type";
-import { GameApi } from "@/core/api/game.api.type";
+import { GameBanner } from "../types/game.type";
+import { GameApi, GameDetailApi } from "@/core/api/game.api.type";
 
 export function usePublishedGames({ page, limit, category_id }: {
     page?: number;
@@ -154,12 +154,12 @@ export function useRelatedGame({
 }
 
 export function useGameDetail({ gameId }: { gameId: string }): {
-    game: Game | null;
+    game: GameDetailApi | null;
     isLoading: boolean;
     hasFetched: boolean;
     error: string | null;
 } {
-    const [game, setGame] = useState<Game | null>(null);
+    const [game, setGame] = useState<GameDetailApi | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [hasFetched, setHasFetched] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -176,7 +176,7 @@ export function useGameDetail({ gameId }: { gameId: string }): {
 
                 const res = await getGameDetailApi(gameId);
                 console.log(res);
-                setGame(res ?? null);
+                setGame(res);
             } catch (e: any) {
                 setError(e?.message ?? "Failed to load game");
             } finally {

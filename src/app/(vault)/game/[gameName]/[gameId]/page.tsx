@@ -43,6 +43,7 @@ import ModalShell from "@/core/ui-system/modal/ModalShell";
 import clsx from "clsx";
 import { Share } from "@/shared/components/ui/organisms/Share";
 import { SelectPaymentToken } from "@/features/game/components/SelectPaymentToken";
+import { ChainApi } from "@/core/api/chain.api.type";
 
 /* ======================================================
    PAGE — Game Detail
@@ -367,7 +368,7 @@ export default function GameDetailPage(): React.ReactElement {
     requiredAge,
     price,
   }: {
-    chainSupport: ChainType[] | undefined;
+    chainSupport: ChainApi[] | undefined;
     game_onchain_publishes: Array<GameOnChainPublish> | undefined;
     platformSupport: Set<string>;
     releaseDateMs: number;

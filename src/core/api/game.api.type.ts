@@ -1,5 +1,6 @@
 import { Timestamp } from "@/shared/types/time.type";
 import { CategoryApi } from "./category.api.type";
+import { ChainApi } from "./chain.api.type";
 
 export type GameSortApi = "latest" | "price_asc" | "price_desc" | null | undefined;
 
@@ -28,6 +29,7 @@ export interface GameApi {
     user_id?: string;
     // wallet_address: null,
     categories: CategoryApi[],
+    chains?: Array<ChainApi>;
 
 }
 
@@ -41,7 +43,6 @@ export interface GameDetailApi extends Omit<GameApi, "categories"> {
     distributions: GameDistributionApi[],
     game_onchain_publishes?: Array<GameOnChainPublish>;
 
-    // chains?: Array<ChainType>;
 }
 
 export type GameDistributionApi =

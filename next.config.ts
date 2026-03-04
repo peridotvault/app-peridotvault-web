@@ -5,6 +5,8 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       new URL('https://api.peridotvault.com/**'),
       new URL('https://api-dev.peridotvault.com/**'),
+      new URL('https://avatars.githubusercontent.com/**'),
+      new URL('https://cryptologos.cc/**'),
     ],
   },
   output: 'standalone',

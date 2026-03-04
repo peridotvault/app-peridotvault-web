@@ -1,9 +1,9 @@
 export type ChainApi = {
     caip_2_id: string;
-    name: string;
-    native_symbol: string;
+    name?: string;
+    native_symbol?: string;
     icon_url: string;
-    is_testnet: boolean;
+    is_testnet?: boolean;
 }
 
 export type ChainDetailsApi = {

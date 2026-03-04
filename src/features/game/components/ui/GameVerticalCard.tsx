@@ -6,8 +6,8 @@ import { EmbedLink } from "@/features/security/embed/embed.component";
 import { PriceCoin } from "@/shared/components/ui/molecules/CoinWithAmmount";
 import { STYLE_ROUNDED_CARD } from "@/shared/constants/style";
 import { getAssetUrl } from "@/shared/utils/helper.url";
-import { ChainType } from "../../types/game.type";
 import { urlGameDetail } from "../../configs/url.config";
+import { ChainApi } from "@/core/api/chain.api.type";
 
 export const GameVerticalCard = ({
   gameId,
@@ -28,7 +28,7 @@ export const GameVerticalCard = ({
   tokenSymbol?: string;
   tokenDecimals?: number;
   tokenLogo?: string | null;
-  chain: ChainType[] | undefined;
+  chain: ChainApi[] | undefined;
 }) => {
   return (
     <EmbedLink
