@@ -1,4 +1,5 @@
-import { getPublishedGames } from '@/core/api/game.api';
+
+import { getGamesApi } from '@/core/api/game.api';
 import { formatTitle } from '@/shared/utils/formatUrl';
 import type { MetadataRoute } from 'next'
 
@@ -9,7 +10,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     if (hasDatabase) {
         try {
-            const allGames = await getPublishedGames({ page: 1 });
+            const allGames = await getGamesApi({ page: 1, limit: 100 });
             return [
                 {
                     url: SITE_URL,
@@ -19,7 +20,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
                     url: `${SITE_URL}/game`,
                     lastModified: new Date(),
                 },
-                ...allGames.data.data.map((item) => ({
+                ...allGames.map((item) => ({
                     url: `${SITE_URL}/game/${formatTitle(item.name)}/${item.game_id}`,
                     //   lastModified: new Date(item.),
                 })),

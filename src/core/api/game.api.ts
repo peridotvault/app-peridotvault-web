@@ -1,7 +1,6 @@
 import { http } from "@/shared/lib/http";
 import { GameApi, GameDetailApi, GameSortApi } from "./game.api.type";
 import { ApiResponse, ApiResponseWithPagination } from "./types/response.type";
-import { GameDetailResponse } from "@/features/game/types/apiResponse.type";
 
 export async function getGamesApi(params?: {
     q?: string;
