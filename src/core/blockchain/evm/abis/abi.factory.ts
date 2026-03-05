@@ -55,6 +55,11 @@ export const PGC1FactoryAbi = [
   },
   {
     "inputs": [],
+    "name": "InvalidGameId",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "InvalidPayment",
     "type": "error"
   },
@@ -117,20 +122,7 @@ export const PGC1FactoryAbi = [
       {
         "indexed": true,
         "internalType": "address",
-        "name": "newRecipient",
-        "type": "address"
-      }
-    ],
-    "name": "FeeRecipientSet",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "newToken",
+        "name": "token",
         "type": "address"
       }
     ],
@@ -153,10 +145,10 @@ export const PGC1FactoryAbi = [
         "type": "address"
       },
       {
-        "indexed": true,
-        "internalType": "bytes32",
+        "indexed": false,
+        "internalType": "string",
         "name": "gameId",
-        "type": "bytes32"
+        "type": "string"
       }
     ],
     "name": "GamePublished",
@@ -318,9 +310,9 @@ export const PGC1FactoryAbi = [
             "type": "string"
           },
           {
-            "internalType": "bytes32",
+            "internalType": "string",
             "name": "gameId",
-            "type": "bytes32"
+            "type": "string"
           },
           {
             "internalType": "address",

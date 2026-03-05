@@ -1,226 +1,381 @@
 import type { Abi } from "viem";
 
 export const PeridotRegistryAbi = [
-  /* ======================================================
-     CONSTRUCTOR
-  ====================================================== */
   {
-    type: "constructor",
-    inputs: [],
-    stateMutability: "nonpayable",
-  },
-
-  /* ======================================================
-     ERRORS
-  ====================================================== */
-  {
-    type: "error",
-    name: "GameAlreadyRegistered",
-    inputs: [],
+    "inputs": [],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
   },
   {
-    type: "error",
-    name: "GameNotRegistered",
-    inputs: [],
+    "inputs": [],
+    "name": "GameAlreadyRegistered",
+    "type": "error"
   },
   {
-    type: "error",
-    name: "InvalidPGC1",
-    inputs: [],
+    "inputs": [],
+    "name": "GameNotRegistered",
+    "type": "error"
   },
   {
-    type: "error",
-    name: "NotFactory",
-    inputs: [],
+    "inputs": [],
+    "name": "InvalidGameId",
+    "type": "error"
   },
   {
-    type: "error",
-    name: "OwnableInvalidOwner",
-    inputs: [
-      { name: "owner", type: "address" },
+    "inputs": [],
+    "name": "InvalidPGC1",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NotFactory",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      }
     ],
+    "name": "OwnableInvalidOwner",
+    "type": "error"
   },
   {
-    type: "error",
-    name: "OwnableUnauthorizedAccount",
-    inputs: [
-      { name: "account", type: "address" },
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
     ],
+    "name": "OwnableUnauthorizedAccount",
+    "type": "error"
   },
   {
-    type: "error",
-    name: "PGC1AlreadyRegistered",
-    inputs: [],
+    "inputs": [],
+    "name": "PGC1AlreadyRegistered",
+    "type": "error"
   },
   {
-    type: "error",
-    name: "ZeroAddress",
-    inputs: [],
-  },
-
-  /* ======================================================
-     EVENTS
-  ====================================================== */
-  {
-    type: "event",
-    name: "FactorySet",
-    anonymous: false,
-    inputs: [
-      { name: "factory", type: "address", indexed: true },
-    ],
+    "inputs": [],
+    "name": "ZeroAddress",
+    "type": "error"
   },
   {
-    type: "event",
-    name: "GameRegistered",
-    anonymous: false,
-    inputs: [
-      { name: "gameId", type: "bytes32", indexed: true },
-      { name: "pgc1", type: "address", indexed: true },
-      { name: "publisher", type: "address", indexed: true },
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "factory",
+        "type": "address"
+      }
     ],
+    "name": "FactorySet",
+    "type": "event"
   },
   {
-    type: "event",
-    name: "GameStatusSet",
-    anonymous: false,
-    inputs: [
-      { name: "gameId", type: "bytes32", indexed: true },
-      { name: "active", type: "bool", indexed: false },
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "gameId",
+        "type": "string"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "pgc1",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "publisher",
+        "type": "address"
+      }
     ],
+    "name": "GameRegistered",
+    "type": "event"
   },
   {
-    type: "event",
-    name: "OwnershipTransferred",
-    anonymous: false,
-    inputs: [
-      { name: "previousOwner", type: "address", indexed: true },
-      { name: "newOwner", type: "address", indexed: true },
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "gameId",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "bool",
+        "name": "active",
+        "type": "bool"
+      }
     ],
-  },
-
-  /* ======================================================
-     READ FUNCTIONS
-  ====================================================== */
-  {
-    type: "function",
-    name: "allGameIds",
-    stateMutability: "view",
-    inputs: [],
-    outputs: [
-      { type: "bytes32[]" },
-    ],
+    "name": "GameStatusSet",
+    "type": "event"
   },
   {
-    type: "function",
-    name: "factory",
-    stateMutability: "view",
-    inputs: [],
-    outputs: [
-      { type: "address" },
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "previousOwner",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
     ],
+    "name": "OwnershipTransferred",
+    "type": "event"
   },
   {
-    type: "function",
-    name: "gameCount",
-    stateMutability: "view",
-    inputs: [],
-    outputs: [
-      { type: "uint256" },
+    "inputs": [],
+    "name": "allGameIds",
+    "outputs": [
+      {
+        "internalType": "string[]",
+        "name": "",
+        "type": "string[]"
+      }
     ],
+    "stateMutability": "view",
+    "type": "function"
   },
   {
-    type: "function",
-    name: "gameIdAt",
-    stateMutability: "view",
-    inputs: [
-      { name: "index", type: "uint256" },
+    "inputs": [],
+    "name": "factory",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
     ],
-    outputs: [
-      { type: "bytes32" },
-    ],
+    "stateMutability": "view",
+    "type": "function"
   },
   {
-    type: "function",
-    name: "gameIdOf",
-    stateMutability: "view",
-    inputs: [
-      { type: "address" },
+    "inputs": [],
+    "name": "gameCount",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
     ],
-    outputs: [
-      { type: "bytes32" },
-    ],
+    "stateMutability": "view",
+    "type": "function"
   },
   {
-    type: "function",
-    name: "games",
-    stateMutability: "view",
-    inputs: [
-      { type: "bytes32" },
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "index",
+        "type": "uint256"
+      }
     ],
-    outputs: [
-      { name: "pgc1", type: "address" },
-      { name: "publisher", type: "address" },
-      { name: "createdAt", type: "uint64" },
-      { name: "active", type: "bool" },
+    "name": "gameIdAt",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
     ],
+    "stateMutability": "view",
+    "type": "function"
   },
   {
-    type: "function",
-    name: "owner",
-    stateMutability: "view",
-    inputs: [],
-    outputs: [
-      { type: "address" },
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
     ],
-  },
-
-  /* ======================================================
-     WRITE FUNCTIONS
-  ====================================================== */
-  {
-    type: "function",
-    name: "registerGame",
-    stateMutability: "nonpayable",
-    inputs: [
-      { name: "gameId", type: "bytes32" },
-      { name: "pgc1", type: "address" },
-      { name: "publisher", type: "address" },
+    "name": "gameIdOf",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
     ],
-    outputs: [],
+    "stateMutability": "view",
+    "type": "function"
   },
   {
-    type: "function",
-    name: "renounceOwnership",
-    stateMutability: "nonpayable",
-    inputs: [],
-    outputs: [],
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "name": "games",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "pgc1",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "publisher",
+        "type": "address"
+      },
+      {
+        "internalType": "uint64",
+        "name": "createdAt",
+        "type": "uint64"
+      },
+      {
+        "internalType": "bool",
+        "name": "active",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
   },
   {
-    type: "function",
-    name: "setFactory",
-    stateMutability: "nonpayable",
-    inputs: [
-      { name: "factory_", type: "address" },
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "gameId",
+        "type": "string"
+      }
     ],
-    outputs: [],
+    "name": "getGame",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "pgc1",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "publisher",
+            "type": "address"
+          },
+          {
+            "internalType": "uint64",
+            "name": "createdAt",
+            "type": "uint64"
+          },
+          {
+            "internalType": "bool",
+            "name": "active",
+            "type": "bool"
+          }
+        ],
+        "internalType": "struct PeridotRegistry.GameRecord",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
   },
   {
-    type: "function",
-    name: "setGameActive",
-    stateMutability: "nonpayable",
-    inputs: [
-      { name: "gameId", type: "bytes32" },
-      { name: "active", type: "bool" },
+    "inputs": [],
+    "name": "owner",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
     ],
-    outputs: [],
+    "stateMutability": "view",
+    "type": "function"
   },
   {
-    type: "function",
-    name: "transferOwnership",
-    stateMutability: "nonpayable",
-    inputs: [
-      { name: "newOwner", type: "address" },
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "gameId",
+        "type": "string"
+      },
+      {
+        "internalType": "address",
+        "name": "pgc1",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "publisher",
+        "type": "address"
+      }
     ],
-    outputs: [],
+    "name": "registerGame",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
   },
+  {
+    "inputs": [],
+    "name": "renounceOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "factory_",
+        "type": "address"
+      }
+    ],
+    "name": "setFactory",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "gameId",
+        "type": "string"
+      },
+      {
+        "internalType": "bool",
+        "name": "active",
+        "type": "bool"
+      }
+    ],
+    "name": "setGameActive",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
+    ],
+    "name": "transferOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
 ] as const satisfies Abi;

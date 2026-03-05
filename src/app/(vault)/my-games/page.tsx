@@ -1,7 +1,7 @@
 "use client";
 
 import { GameCard } from "@/features/game/components/ui/GameCard";
-import { useMyGames } from "@/features/library/hooks/my-games.hook";
+import { useMyGames } from "@/features/library/hooks/useMyGames";
 
 /* ======================================================
    PAGE — My Games

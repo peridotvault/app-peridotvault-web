@@ -682,9 +682,9 @@ export const PGC1Abi = [
     "name": "gameId",
     "outputs": [
       {
-        "internalType": "bytes32",
+        "internalType": "string",
         "name": "",
-        "type": "bytes32"
+        "type": "string"
       }
     ],
     "stateMutability": "view",
@@ -708,9 +708,9 @@ export const PGC1Abi = [
         "type": "string"
       },
       {
-        "internalType": "bytes32",
+        "internalType": "string",
         "name": "gameId_",
-        "type": "bytes32"
+        "type": "string"
       },
       {
         "internalType": "address",
