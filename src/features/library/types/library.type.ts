@@ -1,7 +1,5 @@
-import { Hex } from "viem";
-
 export type MyGameItem = {
-    gameId: Hex;
+    gameId: string;
     pgc1: `0x${string}`;
     publisher: string;
     createdAt: bigint;

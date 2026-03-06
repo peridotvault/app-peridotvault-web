@@ -1,22 +1,28 @@
 import {
-    createPublicClient,
     createWalletClient,
     custom,
-    http,
     type Address,
+    getAddress,
+    isAddress,
+    zeroAddress,
 } from 'viem'
 import { PGC1Abi } from '../abis/abi.pgc1'
 import { ERC20Abi } from '../abis/abi.erc20'
 import { getViemChain } from '../viem/chain.config'
 import { getPeridotRegistry } from '../contracts/contract.registry'
+import { getEvmPublicClient } from '../viem'
 import { useChainStore } from '@/shared/states/chain.store'
 
 const LICENSE_ID = BigInt(1);
 
 export class EvmPurchaseService {
-    static async buyGame(input: { pgc1_address: `0x${string}`, payment_token: string }) {
+    static async buyGame(input: { pgc1_address: `0x${string}`, payment_token: `0x${string}` }) {
         if (!window.ethereum) {
             throw new Error('Wallet not found')
+        }
+
+        if (!isAddress(input.pgc1_address) || !isAddress(input.payment_token)) {
+            throw new Error('Invalid purchase contract addresses')
         }
 
         /* ================= SETUP ================= */
@@ -25,11 +31,10 @@ export class EvmPurchaseService {
 
         const chain = getViemChain(chainKey)
         const registry = getPeridotRegistry(chainKey)
+        const publicClient = getEvmPublicClient(chainKey)
 
-        const publicClient = createPublicClient({
-            chain,
-            transport: http(),
-        })
+        const requestedPgc1 = getAddress(input.pgc1_address)
+        const selectedPaymentToken = getAddress(input.payment_token)
 
         const walletClient = createWalletClient({
             chain,
@@ -52,28 +57,52 @@ export class EvmPurchaseService {
 
         /* ================= REGISTRY ================= */
 
-        const gameId = await publicClient.readContract({
-            address: registry.address,
-            abi: registry.abi,
-            functionName: "gameIdOf",
-            args: [input.pgc1_address],
-        }) as `0x${string}`
+        let gameId: string;
+        let active = false;
 
-        const [pgc1, , , active] =
-            (await publicClient.readContract({
+        try {
+            gameId = await publicClient.readContract({
                 address: registry.address,
                 abi: registry.abi,
-                functionName: 'games',
-                args: [gameId],
-            })) as readonly [Address, Address, bigint, boolean]
+                functionName: "gameIdOf",
+                args: [requestedPgc1],
+            }) as string
 
-        if (!pgc1) throw new Error('Game not registered')
+            if (!gameId) {
+                throw new Error('Game not registered in registry')
+            }
+
+            const [pgc1, , , isActive] =
+                (await publicClient.readContract({
+                    address: registry.address,
+                    abi: registry.abi,
+                    functionName: 'games',
+                    args: [gameId],
+                })) as readonly [Address, Address, bigint, boolean]
+
+            if (!pgc1) throw new Error('Game not registered')
+            if (getAddress(pgc1) !== requestedPgc1) {
+                throw new Error('Selected game does not match registry')
+            }
+
+            active = isActive;
+        } catch (error) {
+            if (
+                error instanceof Error &&
+                error.message.includes('Position') &&
+                error.message.includes('out of bounds')
+            ) {
+                throw new Error('Registry ABI/address mismatch for selected chain')
+            }
+
+            throw error;
+        }
         if (!active) throw new Error('Game inactive')
 
         /* ================= OWNERSHIP ================= */
 
         const owned = (await publicClient.readContract({
-            address: pgc1,
+            address: requestedPgc1,
             abi: PGC1Abi,
             functionName: 'balanceOf',
             args: [buyer, LICENSE_ID],
@@ -87,22 +116,26 @@ export class EvmPurchaseService {
 
         const [price, paymentToken] = await Promise.all([
             publicClient.readContract({
-                address: pgc1,
+                address: requestedPgc1,
                 abi: PGC1Abi,
                 functionName: 'price',
             }) as Promise<bigint>,
             publicClient.readContract({
-                address: pgc1,
+                address: requestedPgc1,
                 abi: PGC1Abi,
                 functionName: 'paymentToken',
             }) as Promise<Address>,
         ])
 
         /* ================= BUY ================= */
+        const contractPaymentToken = getAddress(paymentToken)
+        if (contractPaymentToken !== selectedPaymentToken) {
+            throw new Error('Selected payment token does not match game contract')
+        }
 
-        if (paymentToken === input.payment_token) {
+        if (contractPaymentToken === zeroAddress) {
             await publicClient.simulateContract({
-                address: pgc1,
+                address: requestedPgc1,
                 abi: PGC1Abi,
                 functionName: 'buy',
                 account: buyer,
@@ -110,7 +143,7 @@ export class EvmPurchaseService {
             })
 
             return walletClient.writeContract({
-                address: pgc1,
+                address: requestedPgc1,
                 abi: PGC1Abi,
                 functionName: 'buy',
                 value: price,
@@ -119,24 +152,36 @@ export class EvmPurchaseService {
         }
 
         const allowance = (await publicClient.readContract({
-            address: paymentToken,
+            address: contractPaymentToken,
             abi: ERC20Abi,
             functionName: 'allowance',
-            args: [buyer, pgc1],
+            args: [buyer, requestedPgc1],
         })) as bigint
 
         if (allowance < price) {
-            await walletClient.writeContract({
-                address: paymentToken,
+            const approvalHash = await walletClient.writeContract({
+                address: contractPaymentToken,
                 abi: ERC20Abi,
                 functionName: 'approve',
-                args: [pgc1, price],
+                args: [requestedPgc1, price],
                 account: buyer,
+            })
+
+            await publicClient.waitForTransactionReceipt({
+                hash: approvalHash,
             })
         }
 
+        await publicClient.simulateContract({
+            address: requestedPgc1,
+            abi: PGC1Abi,
+            functionName: 'buy',
+            account: buyer,
+            value: BigInt(0),
+        })
+
         return walletClient.writeContract({
-            address: pgc1,
+            address: requestedPgc1,
             abi: PGC1Abi,
             functionName: 'buy',
             value: BigInt(0),

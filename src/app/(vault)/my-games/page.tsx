@@ -1,7 +1,7 @@
 "use client";
 
 import { GameCard } from "@/features/game/components/ui/GameCard";
-import { useMyGames } from "@/features/library/hooks/useMyGames";
+import { useMyGames } from "@/features/game/hooks/useMyGames";
 
 /* ======================================================
    PAGE — My Games
@@ -41,10 +41,10 @@ export default function MyGames() {
       {/* ======================================================
          SECTION — My Games
          ====================================================== */}
-      <section className="grid lg:grid-cols-4 md:grid-cols-3 grid-cols-2">
+      <section className="grid gap-4">
         {games.length > 0
-          ? games.map((item, index) => {
-              return <GameCard key={index} item={item} loading={loading} />;
+          ? games.map((item) => {
+              return <GameCard key={item.game_id} item={item} loading={loading} />;
             })
           : Array.from({ length: 10 }).map((_, index) => {
               return <GameCard key={index} loading={loading} />;

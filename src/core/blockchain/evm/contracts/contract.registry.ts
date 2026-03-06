@@ -1,9 +1,7 @@
 import { PeridotRegistryAbi } from "../abis/abi.registry";
 import type { ChainKey, EvmChainKey } from "@/shared/types/chain";
 import { getEvmChainKey } from "../viem";
-
-const DEFAULT_REGISTRY_ADDRESS =
-    "0xb44449094d7872d4ef52237d633c7ac55f207bdb" as const;
+import { getAddress, isAddress } from "viem";
 
 const REGISTRY_ADDRESSES: Record<EvmChainKey, `0x${string}` | undefined> = {
     "base-mainnet": process.env
@@ -18,7 +16,17 @@ const REGISTRY_ADDRESSES: Record<EvmChainKey, `0x${string}` | undefined> = {
 
 export function getPeridotRegistry(chainKey?: ChainKey) {
     const resolvedKey = getEvmChainKey(chainKey);
-    const address = REGISTRY_ADDRESSES[resolvedKey] ?? DEFAULT_REGISTRY_ADDRESS;
+    const configuredAddress = REGISTRY_ADDRESSES[resolvedKey];
+
+    if (!configuredAddress) {
+        throw new Error(`EVM_REGISTRY_NOT_CONFIGURED:${resolvedKey}`);
+    }
+
+    if (!isAddress(configuredAddress)) {
+        throw new Error(`EVM_INVALID_REGISTRY_ADDRESS:${resolvedKey}`);
+    }
+
+    const address = getAddress(configuredAddress);
 
     return {
         address,

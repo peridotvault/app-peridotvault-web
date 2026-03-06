@@ -36,7 +36,6 @@ export function useMyGames(): UseMyGamesResult {
                 setErrorCode(null);
 
                 const myGames = await getMyGamesForSession();
-                console.log(myGames);
 
                 if (!mounted) return;
                 setGames(myGames);

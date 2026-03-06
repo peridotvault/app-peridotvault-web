@@ -37,6 +37,16 @@ function createLibraryError(
     return err;
 }
 
+function isUnsupportedChainError(error: unknown): boolean {
+    if (!(error instanceof Error)) return false;
+
+    return (
+        error.message === "EVM_UNSUPPORTED_CHAIN" ||
+        error.message.startsWith("EVM_REGISTRY_NOT_CONFIGURED:") ||
+        error.message.startsWith("EVM_INVALID_REGISTRY_ADDRESS:")
+    );
+}
+
 function parseRegistryGame(value: unknown): RegistryGame | null {
     if (!Array.isArray(value)) return null;
 
@@ -104,11 +114,15 @@ export async function getMyGames(user: string): Promise<MyGameItem[]> {
             allowFailure: true,
         });
 
-        const gameIds: Hex[] = [];
+        const gameIds: string[] = [];
 
         for (const result of gameIdResults) {
-            if (result.status === "success" && result.result) {
-                gameIds.push(result.result as Hex);
+            if (
+                result.status === "success" &&
+                typeof result.result === "string" &&
+                result.result.length > 0
+            ) {
+                gameIds.push(result.result);
             }
         }
 
@@ -128,7 +142,7 @@ export async function getMyGames(user: string): Promise<MyGameItem[]> {
         });
 
         const parsedGames: Array<{
-            gameId: Hex;
+            gameId: string;
             pgc1: `0x${string}`;
             publisher: string;
             createdAt: bigint;
@@ -214,15 +228,19 @@ export async function getMyGames(user: string): Promise<MyGameItem[]> {
             const result = contractMetaVersionResults[i];
             if (result.status !== "success") continue;
 
-            const version = result.result as number;
+            const versionRaw = result.result as number | bigint;
+            const version =
+                typeof versionRaw === "bigint"
+                    ? versionRaw
+                    : BigInt(versionRaw);
 
-            if (version === 0) continue;
+            if (version === ZERO) continue;
 
             metadataContracts.push({
                 address: ownedGames[i].pgc1,
                 abi: PGC1Abi,
                 functionName: "contractMetadataAt",
-                args: [BigInt(version - 1)], // version starts at 1
+                args: [version - BigInt(1)], // version starts at 1
             });
 
             metadataIndexMap.push(i);
@@ -245,6 +263,7 @@ export async function getMyGames(user: string): Promise<MyGameItem[]> {
         for (let i = 0; i < metadataResults.length; i++) {
             const result = metadataResults[i];
             const gameIndex = metadataIndexMap[i];
+            if (gameIndex === undefined) continue;
 
             if (result.status !== "success") {
                 metadataUriMap.set(gameIndex, null);
@@ -267,7 +286,10 @@ export async function getMyGames(user: string): Promise<MyGameItem[]> {
         return finalResults;
 
     } catch (error) {
-        console.error(error);
+        if (isUnsupportedChainError(error)) {
+            throw createLibraryError(LIBRARY_ERROR_CODES.UnsupportedChain, error);
+        }
+
         throw createLibraryError(LIBRARY_ERROR_CODES.RpcFailed, error);
     }
 }
