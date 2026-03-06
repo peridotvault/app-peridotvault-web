@@ -75,7 +75,7 @@ export type ManifestApi = {
     createdAt: Timestamp;
     size_bytes: number;
     version: string;
-    storageRef: StorageRefApi;
+    storageRef: StorageRefApi | string;
     checksum: string;
     status?: string;
 }

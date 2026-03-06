@@ -1,5 +1,9 @@
 /* eslint-disable @next/next/no-img-element */
-import { GameDistributionApi, ManifestApi } from "@/core/api/game.api.type";
+import {
+  GameDistributionApi,
+  ManifestApi,
+  StorageRefApi,
+} from "@/core/api/game.api.type";
 import { EmbedLink } from "@/features/security/embed/embed.component";
 import { IMAGE_LOADING } from "@/shared/constants/image";
 import { getAssetUrl } from "@/shared/utils/helper.url";
@@ -44,19 +48,41 @@ function normalizeUrl(value: string | undefined | null): string | null {
   return getAssetUrl(trimmed);
 }
 
-function resolveManifestUrl(manifest: ManifestApi): string | null {
-  const listingUrl = normalizeUrl(manifest.listing);
-  if (listingUrl) return listingUrl;
-
-  if ("url" in manifest.storageRef) {
-    return normalizeUrl(manifest.storageRef.url.url);
+function parseStorageRef(
+  raw: ManifestApi["storageRef"]
+): StorageRefApi | null {
+  if (!raw) return null;
+  if (typeof raw === "string") {
+    try {
+      const parsed = JSON.parse(raw) as StorageRefApi;
+      return parsed;
+    } catch {
+      return null;
+    }
   }
 
-  if ("ipfs" in manifest.storageRef) {
-    const cid = manifest.storageRef.ipfs.cid;
-    const path = manifest.storageRef.ipfs.path?.replace(/^\/+/, "");
+  return raw;
+}
+
+function resolveManifestUrl(manifest: ManifestApi): string | null {
+  const storageRef = parseStorageRef(manifest.storageRef);
+
+  if (storageRef && "s3" in storageRef) {
+    return normalizeUrl(storageRef.s3.basePath);
+  }
+
+  if (storageRef && "url" in storageRef) {
+    return normalizeUrl(storageRef.url.url);
+  }
+
+  if (storageRef && "ipfs" in storageRef) {
+    const cid = storageRef.ipfs.cid;
+    const path = storageRef.ipfs.path?.replace(/^\/+/, "");
     return `https://ipfs.io/ipfs/${cid}${path ? `/${path}` : ""}`;
   }
+
+  const listingUrl = normalizeUrl(manifest.listing);
+  if (listingUrl) return listingUrl;
 
   return null;
 }

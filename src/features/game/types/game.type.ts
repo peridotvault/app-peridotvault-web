@@ -53,7 +53,7 @@ export type Manifest = {
     createdAt: Timestamp;
     size_bytes: number;
     version: string;
-    storageRef: StorageRef;
+    storageRef: StorageRef | string;
     checksum: string;
     status?: string;
 }
