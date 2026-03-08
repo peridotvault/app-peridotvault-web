@@ -17,6 +17,7 @@ import {
   useTopGames,
 } from "@/features/game/hooks/game.hook";
 import { CarouselWrapper } from "@/shared/components/ui/organisms/CarouselWrapper";
+import { getAssetUrl } from "@/shared/utils/helper.url";
 
 /* ======================================================
    PAGE — Vault (Main Discovery Page)
@@ -138,7 +139,11 @@ export default function Vault() {
                 className={`w-full aspect-square ${STYLE_ROUNDED_CARD} bg-muted overflow-hidden bg-linear-to-t from-black relative duration-300 flex items-end font-medium p-6 text-xl group cursor-pointer`}
               >
                 <img
-                  src={item.cover_image || IMAGE_LOADING}
+                  src={
+                    item.cover_image
+                      ? getAssetUrl(item.cover_image)
+                      : IMAGE_LOADING
+                  }
                   alt={item.name + " Image"}
                   className="w-full h-full object-cover absolute top-0 left-0 opacity-80 duration-300 group-hover:scale-105"
                 />

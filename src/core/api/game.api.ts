@@ -28,7 +28,6 @@ export async function getTopGamesApi(): Promise<GameApi[]> {
 export async function getBannerGamesApi(params?: {
     page?: number;
     limit?: number;
-    category?: string;
 }): Promise<GameApi[]> {
     const res = await http.get<ApiResponseWithPagination<GameApi>>("/api/games/banners", {
         params,

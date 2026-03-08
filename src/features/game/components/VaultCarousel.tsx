@@ -6,6 +6,7 @@ import { ButtonWithSound } from "@/shared/components/ui/atoms/ButtonWithSound";
 import React, { useEffect } from "react";
 import { GameBanner } from "../types/game.type";
 import { urlGameDetail } from "../configs/url.config";
+import { getAssetUrl } from "@/shared/utils/helper.url";
 
 type Props = {
   items: GameBanner[];
@@ -157,14 +158,16 @@ export function VaultCarousel({
           {/* Layer lama */}
           <img
             key={prevIndex ?? -1}
-            src={(prevIndex !== null ? items[prevIndex] : active).banner_image}
+            src={getAssetUrl(
+              (prevIndex !== null ? items[prevIndex] : active).banner_image,
+            )}
             alt={(prevIndex !== null ? items[prevIndex] : active).name}
             className="absolute inset-0 w-full h-full object-cover"
           />
           {/* Layer baru (fade-in) */}
           <img
             key={activeIndex}
-            src={active.banner_image}
+            src={getAssetUrl(active.banner_image)}
             alt={active.name}
             className="absolute inset-0 w-full h-full object-cover transition-opacity"
             style={{
