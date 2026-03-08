@@ -6,7 +6,6 @@ import GameDetailPreview from "@/features/game/components/GameDetailPreview";
 import { GameRelated } from "@/features/game/components/ui/GameRelated";
 import { useGameDetail, useRelatedGame } from "@/features/game/hooks/game.hook";
 import {
-  ChainType,
   GameDistribution,
   GameOnChainPublish,
   GamePreview,
