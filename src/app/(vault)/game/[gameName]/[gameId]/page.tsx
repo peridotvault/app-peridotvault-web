@@ -175,6 +175,7 @@ export default function GameDetailPage(): React.ReactElement {
             releaseDateMs={game.release_date}
             requiredAge={game.required_age}
             price={game.price}
+            website_url={game.website_url}
           />
         </ContainerPadding>
 
@@ -367,6 +368,7 @@ export default function GameDetailPage(): React.ReactElement {
     releaseDateMs,
     requiredAge,
     price,
+    website_url,
   }: {
     chainSupport: ChainApi[] | undefined;
     game_onchain_publishes: Array<GameOnChainPublish> | undefined;
@@ -374,6 +376,7 @@ export default function GameDetailPage(): React.ReactElement {
     releaseDateMs: number;
     requiredAge: number;
     price: number;
+    website_url?: string;
   }) {
     const releaseDate = new Date(releaseDateMs).toLocaleDateString();
 
@@ -521,14 +524,21 @@ export default function GameDetailPage(): React.ReactElement {
               <td className="text-muted-foreground">Release Date</td>
               <td>{releaseDate}</td>
             </tr>
-            <tr className="border-b border-white/15 flex justify-between w-full py-3">
-              <td className="text-muted-foreground">Website</td>
-              <td>
-                <a href="https://peridotvault.com" className="text-highlight">
-                  https://peridotvault.com
-                </a>
-              </td>
-            </tr>
+            {website_url && (
+              <tr className="border-b border-white/15 flex justify-between w-full py-3">
+                <td className="text-muted-foreground">Website</td>
+                <td>
+                  <a
+                    href={website_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-highlight"
+                  >
+                    {website_url}
+                  </a>
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
 
