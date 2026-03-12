@@ -7,6 +7,7 @@ import React, { useEffect } from "react";
 import { GameBanner } from "../types/game.type";
 import { urlGameDetail } from "../configs/url.config";
 import { getAssetUrl } from "@/shared/utils/helper.url";
+import { sendTrackGameView } from "@/features/event/services/sendTrackGameView";
 
 type Props = {
   items: GameBanner[];
@@ -125,6 +126,12 @@ export function VaultCarousel({
                     name: active.name,
                     game_id: active.game_id,
                   })}
+                  onClick={() =>
+                    sendTrackGameView({
+                      game_id: active.game_id,
+                      source: "banner",
+                    })
+                  }
                   className="px-4 py-2 rounded-lg border border-foreground/15 bg-foreground/10 hover:bg-foreground/15 transition"
                 >
                   View Game

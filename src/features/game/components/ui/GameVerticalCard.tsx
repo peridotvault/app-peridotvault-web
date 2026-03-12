@@ -19,6 +19,7 @@ export const GameVerticalCard = ({
   tokenDecimals,
   tokenLogo,
   chain,
+  onClick,
 }: {
   gameId: string;
   gameName: string;
@@ -29,6 +30,7 @@ export const GameVerticalCard = ({
   tokenDecimals?: number;
   tokenLogo?: string | null;
   chain: ChainApi[] | undefined;
+  onClick?: () => void;
 }) => {
   return (
     <EmbedLink
@@ -36,6 +38,7 @@ export const GameVerticalCard = ({
         name: gameName,
         game_id: gameId,
       })}
+      onClick={onClick}
       className={`w-full group relative overflow-hidden  ${STYLE_ROUNDED_CARD}`}
     >
       <div className="w-full aspect-3/4 bg-muted">

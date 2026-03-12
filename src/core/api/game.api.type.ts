@@ -2,13 +2,14 @@ import { Timestamp } from "@/shared/types/time.type";
 import { CategoryApi } from "./category.api.type";
 import { ChainApi } from "./chain.api.type";
 
+export type GameIdApi = string;
 export type GameSortApi = "latest" | "price_asc" | "price_desc" | null | undefined;
 
 /* ======================================================
    GAME API ✅
 ====================================================== */
 export interface GameApi {
-    game_id: string,
+    game_id: GameIdApi,
     name: string,
     description: string,
     required_age: number,
@@ -97,7 +98,7 @@ export type GamePreviewApi =
 ====================================================== */
 export interface GameOnChainPublish {
     id: string;
-    game_id: string;
+    game_id: GameIdApi;
     caip_2_id?: string;
     publish_version: number;
     pgc1_address: `0x${string}`;

@@ -16,6 +16,7 @@ export const GameHorizontalCard = ({
   tokenSymbol,
   tokenDecimals,
   tokenLogo,
+  onClick,
 }: {
   gameId: string;
   gameName: string;
@@ -25,6 +26,7 @@ export const GameHorizontalCard = ({
   tokenSymbol?: string;
   tokenDecimals?: number;
   tokenLogo?: string | null;
+  onClick?: () => void;
 }) => {
   return (
     <EmbedLink
@@ -32,6 +34,7 @@ export const GameHorizontalCard = ({
         name: gameName,
         game_id: gameId,
       })}
+      onClick={onClick}
       className={`w-full group relative overflow-hidden  ${STYLE_ROUNDED_CARD}`}
     >
       <div className="w-full aspect-video bg-muted">

@@ -10,6 +10,7 @@ import { TypographyH2 } from "@/shared/components/ui/atoms/TypographyH2";
 import { CarouselWrapper } from "@/shared/components/ui/organisms/CarouselWrapper";
 import { urlGameDetail } from "../configs/url.config";
 import { GameApi } from "@/core/api/game.api.type";
+import { sendTrackGameView } from "@/features/event/services/sendTrackGameView";
 
 type Props = {
   className?: string; // optional: untuk -mt overlap dari parent
@@ -53,6 +54,12 @@ export const VaultTopGames: React.FC<Props> = ({
                   name: item.name,
                   game_id: item.game_id,
                 })}
+                onClick={() =>
+                  sendTrackGameView({
+                    game_id: item.game_id,
+                    source: "top_games",
+                  })
+                }
                 className="w-full aspect-video relative overflow-hidden flex justify-end"
               >
                 <span className="text-[10rem] font-bold absolute left-2 bottom-16 z-5">

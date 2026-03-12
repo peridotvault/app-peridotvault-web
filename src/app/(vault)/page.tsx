@@ -18,6 +18,7 @@ import {
 } from "@/features/game/hooks/game.hook";
 import { CarouselWrapper } from "@/shared/components/ui/organisms/CarouselWrapper";
 import { getAssetUrl } from "@/shared/utils/helper.url";
+import { sendTrackGameView } from "@/features/event/services/sendTrackGameView";
 
 /* ======================================================
    PAGE — Vault (Main Discovery Page)
@@ -85,6 +86,12 @@ export default function Vault() {
                 imgUrl={item.cover_vertical_image ?? IMAGE_LOADING}
                 price={item.price ?? 0}
                 chain={item.chains}
+                onClick={() =>
+                  sendTrackGameView({
+                    game_id: item.game_id,
+                    source: "homepage",
+                  })
+                }
               />
             )}
           />
@@ -112,6 +119,12 @@ export default function Vault() {
                 imgUrl={item.cover_vertical_image ?? IMAGE_LOADING}
                 price={item.price ?? 0}
                 chain={item.chains}
+                onClick={() =>
+                  sendTrackGameView({
+                    game_id: item.game_id,
+                    source: "homepage",
+                  })
+                }
               />
             ))}
           </div>

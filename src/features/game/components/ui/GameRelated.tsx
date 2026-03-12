@@ -5,6 +5,7 @@ import { STYLE_ROUNDED_CARD } from "@/shared/constants/style";
 import { GameHorizontalCard } from "./GameHorizontalCard";
 import { CarouselWrapper } from "@/shared/components/ui/organisms/CarouselWrapper";
 import { GameApi } from "@/core/api/game.api.type";
+import { sendTrackGameView } from "@/features/event/services/sendTrackGameView";
 
 type Props = {
   games: GameApi[];
@@ -34,6 +35,12 @@ export const GameRelated = ({ games }: Props) => {
                 gameName={item.name}
                 imgUrl={item.cover_horizontal_image ?? IMAGE_LOADING}
                 price={item.price ?? 0}
+                onClick={() =>
+                  sendTrackGameView({
+                    game_id: item.game_id,
+                    source: "detail_related",
+                  })
+                }
               />
             )}
           />
