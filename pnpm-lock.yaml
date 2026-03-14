@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@antigane/wallet-adapters':
-        specifier: ^0.0.12
-        version: 0.0.12(bufferutil@4.1.0)(fastestsmallesttextencoderdecoder@1.0.22)(framer-motion@12.24.10(react-dom@19.2.1(react@19.2.1))(react@19.2.1))(react-dom@19.2.1(react@19.2.1))(react@19.2.1)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.3.5)
+        specifier: ^0.1.0
+        version: 0.1.0(bufferutil@4.1.0)(fastestsmallesttextencoderdecoder@1.0.22)(framer-motion@12.24.10(react-dom@19.2.1(react@19.2.1))(react@19.2.1))(react-dom@19.2.1(react@19.2.1))(react@19.2.1)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.3.5)
       '@fortawesome/fontawesome-svg-core':
         specifier: ^7.1.0
         version: 7.1.0
@@ -117,8 +117,8 @@ packages:
     resolution: {integrity: sha512-UrcABB+4bUrFABwbluTIBErXwvbsU/V7TZWfmbgJfbkwiBuziS9gxdODUyuiecfdGQ85jglMW6juS3+z5TsKLw==}
     engines: {node: '>=10'}
 
-  '@antigane/wallet-adapters@0.0.12':
-    resolution: {integrity: sha512-oUCI2Z9J4N8hjMNBl1rub95TfwJOLINjWpkvVSFE6352iOIPkYpp9A/6tjTJ9LvWR/ZJVN+VxwYpUvuXUHCjNg==}
+  '@antigane/wallet-adapters@0.1.0':
+    resolution: {integrity: sha512-NxhHulyW5I9Z8YILX36sUdwyAIj8QCbDmpgtwHdEWs3xv2jV993A3EKrH2h2JwMm5vKGQnHQH0yOM8qH0xtYyA==}
     peerDependencies:
       framer-motion: '>=12.24.0 <13'
       react: '>=18'
@@ -2885,10 +2885,12 @@ snapshots:
 
   '@alloc/quick-lru@5.2.0': {}
 
-  '@antigane/wallet-adapters@0.0.12(bufferutil@4.1.0)(fastestsmallesttextencoderdecoder@1.0.22)(framer-motion@12.24.10(react-dom@19.2.1(react@19.2.1))(react@19.2.1))(react-dom@19.2.1(react@19.2.1))(react@19.2.1)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.3.5)':
+  '@antigane/wallet-adapters@0.1.0(bufferutil@4.1.0)(fastestsmallesttextencoderdecoder@1.0.22)(framer-motion@12.24.10(react-dom@19.2.1(react@19.2.1))(react@19.2.1))(react-dom@19.2.1(react@19.2.1))(react@19.2.1)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.3.5)':
     dependencies:
       '@metamask/sdk': 0.34.0(bufferutil@4.1.0)(utf-8-validate@5.0.10)
       '@phantom/browser-sdk': 1.0.0(bufferutil@4.1.0)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.3.5)
+      '@solana/web3.js': 1.98.4(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)
+      bs58: 6.0.0
       framer-motion: 12.24.10(react-dom@19.2.1(react@19.2.1))(react@19.2.1)
       react: 19.2.1
       react-dom: 19.2.1(react@19.2.1)

@@ -41,6 +41,7 @@ export default function Navbar() {
 
   async function afterSign(e: SignState) {
     setState(e);
+    console.log("SIGNED:", e);
 
     await verifyAndCreateSession({
       signature: e.signature!,
