@@ -152,8 +152,8 @@ export default function GameDetailPage(): React.ReactElement {
             coverHorizontalImage={getAssetUrl(game.cover_horizontal_image)}
             gameDescription={game.description}
             gameName={game.name}
-            previews={game.previews}
-            tags={game.tags}
+            previews={game.previews ?? []}
+            tags={game.tags ?? []}
           />
         </div>
 
@@ -278,20 +278,23 @@ export default function GameDetailPage(): React.ReactElement {
     gameDescription,
     tags,
   }: {
-    previews: GamePreview[];
+    previews?: GamePreview[];
     coverHorizontalImage: string;
     gameName: string;
     gameDescription: string;
-    tags: string[];
+    tags?: string[];
   }) {
+    const safePreviews = previews ?? [];
+    const safeTags = tags ?? [];
+
     return (
       <ContainerPadding className="flex gap-12 max-lg:flex-col">
         {/* Previews */}
         <div className="overflow-hidden flex w-full">
           <GameDetailPreview
             items={
-              previews.length
-                ? previews
+              safePreviews.length
+                ? safePreviews
                 : [
                     {
                       kind: "image" as const,
@@ -345,7 +348,7 @@ export default function GameDetailPage(): React.ReactElement {
             <div className="flex flex-col gap-3">
               <dt className="text-muted-foreground">Tags</dt>
               <dd className="flex flex-wrap gap-3">
-                {tags.map((item, index) => (
+                {safeTags.map((item, index) => (
                   <span
                     key={index}
                     className="bg-foreground/15 py-1 px-2 rounded-lg capitalize"

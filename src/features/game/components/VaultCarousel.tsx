@@ -10,7 +10,7 @@ import { getAssetUrl } from "@/shared/utils/helper.url";
 import { sendTrackGameView } from "@/features/event/services/sendTrackGameView";
 
 type Props = {
-  items: GameBanner[];
+  items?: GameBanner[] | null;
   intervalMs?: number;
   fadeMs?: number; // durasi fade (ms)
   isLoading: boolean;
@@ -24,6 +24,7 @@ export function VaultCarousel({
   isLoading,
   isError,
 }: Props) {
+  const safeItems = items ?? [];
   const [activeIndex, setActiveIndex] = React.useState(0);
   const [prevIndex, setPrevIndex] = React.useState<number | null>(null);
   const [isFading, setIsFading] = React.useState(false);
@@ -53,7 +54,7 @@ export function VaultCarousel({
     return () => ro.disconnect();
   }, []);
 
-  const len = items.length;
+  const len = safeItems.length;
   //   if (len === 0) return null;
 
   const goTo = (i: number) => {
@@ -90,7 +91,7 @@ export function VaultCarousel({
     };
   }, []);
 
-  const active = items[activeIndex];
+  const active = safeItems[activeIndex];
 
   if (len === 0 || isLoading || isError) {
     // tidak ada data → jangan render carousel sama sekali
@@ -141,7 +142,7 @@ export function VaultCarousel({
           </div>
           {/* Dots */}
           <div className="flex items-center gap-2">
-            {items.map((_, i) => (
+            {safeItems.map((_, i) => (
               <ButtonWithSound
                 key={i}
                 onClick={() => goTo(i)}
@@ -166,9 +167,9 @@ export function VaultCarousel({
           <img
             key={prevIndex ?? -1}
             src={getAssetUrl(
-              (prevIndex !== null ? items[prevIndex] : active).banner_image,
+              (prevIndex !== null ? safeItems[prevIndex] : active).banner_image,
             )}
-            alt={(prevIndex !== null ? items[prevIndex] : active).name}
+            alt={(prevIndex !== null ? safeItems[prevIndex] : active).name}
             className="absolute inset-0 w-full h-full object-cover"
           />
           {/* Layer baru (fade-in) */}
