@@ -109,3 +109,19 @@ export interface GameOnChainPublish {
     max_supply: string;
     published_at: string;
 }
+
+
+/* ======================================================
+   GAME TOP
+====================================================== */
+export type GameTopApi = {
+    game_id: GameIdApi;
+    name: string,
+    cover_vertical_image: string,
+    cover_horizontal_image: string,
+    score: number,
+    play_count: number,
+    avg_rating: number,
+    rating_count: number,
+    rank: number,
+}

@@ -2,6 +2,10 @@ import { http } from "@/shared/lib/http";
 import { CategoryApi } from "./category.api.type";
 import { ApiResponse, ApiResponseWithPagination } from "./types/response.type";
 
+function getPaginatedItems<T>(res: { data?: ApiResponseWithPagination<T> }): T[] {
+    return res.data?.data?.data ?? [];
+}
+
 export async function getCategoriesApi(params?: {
     page?: number;
     limit?: number
@@ -10,7 +14,7 @@ export async function getCategoriesApi(params?: {
         params,
     });
 
-    return res.data.data.data;
+    return getPaginatedItems(res);
 }
 
 export async function getFavoriteCategoriesApi(params?: {
@@ -21,7 +25,7 @@ export async function getFavoriteCategoriesApi(params?: {
         params,
     });
 
-    return res.data.data.data;
+    return getPaginatedItems(res);
 }
 
 export async function getCategorieByIdApi(params: {

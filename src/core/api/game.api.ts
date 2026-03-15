@@ -1,6 +1,10 @@
 import { http } from "@/shared/lib/http";
-import { GameApi, GameDetailApi, GameSortApi } from "./game.api.type";
+import { GameApi, GameDetailApi, GameSortApi, GameTopApi } from "./game.api.type";
 import { ApiResponse, ApiResponseWithPagination } from "./types/response.type";
+
+function getPaginatedItems<T>(res: { data?: ApiResponseWithPagination<T> }): T[] {
+    return res.data?.data?.data ?? [];
+}
 
 export async function getGamesApi(params?: {
     q?: string;
@@ -16,13 +20,13 @@ export async function getGamesApi(params?: {
         params,
     });
 
-    return res.data.data.data;
+    return getPaginatedItems(res);
 }
 
-export async function getTopGamesApi(): Promise<GameApi[]> {
-    const res = await http.get<ApiResponseWithPagination<GameApi>>("/api/games/top-games");
+export async function getTopGamesApi(): Promise<GameTopApi[]> {
+    const res = await http.get<ApiResponse<GameTopApi[]>>("/api/games/top-games");
 
-    return res.data.data.data;
+    return res.data.data ?? [];
 }
 
 export async function getBannerGamesApi(params?: {
@@ -33,7 +37,7 @@ export async function getBannerGamesApi(params?: {
         params,
     });
 
-    return res.data.data.data;
+    return getPaginatedItems(res);
 }
 
 export async function getGameMetadataApi(gameId: string, params?: {
@@ -55,7 +59,7 @@ export async function getGameRelatedApi(gameId: string, params?: {
         params,
     });
 
-    return res.data.data.data;
+    return getPaginatedItems(res);
 }
 
 export async function getGameDetailApi(gameId: string, params?: {
@@ -69,8 +73,6 @@ export async function getGameDetailApi(gameId: string, params?: {
 
     return res.data.data;
 }
-
-
 
 
 

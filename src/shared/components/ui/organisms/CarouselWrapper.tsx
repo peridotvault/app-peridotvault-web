@@ -12,7 +12,7 @@ import { ButtonWithSound } from "../atoms/ButtonWithSound";
 ========================= */
 
 interface CarouselWrapperProps<T> {
-  items: T[];
+  items?: T[] | null;
   pageSize?: number; // desktop base
   renderItem: (item: T, index: number) => React.ReactNode;
   className?: string;
@@ -24,10 +24,11 @@ interface CarouselWrapperProps<T> {
 
 export function CarouselWrapper<T>({
   items,
-  pageSize = 4,
+  pageSize = 3,
   renderItem,
   className = "",
 }: CarouselWrapperProps<T>) {
+  const safeItems = items ?? [];
   const bp = useBreakpoint(); // "mobile" | "tablet" | "desktop"
   const isMobile = bp === "mobile";
   const isTablet = bp === "tablet";
@@ -40,7 +41,7 @@ export function CarouselWrapper<T>({
     return pageSize;
   }, [isTablet, pageSize]);
 
-  const totalPages = Math.ceil(items.length / effectivePageSize);
+  const totalPages = Math.ceil(safeItems.length / effectivePageSize);
 
   // clamp page if breakpoint changes (e.g., rotate iPad)
   React.useEffect(() => {
@@ -63,7 +64,7 @@ export function CarouselWrapper<T>({
             cursor-grab active:cursor-grabbing
           "
         >
-          {items.map((item, index) => (
+          {safeItems.map((item, index) => (
             <div
               key={index}
               className={`shrink-0 snap-start w-[60%] overflow-hidden ${STYLE_ROUNDED_CARD}`}
@@ -81,7 +82,7 @@ export function CarouselWrapper<T>({
   ========================= */
 
   const start = page * effectivePageSize;
-  const sliced = items.slice(start, start + effectivePageSize);
+  const sliced = safeItems.slice(start, start + effectivePageSize);
 
   const visibleItems: (T | null)[] = [
     ...sliced,

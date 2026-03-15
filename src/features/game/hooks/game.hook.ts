@@ -4,7 +4,7 @@
 import { useState, useEffect } from "react";
 import { getGamesApi, getBannerGamesApi, getTopGamesApi, getGameRelatedApi, getGameDetailApi } from "../../../core/api/game.api";
 import { GameBanner } from "../types/game.type";
-import { GameApi, GameDetailApi } from "@/core/api/game.api.type";
+import { GameApi, GameDetailApi, GameTopApi } from "@/core/api/game.api.type";
 
 export function usePublishedGames({ page, limit, category_id }: {
     page?: number;
@@ -78,11 +78,11 @@ export function useBannerGames(): {
 }
 
 export function useTopGames(): {
-    games: GameApi[];
+    games: GameTopApi[];
     isLoading: boolean;
     error: string | null;
 } {
-    const [games, setGames] = useState<GameApi[]>([]);
+    const [games, setGames] = useState<GameTopApi[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
 
