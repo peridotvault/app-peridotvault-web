@@ -8,7 +8,6 @@ import {
   faMagnifyingGlass,
   faSpinner,
 } from "@fortawesome/free-solid-svg-icons";
-import Link from "next/link";
 import { PriceCoin } from "./CoinWithAmmount";
 import { GameApi, GameTopApi } from "@/core/api/game.api.type";
 import { getGamesApi, getTopGamesApi } from "@/core/api/game.api";
@@ -18,6 +17,7 @@ import { IMAGE_LOADING } from "@/shared/constants/image";
 import { useModal } from "@/core/ui-system/modal/modal.store";
 import ModalShell from "@/core/ui-system/modal/ModalShell";
 import { useClickSound } from "@/shared/hooks/useClickSound";
+import { EmbedLink } from "@/features/security/embed/embed.component";
 
 interface SearchInputProps {
   value: string;
@@ -336,7 +336,7 @@ function SearchResultCard({
   const playClick = useClickSound("/sounds/click.mp3", 0.6);
 
   return (
-    <Link
+    <EmbedLink
       href={urlGameDetail({
         name: game.name,
         game_id: game.game_id,
@@ -365,7 +365,7 @@ function SearchResultCard({
       <div className="shrink-0 rounded-lg bg-background/80 px-3 py-2">
         <PriceCoin amount={game.price ?? 0} textSize="sm" />
       </div>
-    </Link>
+    </EmbedLink>
   );
 }
 
@@ -380,7 +380,7 @@ function PopularGameCard({
   const playClick = useClickSound("/sounds/click.mp3", 0.6);
 
   return (
-    <Link
+    <EmbedLink
       href={urlGameDetail({
         name: game.name,
         game_id: game.game_id,
@@ -410,7 +410,7 @@ function PopularGameCard({
           Popular on PeridotVault
         </p>
       </div>
-    </Link>
+    </EmbedLink>
   );
 }
 

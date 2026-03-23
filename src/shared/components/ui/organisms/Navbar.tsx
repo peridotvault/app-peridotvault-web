@@ -2,9 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import { ConnectButton, SignState } from "@antigane/wallet-adapters";
-import { NotificationBar } from "@/shared/components/ui/molecules/NotificationBar";
+// import { NotificationBar } from "@/shared/components/ui/molecules/NotificationBar";
 import { verifyAndCreateSession } from "@/features/auth/verify/verify.service";
 import { useAuthStore } from "@/features/auth/_store/auth.store";
 import { STYLE_PADDING } from "@/shared/constants/style";
@@ -12,6 +11,7 @@ import { ModalProfile } from "@/features/user/components/ModalProfile";
 import { authRepo } from "@/core/db/repositories/auth.repo";
 import { useModal } from "@/core/ui-system/modal/modal.store";
 import ModalShell from "@/core/ui-system/modal/ModalShell";
+import { EmbedLink } from "@/features/security/embed/embed.component";
 
 export default function Navbar() {
   const [state, setState] = useState<null | SignState>();
@@ -122,7 +122,7 @@ export default function Navbar() {
 
   return (
     <header className="left-0 top-0 z-20 w-full flex flex-col bg-card ">
-      <NotificationBar />
+      {/* <NotificationBar /> */}
 
       <div className={STYLE_PADDING}>
         <div className="flex items-center justify-between mx-auto max-w-400 w-full z-21 py-4 ">
@@ -130,7 +130,10 @@ export default function Navbar() {
             <nav className="flex">
               <ol>
                 <li>
-                  <Link href="/" className="flex items-center text-3xl gap-3">
+                  <EmbedLink
+                    href="/"
+                    className="flex items-center text-3xl gap-3"
+                  >
                     <Image
                       width={120}
                       height={120}
@@ -141,7 +144,7 @@ export default function Navbar() {
                     <span>
                       <span className="font-bold">Peridot</span>Vault
                     </span>
-                  </Link>
+                  </EmbedLink>
                 </li>
               </ol>
             </nav>

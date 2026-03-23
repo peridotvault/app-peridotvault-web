@@ -12,11 +12,12 @@ import { getViemChain } from '../viem/chain.config'
 import { getPeridotRegistry } from '../contracts/contract.registry'
 import { getEvmPublicClient } from '../viem'
 import { useChainStore } from '@/shared/states/chain.store'
+import { BuyGameInput } from '@/core/blockchain/__core__/types/purchase.type'
 
 const LICENSE_ID = BigInt(1);
 
 export class EvmPurchaseService {
-    static async buyGame(input: { pgc1_address: `0x${string}`, payment_token: `0x${string}` }) {
+    static async buyGame(input: BuyGameInput) {
         if (!window.ethereum) {
             throw new Error('Wallet not found')
         }
@@ -27,7 +28,7 @@ export class EvmPurchaseService {
 
         /* ================= SETUP ================= */
 
-        const { chainKey } = useChainStore.getState()
+        const chainKey = input.chainKey ?? useChainStore.getState().chainKey
 
         const chain = getViemChain(chainKey)
         const registry = getPeridotRegistry(chainKey)

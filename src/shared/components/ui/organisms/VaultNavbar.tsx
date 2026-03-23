@@ -1,7 +1,6 @@
 "use client";
 
 /* eslint-disable @next/next/no-img-element */
-import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
@@ -23,6 +22,7 @@ import { Category } from "@/features/game/types/category.type";
 import clsx from "clsx";
 import { ButtonWithSound } from "../atoms/ButtonWithSound";
 import { useClickSound } from "@/shared/hooks/useClickSound";
+import { EmbedLink } from "@/features/security/embed/embed.component";
 
 type NavMenu = "browse" | "categories" | null;
 
@@ -243,7 +243,7 @@ function BrowseMenu({
       <div className="mx-auto grid w-full max-w-400 grid-cols-[16rem_1fr] max-lg:grid-cols-1">
         <div className="flex flex-col">
           {listMenu.map((item, i) => (
-            <Link
+            <EmbedLink
               key={i}
               href={item.href}
               onClick={() => {
@@ -253,7 +253,7 @@ function BrowseMenu({
               className="border-b border-transparent px-3 py-4 transition-colors hover:border-border hover:bg-background/60"
             >
               {item.title}
-            </Link>
+            </EmbedLink>
           ))}
         </div>
 
@@ -320,7 +320,7 @@ function CategoryGrid({
   return (
     <div className="grid grid-cols-3 gap-3 max-lg:grid-cols-2 max-md:grid-cols-1">
       {categories.map((category) => (
-        <Link
+        <EmbedLink
           key={category.category_id}
           href="/#categories"
           onClick={() => {
@@ -344,7 +344,7 @@ function CategoryGrid({
               {category.name}
             </span>
           </div>
-        </Link>
+        </EmbedLink>
       ))}
     </div>
   );

@@ -1,12 +1,18 @@
-export type ChainId = "base" | "lisk" | "solana";
+export type EvmChainId = "base" | "lisk";
+export type SvmChainId = "solana";
+export type ChainId = EvmChainId | SvmChainId;
 
 export type ChainNetwork = "mainnet" | "testnet";
 
-export type ChainKey = `${ChainId}-${ChainNetwork}`;
+export type EvmChainKey =
+  | "base-mainnet"
+  | "base-testnet"
+  | "lisk-mainnet"
+  | "lisk-testnet";
 
-export type EvmChainKey = Exclude<ChainKey, "solana-mainnet" | "solana-testnet">;
+export type SvmChainKey = "solana-mainnet" | "solana-testnet";
 
-export type SvmChainKey = Exclude<ChainKey, EvmChainKey>;
+export type ChainKey = EvmChainKey | SvmChainKey;
 
 export type ChainType = "evm" | "svm";
 
