@@ -69,7 +69,10 @@ export default function Vault() {
       {/* ======================================================
          SECTION — New on PeridotVault (Latest Releases)
       ====================================================== */}
-      <section className="flex justify-center w-full px-10">
+      <section
+        id="browse"
+        className="flex justify-center w-full scroll-mt-28 px-10"
+      >
         <div className="flex flex-col gap-3 w-full items-center">
           <div className="flex max-w-7xl mx-auto w-full">
             <TypographyH2 text="New on PeridotVault" />
@@ -106,7 +109,10 @@ export default function Vault() {
       {/* ======================================================
          SECTION — All Games (Full Catalog)
       ====================================================== */}
-      <section className="flex justify-center w-full px-10">
+      <section
+        id="categories"
+        className="flex justify-center w-full scroll-mt-28 px-10"
+      >
         <div className="flex flex-col gap-6 w-full max-w-7xl">
           <TypographyH2 text="All Games" />
           {/* contents  */}

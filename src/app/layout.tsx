@@ -2,7 +2,6 @@ import type { Metadata, Viewport } from "next";
 import { Suspense } from "react";
 import { Geist, Geist_Mono } from "next/font/google";
 import "@/shared/styles/globals.css";
-import { UIEffects } from "./_effects/UIEffects";
 import { METADATA } from "./_seo/metadata";
 import { EmbedLayout } from "@/features/security/embed/embed.component";
 import { GoogleAnalytics } from "@next/third-parties/google";
@@ -37,7 +36,6 @@ export default async function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col`}
       >
-        <UIEffects />
         <ModalRoot />
         <ToasterComponent />
         <Suspense fallback={null}>
