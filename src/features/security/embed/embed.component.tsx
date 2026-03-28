@@ -1,11 +1,12 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import Link, { LinkProps } from "next/link";
 import type { ParsedUrlQueryInput } from "node:querystring";
 import type { UrlObject } from "url";
 import Navbar from "@/shared/components/ui/organisms/Navbar";
 import { useEmbedMode } from "./embed.hook";
+import { injectPeridotWallet } from "@/core/blockchain/svm/web3/peridot.provider";
 
 type EmbedLayoutProps = {
   children: React.ReactNode;
@@ -13,6 +14,12 @@ type EmbedLayoutProps = {
 
 export function EmbedLayout({ children }: EmbedLayoutProps) {
   const { isEmbed } = useEmbedMode();
+
+  useEffect(() => {
+    if (isEmbed) {
+      injectPeridotWallet();
+    }
+  }, [isEmbed]);
 
   return (
     <>

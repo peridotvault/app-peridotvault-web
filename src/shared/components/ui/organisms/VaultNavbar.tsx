@@ -223,7 +223,11 @@ function BrowseMenu({
   const listMenu = [
     {
       title: "Game Vault",
-      href: "/#",
+      href: "/",
+    },
+    {
+      title: "My Library",
+      href: "/my-games",
     },
     {
       title: "New Releases",

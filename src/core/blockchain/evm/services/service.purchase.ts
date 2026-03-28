@@ -22,8 +22,16 @@ export class EvmPurchaseService {
             throw new Error('Wallet not found')
         }
 
-        if (!isAddress(input.pgc1_address) || !isAddress(input.payment_token)) {
-            throw new Error('Invalid purchase contract addresses')
+        const pgc1_address = input.pgc1_address;
+        const payment_token = input.payment_token || zeroAddress;
+
+        if (!isAddress(pgc1_address)) {
+            console.error('Invalid pgc1_address:', pgc1_address);
+            throw new Error(`Invalid purchase contract: pgc1_address is ${pgc1_address}`);
+        }
+        if (!isAddress(payment_token)) {
+            console.error('Invalid payment_token:', payment_token);
+            throw new Error(`Invalid payment token: payment_token is ${payment_token}`);
         }
 
         /* ================= SETUP ================= */
@@ -34,8 +42,8 @@ export class EvmPurchaseService {
         const registry = getPeridotRegistry(chainKey)
         const publicClient = getEvmPublicClient(chainKey)
 
-        const requestedPgc1 = getAddress(input.pgc1_address)
-        const selectedPaymentToken = getAddress(input.payment_token)
+        const requestedPgc1 = getAddress(pgc1_address)
+        const selectedPaymentToken = getAddress(payment_token)
 
         const walletClient = createWalletClient({
             chain,
@@ -143,13 +151,16 @@ export class EvmPurchaseService {
                 value: price,
             })
 
-            return walletClient.writeContract({
+            const hash = await walletClient.writeContract({
                 address: requestedPgc1,
                 abi: PGC1Abi,
                 functionName: 'buy',
                 value: price,
                 account: buyer,
             })
+            
+            await publicClient.waitForTransactionReceipt({ hash })
+            return hash
         }
 
         const allowance = (await publicClient.readContract({
@@ -181,12 +192,15 @@ export class EvmPurchaseService {
             value: BigInt(0),
         })
 
-        return walletClient.writeContract({
+        const hash = await walletClient.writeContract({
             address: requestedPgc1,
             abi: PGC1Abi,
             functionName: 'buy',
             value: BigInt(0),
             account: buyer,
         })
+        
+        await publicClient.waitForTransactionReceipt({ hash })
+        return hash
     }
 }

@@ -53,16 +53,29 @@ export class SvmPurchaseService {
       skipPreflight: false,
     };
 
-    if (!provider.signAndSendTransaction) {
+    let signature: string;
+
+    if ((provider as any).isPeridotWallet) {
+      const serialized = transaction
+        .serialize({ requireAllSignatures: false, verifySignatures: false })
+        .toString("base64");
+
+      if (!(provider as any).sendTransaction) {
+        throw new Error("PeridotWallet provider does not support sendTransaction");
+      }
+
+      signature = await (provider as any).sendTransaction(serialized);
+    } else if (provider.signAndSendTransaction) {
+      const result = await provider.signAndSendTransaction(
+        transaction,
+        sendOptions,
+      );
+      signature = result.signature;
+    } else {
       throw new Error(
-        "Solana wallet does not support signAndSendTransaction",
+        "Solana wallet does not support signAndSendTransaction or PeridotWallet protocol",
       );
     }
-
-    const { signature } = await provider.signAndSendTransaction(
-      transaction,
-      sendOptions,
-    );
 
     await connection.confirmTransaction(
       {
