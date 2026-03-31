@@ -13,10 +13,8 @@ export function useClickSound(url: string, volume: number) {
 
     return useCallback(() => {
         if (!enabled) return;
-        // kalau belum ke-load, dia akan nge-wait sekali; setelah itu super cepat
-        void (async () => {
-            await preloadClickSound(url);
-            await playClickBuffer(volume);
-        })();
-    }, [enabled, url, volume]);
+        
+        // playClickBuffer sekarang sync (kecuali resume yang fire-and-forget)
+        playClickBuffer(volume);
+    }, [enabled, volume]);
 }

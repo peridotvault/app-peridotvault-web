@@ -1,45 +1,87 @@
 import { PublicKey } from "@solana/web3.js";
-import {
-  ASSOCIATED_TOKEN_PROGRAM_ID,
-  NATIVE_SOL_MINT,
-  SYSTEM_PROGRAM_ID,
-} from "./program.constants";
+import { ASSOCIATED_TOKEN_PROGRAM_ID, NATIVE_SOL_MINT } from "./program.constants";
 
 export function findStoreStatePda(programId: PublicKey) {
   return PublicKey.findProgramAddressSync(
-    [Buffer.from("game_store_state")],
+    [Buffer.from("config")],
     programId,
   )[0];
 }
 
-export function findPgcGameAuthorityPda(
-  pgcProgramId: PublicKey,
-  gameState: PublicKey,
+export function findPriceAccountPda(programId: PublicKey, gamePda: PublicKey) {
+  return PublicKey.findProgramAddressSync(
+    [Buffer.from("price"), gamePda.toBuffer()],
+    programId,
+  )[0];
+}
+
+export function findPublisherBalancePda(
+  programId: PublicKey,
+  publisher: PublicKey,
+  mint: PublicKey,
 ) {
   return PublicKey.findProgramAddressSync(
-    [Buffer.from("game_authority"), gameState.toBuffer()],
+    [Buffer.from("balance"), publisher.toBuffer(), mint.toBuffer()],
+    programId,
+  )[0];
+}
+
+export function findRegistryConfigPda(registryProgramId: PublicKey) {
+  return PublicKey.findProgramAddressSync(
+    [Buffer.from("config")],
+    registryProgramId,
+  )[0];
+}
+
+/**
+ * Registry uses an individual account model for games.
+ */
+export function findRegistryGamePda(registryProgramId: PublicKey, gameId: string) {
+  return PublicKey.findProgramAddressSync(
+    [Buffer.from("game"), Buffer.from(gameId)],
+    registryProgramId,
+  )[0];
+}
+
+export function findPgcConfigPda(pgcProgramId: PublicKey) {
+  return PublicKey.findProgramAddressSync(
+    [Buffer.from("config")],
     pgcProgramId,
   )[0];
 }
 
-export function findPgcMinterAuthorityPda(
+export function findPgcGameAccountPda(pgcProgramId: PublicKey, gameId: string) {
+  return PublicKey.findProgramAddressSync(
+    [Buffer.from("game"), Buffer.from(gameId)],
+    pgcProgramId,
+  )[0];
+}
+
+export function findPgcMinterAccountPda(
   pgcProgramId: PublicKey,
-  gameState: PublicKey,
-  account: PublicKey,
+  gamePda: PublicKey,
+  minter: PublicKey,
 ) {
   return PublicKey.findProgramAddressSync(
-    [Buffer.from("minter_auth"), gameState.toBuffer(), account.toBuffer()],
+    [Buffer.from("minter_auth"), gamePda.toBuffer(), minter.toBuffer()],
     pgcProgramId,
   )[0];
 }
 
 export function findPgcLicenseAccountPda(
   pgcProgramId: PublicKey,
-  gameState: PublicKey,
-  user: PublicKey,
+  buyer: PublicKey,
+  gamePda: PublicKey,
 ) {
   return PublicKey.findProgramAddressSync(
-    [Buffer.from("license"), gameState.toBuffer(), user.toBuffer()],
+    [Buffer.from("license"), buyer.toBuffer(), gamePda.toBuffer()],
+    pgcProgramId,
+  )[0];
+}
+
+export function findPgcGameAuthorityPda(pgcProgramId: PublicKey, gamePda: PublicKey) {
+  return PublicKey.findProgramAddressSync(
+    [Buffer.from("game_authority"), gamePda.toBuffer()],
     pgcProgramId,
   )[0];
 }
@@ -56,9 +98,5 @@ export function findAssociatedTokenAddress(
 }
 
 export function isNativeSolPaymentMint(mint: PublicKey) {
-  const base58 = mint.toBase58();
-  return (
-    base58 === SYSTEM_PROGRAM_ID.toBase58() ||
-    base58 === NATIVE_SOL_MINT.toBase58()
-  );
+  return mint.toBase58() === NATIVE_SOL_MINT.toBase58();
 }

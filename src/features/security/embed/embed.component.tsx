@@ -21,6 +21,23 @@ export function EmbedLayout({ children }: EmbedLayoutProps) {
     }
   }, [isEmbed]);
 
+  useEffect(() => {
+    const handleInteraction = () => {
+      const { initAudioContext } = require("@/shared/utils/soundEngine");
+      initAudioContext();
+      window.removeEventListener("mousedown", handleInteraction);
+      window.removeEventListener("touchstart", handleInteraction);
+    };
+
+    window.addEventListener("mousedown", handleInteraction);
+    window.addEventListener("touchstart", handleInteraction);
+
+    return () => {
+      window.removeEventListener("mousedown", handleInteraction);
+      window.removeEventListener("touchstart", handleInteraction);
+    };
+  }, []);
+
   return (
     <>
       {!isEmbed && <Navbar />}

@@ -34,37 +34,14 @@ export class EvmPurchaseService {
             throw new Error(`Invalid payment token: payment_token is ${payment_token}`);
         }
 
-        /* ================= SETUP ================= */
-
+        /* ================= REGISTRY ================= */
         const chainKey = input.chainKey ?? useChainStore.getState().chainKey
-
         const chain = getViemChain(chainKey)
         const registry = getPeridotRegistry(chainKey)
         const publicClient = getEvmPublicClient(chainKey)
 
         const requestedPgc1 = getAddress(pgc1_address)
         const selectedPaymentToken = getAddress(payment_token)
-
-        const walletClient = createWalletClient({
-            chain,
-            transport: custom(window.ethereum),
-        })
-
-        const [buyer] = await walletClient.getAddresses()
-
-        if (!buyer) {
-            throw new Error("Wallet not connected");
-        }
-
-        /* ================= ENSURE NETWORK ================= */
-
-        try {
-            await walletClient.switchChain({ id: chain.id });
-        } catch {
-            throw new Error("Please switch network in wallet");
-        }
-
-        /* ================= REGISTRY ================= */
 
         let gameId: string;
         let active = false;
@@ -108,6 +85,27 @@ export class EvmPurchaseService {
         }
         if (!active) throw new Error('Game inactive')
 
+        /* ================= SETUP ================= */
+
+        const walletClient = createWalletClient({
+            chain,
+            transport: custom(window.ethereum),
+        })
+
+        const [buyer] = await walletClient.getAddresses()
+
+        if (!buyer) {
+            throw new Error("Wallet not connected");
+        }
+
+        /* ================= ENSURE NETWORK ================= */
+
+        try {
+            await walletClient.switchChain({ id: chain.id });
+        } catch {
+            throw new Error("Please switch network in wallet");
+        }
+
         /* ================= OWNERSHIP ================= */
 
         const owned = (await publicClient.readContract({
@@ -143,7 +141,7 @@ export class EvmPurchaseService {
         }
 
         if (contractPaymentToken === zeroAddress) {
-            await publicClient.simulateContract({
+            const gas = await publicClient.estimateContractGas({
                 address: requestedPgc1,
                 abi: PGC1Abi,
                 functionName: 'buy',
@@ -157,6 +155,7 @@ export class EvmPurchaseService {
                 functionName: 'buy',
                 value: price,
                 account: buyer,
+                gas: (gas * BigInt(120)) / BigInt(100), // 20% buffer
             })
             
             await publicClient.waitForTransactionReceipt({ hash })
@@ -171,7 +170,7 @@ export class EvmPurchaseService {
         })) as bigint
 
         if (allowance < price) {
-            const approvalHash = await walletClient.writeContract({
+            const approvalGas = await publicClient.estimateContractGas({
                 address: contractPaymentToken,
                 abi: ERC20Abi,
                 functionName: 'approve',
@@ -179,12 +178,21 @@ export class EvmPurchaseService {
                 account: buyer,
             })
 
+            const approvalHash = await walletClient.writeContract({
+                address: contractPaymentToken,
+                abi: ERC20Abi,
+                functionName: 'approve',
+                args: [requestedPgc1, price],
+                account: buyer,
+                gas: (approvalGas * BigInt(120)) / BigInt(100), // 20% buffer
+            })
+
             await publicClient.waitForTransactionReceipt({
                 hash: approvalHash,
             })
         }
 
-        await publicClient.simulateContract({
+        const buyGas = await publicClient.estimateContractGas({
             address: requestedPgc1,
             abi: PGC1Abi,
             functionName: 'buy',
@@ -198,6 +206,7 @@ export class EvmPurchaseService {
             functionName: 'buy',
             value: BigInt(0),
             account: buyer,
+            gas: (buyGas * BigInt(120)) / BigInt(100), // 20% buffer
         })
         
         await publicClient.waitForTransactionReceipt({ hash })

@@ -5,7 +5,7 @@
  * IDL can be found at `target/idl/registry.json`.
  */
 export type Registry = {
-  "address": "3bUSqLjWxUgmruzuRwhtWwhV93b4RXVN7bE5qHxHHxLj",
+  "address": "DCYPxPtnVeBgy56SYMT6GPBMJp8NJNLmE46QfHYqCgGL",
   "metadata": {
     "name": "registry",
     "version": "0.1.0",
@@ -27,32 +27,24 @@ export type Registry = {
       ],
       "accounts": [
         {
-          "name": "payer",
+          "name": "authority",
           "writable": true,
           "signer": true
         },
         {
-          "name": "registryState",
+          "name": "config",
           "writable": true,
           "pda": {
             "seeds": [
               {
                 "kind": "const",
                 "value": [
-                  114,
-                  101,
-                  103,
+                  99,
+                  111,
+                  110,
+                  102,
                   105,
-                  115,
-                  116,
-                  114,
-                  121,
-                  95,
-                  115,
-                  116,
-                  97,
-                  116,
-                  101
+                  103
                 ]
               }
             ]
@@ -63,28 +55,7 @@ export type Registry = {
           "address": "11111111111111111111111111111111"
         }
       ],
-      "args": [
-        {
-          "name": "governance",
-          "type": "pubkey"
-        },
-        {
-          "name": "treasury",
-          "type": "pubkey"
-        },
-        {
-          "name": "factory",
-          "type": "pubkey"
-        },
-        {
-          "name": "registrationFee",
-          "type": "u64"
-        },
-        {
-          "name": "registrationFeeToken",
-          "type": "pubkey"
-        }
-      ]
+      "args": []
     },
     {
       "name": "registerGame",
@@ -105,54 +76,47 @@ export type Registry = {
           "signer": true
         },
         {
-          "name": "registryState",
-          "writable": true,
+          "name": "config",
           "pda": {
             "seeds": [
               {
                 "kind": "const",
                 "value": [
-                  114,
-                  101,
-                  103,
+                  99,
+                  111,
+                  110,
+                  102,
                   105,
-                  115,
-                  116,
-                  114,
-                  121,
-                  95,
-                  115,
-                  116,
-                  97,
-                  116,
-                  101
+                  103
                 ]
               }
             ]
           }
         },
         {
-          "name": "pgcGameState"
-        },
-        {
           "name": "treasury",
           "writable": true
         },
         {
-          "name": "publisherFeeTokenAccount",
-          "optional": true
-        },
-        {
-          "name": "treasuryFeeTokenAccount",
-          "optional": true
-        },
-        {
-          "name": "feePaymentMint",
-          "optional": true
-        },
-        {
-          "name": "tokenProgram",
-          "optional": true
+          "name": "game",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  103,
+                  97,
+                  109,
+                  101
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "gameId"
+              }
+            ]
+          }
         },
         {
           "name": "systemProgram",
@@ -165,337 +129,11 @@ export type Registry = {
           "type": "string"
         },
         {
-          "name": "contractAddress",
+          "name": "pgcProgram",
           "type": "pubkey"
         },
         {
-          "name": "paymentMethod",
-          "type": "pubkey"
-        }
-      ]
-    },
-    {
-      "name": "registerGameByFactory",
-      "discriminator": [
-        97,
-        126,
-        237,
-        176,
-        80,
-        144,
-        17,
-        48
-      ],
-      "accounts": [
-        {
-          "name": "factory",
-          "signer": true
-        },
-        {
-          "name": "feePayer",
-          "writable": true,
-          "signer": true
-        },
-        {
-          "name": "registryState",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  114,
-                  101,
-                  103,
-                  105,
-                  115,
-                  116,
-                  114,
-                  121,
-                  95,
-                  115,
-                  116,
-                  97,
-                  116,
-                  101
-                ]
-              }
-            ]
-          }
-        },
-        {
-          "name": "pgcGameState"
-        },
-        {
-          "name": "treasury",
-          "writable": true
-        },
-        {
-          "name": "feePayerTokenAccount",
-          "writable": true,
-          "optional": true
-        },
-        {
-          "name": "treasuryFeeTokenAccount",
-          "writable": true,
-          "optional": true
-        },
-        {
-          "name": "feePaymentMint",
-          "optional": true
-        },
-        {
-          "name": "tokenProgram",
-          "optional": true
-        },
-        {
-          "name": "systemProgram",
-          "address": "11111111111111111111111111111111"
-        }
-      ],
-      "args": [
-        {
-          "name": "gameId",
-          "type": "string"
-        },
-        {
-          "name": "contractAddress",
-          "type": "pubkey"
-        },
-        {
-          "name": "publisher",
-          "type": "pubkey"
-        },
-        {
-          "name": "paymentMethod",
-          "type": "pubkey"
-        }
-      ]
-    },
-    {
-      "name": "setAdmin",
-      "discriminator": [
-        251,
-        163,
-        0,
-        52,
-        91,
-        194,
-        187,
-        92
-      ],
-      "accounts": [
-        {
-          "name": "governance",
-          "signer": true,
-          "relations": [
-            "registryState"
-          ]
-        },
-        {
-          "name": "registryState",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  114,
-                  101,
-                  103,
-                  105,
-                  115,
-                  116,
-                  114,
-                  121,
-                  95,
-                  115,
-                  116,
-                  97,
-                  116,
-                  101
-                ]
-              }
-            ]
-          }
-        }
-      ],
-      "args": [
-        {
-          "name": "account",
-          "type": "pubkey"
-        },
-        {
-          "name": "isAdmin",
-          "type": "bool"
-        }
-      ]
-    },
-    {
-      "name": "setFactory",
-      "discriminator": [
-        46,
-        80,
-        105,
-        138,
-        222,
-        108,
-        79,
-        228
-      ],
-      "accounts": [
-        {
-          "name": "governance",
-          "signer": true,
-          "relations": [
-            "registryState"
-          ]
-        },
-        {
-          "name": "registryState",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  114,
-                  101,
-                  103,
-                  105,
-                  115,
-                  116,
-                  114,
-                  121,
-                  95,
-                  115,
-                  116,
-                  97,
-                  116,
-                  101
-                ]
-              }
-            ]
-          }
-        }
-      ],
-      "args": [
-        {
-          "name": "factory",
-          "type": "pubkey"
-        }
-      ]
-    },
-    {
-      "name": "setFeeExemption",
-      "discriminator": [
-        49,
-        221,
-        99,
-        185,
-        22,
-        228,
-        186,
-        160
-      ],
-      "accounts": [
-        {
-          "name": "governance",
-          "signer": true,
-          "relations": [
-            "registryState"
-          ]
-        },
-        {
-          "name": "registryState",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  114,
-                  101,
-                  103,
-                  105,
-                  115,
-                  116,
-                  114,
-                  121,
-                  95,
-                  115,
-                  116,
-                  97,
-                  116,
-                  101
-                ]
-              }
-            ]
-          }
-        }
-      ],
-      "args": [
-        {
-          "name": "account",
-          "type": "pubkey"
-        },
-        {
-          "name": "isExempt",
-          "type": "bool"
-        }
-      ]
-    },
-    {
-      "name": "setGovernance",
-      "discriminator": [
-        34,
-        71,
-        128,
-        245,
-        179,
-        42,
-        140,
-        137
-      ],
-      "accounts": [
-        {
-          "name": "governance",
-          "signer": true,
-          "relations": [
-            "registryState"
-          ]
-        },
-        {
-          "name": "registryState",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  114,
-                  101,
-                  103,
-                  105,
-                  115,
-                  116,
-                  114,
-                  121,
-                  95,
-                  115,
-                  116,
-                  97,
-                  116,
-                  101
-                ]
-              }
-            ]
-          }
-        }
-      ],
-      "args": [
-        {
-          "name": "governance",
+          "name": "pgcGame",
           "type": "pubkey"
         }
       ]
@@ -514,52 +152,36 @@ export type Registry = {
       ],
       "accounts": [
         {
-          "name": "governance",
+          "name": "authority",
           "signer": true,
           "relations": [
-            "registryState"
+            "config"
           ]
         },
         {
-          "name": "registryState",
+          "name": "config",
           "writable": true,
           "pda": {
             "seeds": [
               {
                 "kind": "const",
                 "value": [
-                  114,
-                  101,
-                  103,
+                  99,
+                  111,
+                  110,
+                  102,
                   105,
-                  115,
-                  116,
-                  114,
-                  121,
-                  95,
-                  115,
-                  116,
-                  97,
-                  116,
-                  101
+                  103
                 ]
               }
             ]
           }
-        },
-        {
-          "name": "registrationFeeMint",
-          "optional": true
         }
       ],
       "args": [
         {
-          "name": "amount",
+          "name": "fee",
           "type": "u64"
-        },
-        {
-          "name": "token",
-          "type": "pubkey"
         }
       ]
     },
@@ -577,32 +199,47 @@ export type Registry = {
       ],
       "accounts": [
         {
-          "name": "admin",
-          "signer": true
+          "name": "authority",
+          "signer": true,
+          "relations": [
+            "config"
+          ]
         },
         {
-          "name": "registryState",
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "game",
           "writable": true,
           "pda": {
             "seeds": [
               {
                 "kind": "const",
                 "value": [
-                  114,
-                  101,
                   103,
-                  105,
-                  115,
-                  116,
-                  114,
-                  121,
-                  95,
-                  115,
-                  116,
                   97,
-                  116,
+                  109,
                   101
                 ]
+              },
+              {
+                "kind": "arg",
+                "path": "gameId"
               }
             ]
           }
@@ -614,8 +251,8 @@ export type Registry = {
           "type": "string"
         },
         {
-          "name": "status",
-          "type": "u8"
+          "name": "active",
+          "type": "bool"
         }
       ]
     },
@@ -633,34 +270,26 @@ export type Registry = {
       ],
       "accounts": [
         {
-          "name": "governance",
+          "name": "authority",
           "signer": true,
           "relations": [
-            "registryState"
+            "config"
           ]
         },
         {
-          "name": "registryState",
+          "name": "config",
           "writable": true,
           "pda": {
             "seeds": [
               {
                 "kind": "const",
                 "value": [
-                  114,
-                  101,
-                  103,
+                  99,
+                  111,
+                  110,
+                  102,
                   105,
-                  115,
-                  116,
-                  114,
-                  121,
-                  95,
-                  115,
-                  116,
-                  97,
-                  116,
-                  101
+                  103
                 ]
               }
             ]
@@ -673,381 +302,197 @@ export type Registry = {
           "type": "pubkey"
         }
       ]
+    },
+    {
+      "name": "transferPublisher",
+      "discriminator": [
+        157,
+        54,
+        242,
+        245,
+        198,
+        174,
+        250,
+        106
+      ],
+      "accounts": [
+        {
+          "name": "publisher",
+          "signer": true,
+          "relations": [
+            "game"
+          ]
+        },
+        {
+          "name": "game",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  103,
+                  97,
+                  109,
+                  101
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "gameId"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "gameId",
+          "type": "string"
+        },
+        {
+          "name": "newPublisher",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
+      "name": "updateGame",
+      "discriminator": [
+        159,
+        61,
+        132,
+        131,
+        3,
+        234,
+        209,
+        220
+      ],
+      "accounts": [
+        {
+          "name": "publisher",
+          "signer": true,
+          "relations": [
+            "game"
+          ]
+        },
+        {
+          "name": "game",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  103,
+                  97,
+                  109,
+                  101
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "gameId"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "gameId",
+          "type": "string"
+        },
+        {
+          "name": "pgcProgram",
+          "type": "pubkey"
+        },
+        {
+          "name": "pgcGame",
+          "type": "pubkey"
+        }
+      ]
     }
   ],
   "accounts": [
     {
-      "name": "gameState",
+      "name": "registryConfig",
       "discriminator": [
-        144,
-        94,
-        208,
-        172,
-        248,
-        99,
-        134,
-        120
+        23,
+        118,
+        10,
+        246,
+        173,
+        231,
+        243,
+        156
       ]
     },
     {
-      "name": "registryState",
+      "name": "registryGameAccount",
       "discriminator": [
-        29,
-        34,
-        224,
-        195,
-        175,
-        183,
-        99,
-        97
-      ]
-    }
-  ],
-  "events": [
-    {
-      "name": "adminUpdated",
-      "discriminator": [
-        69,
-        82,
-        49,
-        171,
-        43,
-        3,
-        80,
-        161
-      ]
-    },
-    {
-      "name": "factoryUpdated",
-      "discriminator": [
-        70,
-        199,
-        169,
-        219,
-        149,
-        71,
-        121,
-        167
-      ]
-    },
-    {
-      "name": "feeExemptionUpdated",
-      "discriminator": [
-        90,
-        107,
-        54,
-        194,
-        86,
-        15,
-        0,
-        217
-      ]
-    },
-    {
-      "name": "gameRegistered",
-      "discriminator": [
-        2,
-        83,
-        36,
-        122,
-        249,
-        190,
-        106,
-        31
-      ]
-    },
-    {
-      "name": "gameStatusUpdated",
-      "discriminator": [
-        247,
-        12,
-        74,
-        230,
-        132,
-        141,
-        74,
-        217
-      ]
-    },
-    {
-      "name": "governanceUpdated",
-      "discriminator": [
-        242,
-        176,
-        180,
-        4,
-        237,
-        220,
-        12,
-        2
-      ]
-    },
-    {
-      "name": "registrationFeeUpdated",
-      "discriminator": [
-        166,
-        161,
-        107,
-        244,
-        151,
-        1,
-        35,
-        38
-      ]
-    },
-    {
-      "name": "registryInitialized",
-      "discriminator": [
-        144,
-        138,
-        62,
-        105,
-        58,
-        38,
-        100,
-        177
-      ]
-    },
-    {
-      "name": "treasuryUpdated",
-      "discriminator": [
-        80,
-        239,
-        54,
-        168,
-        43,
-        38,
-        85,
-        145
+        17,
+        140,
+        126,
+        39,
+        63,
+        84,
+        119,
+        73
       ]
     }
   ],
   "errors": [
     {
       "code": 6000,
-      "name": "emptyGameId",
-      "msg": "Game ID must not be empty"
-    },
-    {
-      "code": 6001,
-      "name": "gameIdTooLong",
-      "msg": "Game ID is too long"
-    },
-    {
-      "code": 6002,
-      "name": "invalidContractAddress",
-      "msg": "Invalid contract address"
-    },
-    {
-      "code": 6003,
-      "name": "invalidGovernance",
-      "msg": "Invalid governance address"
-    },
-    {
-      "code": 6004,
-      "name": "invalidTreasury",
-      "msg": "Invalid treasury address"
-    },
-    {
-      "code": 6005,
-      "name": "invalidFactory",
-      "msg": "Invalid factory address"
-    },
-    {
-      "code": 6006,
-      "name": "invalidPublisher",
-      "msg": "Invalid publisher address"
-    },
-    {
-      "code": 6007,
-      "name": "invalidAdmin",
-      "msg": "Invalid admin address"
-    },
-    {
-      "code": 6008,
-      "name": "invalidFeeExemptionAccount",
-      "msg": "Invalid fee exemption address"
-    },
-    {
-      "code": 6009,
-      "name": "invalidRegistrationPaymentMethod",
-      "msg": "Invalid registration payment method"
-    },
-    {
-      "code": 6010,
       "name": "unauthorized",
       "msg": "unauthorized"
     },
     {
-      "code": 6011,
-      "name": "gameAlreadyRegistered",
-      "msg": "Game is already registered"
-    },
-    {
-      "code": 6012,
-      "name": "gameNotFound",
-      "msg": "Game was not found"
-    },
-    {
-      "code": 6013,
+      "code": 6001,
       "name": "invalidStatus",
-      "msg": "Invalid game status"
+      "msg": "Invalid status"
     },
     {
-      "code": 6014,
-      "name": "gameIdMismatch",
-      "msg": "Provided game ID does not match PGC canonical game ID"
-    },
-    {
-      "code": 6015,
-      "name": "publisherMismatch",
-      "msg": "Provided publisher does not match PGC canonical publisher"
-    },
-    {
-      "code": 6016,
-      "name": "registryFull",
-      "msg": "Registry game limit reached"
-    },
-    {
-      "code": 6017,
-      "name": "adminListFull",
-      "msg": "Registry admin limit reached"
-    },
-    {
-      "code": 6018,
-      "name": "feeExemptionListFull",
-      "msg": "Registry fee exemption limit reached"
-    },
-    {
-      "code": 6019,
-      "name": "missingFeeAccounts",
-      "msg": "Missing required fee accounts"
-    },
-    {
-      "code": 6020,
-      "name": "registrationFeeOptionNotFound",
-      "msg": "Registration fee option was not found"
-    },
-    {
-      "code": 6021,
-      "name": "registrationFeeOptionLimitReached",
-      "msg": "Registration fee option limit reached"
-    },
-    {
-      "code": 6022,
-      "name": "invalidFeePayerTokenAccount",
-      "msg": "Invalid fee payer token account"
-    },
-    {
-      "code": 6023,
-      "name": "invalidTreasuryAccount",
-      "msg": "Invalid treasury account"
-    },
-    {
-      "code": 6024,
-      "name": "invalidTreasuryTokenAccount",
-      "msg": "Invalid treasury token account"
-    },
-    {
-      "code": 6025,
-      "name": "registrationFeeMintMismatch",
-      "msg": "Registration fee mint mismatch"
+      "code": 6002,
+      "name": "invalidAuthority",
+      "msg": "Invalid authority"
     }
   ],
   "types": [
     {
-      "name": "adminUpdated",
+      "name": "registryConfig",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "account",
+            "name": "authority",
             "type": "pubkey"
           },
           {
-            "name": "isAdmin",
-            "type": "bool"
-          }
-        ]
-      }
-    },
-    {
-      "name": "factoryUpdated",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "oldFactory",
+            "name": "treasury",
             "type": "pubkey"
           },
           {
-            "name": "newFactory",
-            "type": "pubkey"
-          }
-        ]
-      }
-    },
-    {
-      "name": "feeExemptionUpdated",
-      "type": {
-        "kind": "struct",
-        "fields": [
+            "name": "registrationFee",
+            "type": "u64"
+          },
           {
-            "name": "account",
+            "name": "registrationCurrency",
             "type": "pubkey"
           },
-          {
-            "name": "isExempt",
-            "type": "bool"
-          }
-        ]
-      }
-    },
-    {
-      "name": "gameRegistered",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "gameId",
-            "type": "string"
-          },
-          {
-            "name": "contractAddress",
-            "type": "pubkey"
-          },
-          {
-            "name": "publisher",
-            "type": "pubkey"
-          },
-          {
-            "name": "status",
-            "type": "u8"
-          },
-          {
-            "name": "registeredByFactory",
-            "type": "bool"
-          }
-        ]
-      }
-    },
-    {
-      "name": "gameState",
-      "type": {
-        "kind": "struct",
-        "fields": [
           {
             "name": "bump",
             "type": "u8"
-          },
-          {
-            "name": "authorityBump",
-            "type": "u8"
-          },
-          {
-            "name": "mint",
-            "type": "pubkey"
-          },
+          }
+        ]
+      }
+    },
+    {
+      "name": "registryGameAccount",
+      "type": {
+        "kind": "struct",
+        "fields": [
           {
             "name": "gameId",
             "type": "string"
@@ -1057,228 +502,24 @@ export type Registry = {
             "type": "pubkey"
           },
           {
-            "name": "metadataUri",
-            "type": "string"
-          }
-        ]
-      }
-    },
-    {
-      "name": "gameStatusUpdated",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "gameId",
-            "type": "string"
-          },
-          {
-            "name": "oldStatus",
-            "type": "u8"
-          },
-          {
-            "name": "newStatus",
-            "type": "u8"
-          },
-          {
-            "name": "admin",
-            "type": "pubkey"
-          }
-        ]
-      }
-    },
-    {
-      "name": "governanceUpdated",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "oldGovernance",
+            "name": "pgcPid",
             "type": "pubkey"
           },
           {
-            "name": "newGovernance",
-            "type": "pubkey"
-          }
-        ]
-      }
-    },
-    {
-      "name": "registrationFeeOption",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "paymentMethod",
+            "name": "pgcPda",
             "type": "pubkey"
           },
           {
-            "name": "amount",
-            "type": "u64"
-          }
-        ]
-      }
-    },
-    {
-      "name": "registrationFeeOptionEvent",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "paymentMethod",
-            "type": "pubkey"
-          },
-          {
-            "name": "amount",
-            "type": "u64"
-          }
-        ]
-      }
-    },
-    {
-      "name": "registrationFeeUpdated",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "paymentMethod",
-            "type": "pubkey"
-          },
-          {
-            "name": "amount",
-            "type": "u64"
-          },
-          {
-            "name": "enabled",
+            "name": "active",
             "type": "bool"
-          }
-        ]
-      }
-    },
-    {
-      "name": "registryGame",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "gameId",
-            "type": "string"
           },
           {
-            "name": "contractAddress",
-            "type": "pubkey"
+            "name": "createdAt",
+            "type": "i64"
           },
-          {
-            "name": "status",
-            "type": "u8"
-          }
-        ]
-      }
-    },
-    {
-      "name": "registryInitialized",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "governance",
-            "type": "pubkey"
-          },
-          {
-            "name": "treasury",
-            "type": "pubkey"
-          },
-          {
-            "name": "factory",
-            "type": "pubkey"
-          },
-          {
-            "name": "registrationFeeOptions",
-            "type": {
-              "vec": {
-                "defined": {
-                  "name": "registrationFeeOptionEvent"
-                }
-              }
-            }
-          }
-        ]
-      }
-    },
-    {
-      "name": "registryState",
-      "type": {
-        "kind": "struct",
-        "fields": [
           {
             "name": "bump",
             "type": "u8"
-          },
-          {
-            "name": "governance",
-            "type": "pubkey"
-          },
-          {
-            "name": "treasury",
-            "type": "pubkey"
-          },
-          {
-            "name": "factory",
-            "type": "pubkey"
-          },
-          {
-            "name": "registrationFeeOptions",
-            "type": {
-              "vec": {
-                "defined": {
-                  "name": "registrationFeeOption"
-                }
-              }
-            }
-          },
-          {
-            "name": "admins",
-            "type": {
-              "vec": "pubkey"
-            }
-          },
-          {
-            "name": "feeExemptions",
-            "type": {
-              "vec": "pubkey"
-            }
-          },
-          {
-            "name": "games",
-            "type": {
-              "vec": {
-                "defined": {
-                  "name": "registryGame"
-                }
-              }
-            }
-          },
-          {
-            "name": "allGameIds",
-            "type": {
-              "vec": "string"
-            }
-          }
-        ]
-      }
-    },
-    {
-      "name": "treasuryUpdated",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "oldTreasury",
-            "type": "pubkey"
-          },
-          {
-            "name": "newTreasury",
-            "type": "pubkey"
           }
         ]
       }

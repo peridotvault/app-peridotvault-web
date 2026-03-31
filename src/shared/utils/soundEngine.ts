@@ -21,20 +21,35 @@ export async function preloadClickSound(url: string) {
     if (loadingPromise) return loadingPromise;
 
     loadingPromise = (async () => {
-        const res = await fetch(url);
-        const arr = await res.arrayBuffer();
-        clickBuffer = await ctx.decodeAudioData(arr);
+        try {
+            const res = await fetch(url);
+            const arr = await res.arrayBuffer();
+            clickBuffer = await ctx.decodeAudioData(arr);
+        } catch (err) {
+            console.error("Failed to preload click sound", err);
+            loadingPromise = null;
+        }
     })();
 
     return loadingPromise;
 }
 
-export async function playClickBuffer(volume: number) {
+/**
+ * Pre-init context on first interaction to avoid delay on first click
+ */
+export function initAudioContext() {
+    const ctx = getAudioContext();
+    if (ctx.state === 'suspended') {
+        void ctx.resume();
+    }
+}
+
+export function playClickBuffer(volume: number) {
     const ctx = getAudioContext();
 
-    // pastikan context resume (beberapa browser suspend sampai ada gesture)
+    // Sync check for resume if suspended (async fallback if needed)
     if (ctx.state === 'suspended') {
-        await ctx.resume();
+        void ctx.resume();
     }
 
     if (!clickBuffer) return;
@@ -51,3 +66,4 @@ export async function playClickBuffer(volume: number) {
     // start secepat mungkin
     src.start(ctx.currentTime);
 }
+

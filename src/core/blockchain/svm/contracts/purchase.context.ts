@@ -1,174 +1,151 @@
 import { Connection, PublicKey } from "@solana/web3.js";
 import type { BuyGameInput } from "@/core/blockchain/__core__/types/purchase.type";
 import {
-  decodePgcGameState,
-  decodeRegistryState,
-  decodeStoreState,
+  decodePgcGameAccount,
+  decodePriceAccount,
+  decodeRegistryGameAccount,
+  decodeStoreConfig,
+  type SvmPgcGameAccount,
+  type SvmPriceAccount,
+  type SvmRegistryGame,
+  type SvmStoreConfig,
 } from "./account.state";
 import {
   findAssociatedTokenAddress,
-  findPgcGameAuthorityPda,
+  findPgcConfigPda,
   findPgcLicenseAccountPda,
-  findPgcMinterAuthorityPda,
+  findPriceAccountPda,
+  findPublisherBalancePda,
+  findRegistryGamePda,
   findStoreStatePda,
   isNativeSolPaymentMint,
 } from "./pda";
-import { TOKEN_2022_PROGRAM_ID } from "./program.constants";
-import { getSvmPgcProgramId } from "./program.registry";
+import {
+  SYSTEM_PROGRAM_ID,
+  TOKEN_PROGRAM_ID,
+} from "./program.constants";
+import { getSvmRegistryProgramId, getSvmPgcProgramId } from "./program.registry";
 
 export type SvmBuyGameAccounts = {
-  buyer: PublicKey;
+  buyer?: PublicKey;
   storeState: PublicKey;
-  registryState: PublicKey;
-  pgcProgram: PublicKey;
-  pgcGameState: PublicKey;
-  gameAuthority: PublicKey;
-  storeMinterAuth: PublicKey;
-  licenseAccount: PublicKey;
-  userGameTokenAccount: PublicKey;
-  gameMint: PublicKey;
   treasury: PublicKey;
-  paymentMint: PublicKey;
-  buyerPaymentTokenAccount: PublicKey;
+  registryGame: PublicKey;
+  priceAccount: PublicKey;
+  publisher: PublicKey;
+  publisherBalance: PublicKey;
+  pgcProgram: PublicKey;
+  pgcConfig: PublicKey;
+  licensePda: PublicKey;
+  tokenProgram: PublicKey;
+  buyerTokenAccount: PublicKey;
   treasuryTokenAccount: PublicKey;
-  storeVaultTokenAccount: PublicKey;
-  paymentTokenProgram: PublicKey;
+  publisherTokenAccount: PublicKey;
+  systemProgram: PublicKey;
 };
 
 export type SvmBuyGameContext = {
-  gameId: string;
   accounts: SvmBuyGameAccounts;
+  store: SvmStoreConfig;
+  pgc: SvmPgcGameAccount;
+  price: SvmPriceAccount;
+  game: SvmRegistryGame;
 };
 
-function parsePublicKey(value: string, label: string) {
-  try {
-    return new PublicKey(value);
-  } catch {
-    throw new Error(`Invalid Solana ${label}: ${value}`);
-  }
-}
-
 export async function getSvmBuyGameContext(params: {
-  buyer: PublicKey;
   connection: Connection;
   programId: PublicKey;
   input: BuyGameInput;
-}) {
+  buyer?: PublicKey;
+}): Promise<SvmBuyGameContext> {
   const gameId = params.input.game_id?.trim();
   if (!gameId) {
     throw new Error("Missing game_id for Solana purchase");
   }
 
-  const pgcGameState = parsePublicKey(params.input.pgc1_address, "game state");
-  const paymentMint = parsePublicKey(params.input.payment_token, "payment mint");
+  const pgcProgramId = getSvmPgcProgramId();
+  const registryProgramId = getSvmRegistryProgramId();
 
-  if (isNativeSolPaymentMint(paymentMint)) {
-    throw new Error("Native SOL purchases are not configured in this client yet");
-  }
+  // 1. Initial lookup PDAs
+  const storeStatePda = findStoreStatePda(params.programId);
+  const registryGamePda = findRegistryGamePda(registryProgramId, gameId);
+  
+  // 2. Fetch Registry Account (Individual PDA in this program version)
+  const registryInfo = await params.connection.getAccountInfo(registryGamePda);
+  if (!registryInfo) throw new Error(`Game ${gameId} not found in Registry at address ${registryGamePda.toBase58()}`);
+  const game = decodeRegistryGameAccount(registryInfo.data);
 
-  const storeState = findStoreStatePda(params.programId);
-  const [storeStateAccount, pgcGameStateAccount, paymentMintAccount] =
-    await params.connection.getMultipleAccountsInfo([
-      storeState,
-      pgcGameState,
-      paymentMint,
-    ]);
+  // 3. Source of Truth Addresses (PGC PDA is obtained from the registry game entry)
+  const pgcGameStatePda = game.pgcPda;
+  const pgcConfigPda = findPgcConfigPda(pgcProgramId);
+  
+  // CRITICAL FIX: Price account is derived using PGC Game PDA, not Registry PDA
+  const priceAccountPda = findPriceAccountPda(params.programId, pgcGameStatePda);
 
-  if (!storeStateAccount) {
-    throw new Error("Store state account not found");
-  }
-  if (!pgcGameStateAccount) {
-    throw new Error("Selected PGC game state account not found");
-  }
-  if (!paymentMintAccount) {
-    throw new Error("Selected payment mint account not found");
-  }
+  // 4. Batch fetch core states
+  const [storeInfo, pgcInfo, priceInfo] = await params.connection.getMultipleAccountsInfo([
+    storeStatePda,
+    pgcGameStatePda,
+    priceAccountPda,
+  ]);
 
-  const store = decodeStoreState(storeStateAccount.data);
-  const pgcGame = decodePgcGameState(pgcGameStateAccount.data);
+  if (!storeInfo) throw new Error("Store config not found");
+  if (!pgcInfo) throw new Error("PGC game account not found");
+  if (!priceInfo) throw new Error(`Price account not found for this game at ${priceAccountPda.toBase58()}`);
 
-  if (pgcGame.gameId !== gameId) {
-    throw new Error("Selected game does not match the on-chain PGC game state");
-  }
+  const store = decodeStoreConfig(storeInfo.data);
+  const pgc = decodePgcGameAccount(pgcInfo.data);
+  const price = decodePriceAccount(priceInfo.data);
 
-  const registryState = store.registry;
-  const registryStateAccount = await params.connection.getAccountInfo(registryState);
+  // 5. Final Derivations
+  const buyer = params.buyer || PublicKey.default;
+  const paymentMint = price.currency;
+  const isSol = isNativeSolPaymentMint(paymentMint);
 
-  if (!registryStateAccount) {
-    throw new Error("Registry state account not found");
-  }
-
-  const registry = decodeRegistryState(registryStateAccount.data);
-  const registryGame = registry.games.find((item) => item.gameId === gameId);
-
-  if (!registryGame) {
-    throw new Error("Game not registered in Solana registry");
-  }
-
-  if (!registryGame.contractAddress.equals(pgcGameState)) {
-    throw new Error("Selected game state does not match registry data");
-  }
-
-  const priceConfig = store.prices.find(
-    (item) => item.gameId === gameId && item.currency.equals(paymentMint),
+  const publisher = game.publisher;
+  const publisherBalancePda = findPublisherBalancePda(params.programId, publisher, paymentMint);
+  const licensePda = findPgcLicenseAccountPda(pgcProgramId, buyer, pgcGameStatePda);
+  
+  // Associated Token Accounts (AATAs)
+  const buyerTokenAccount = isSol ? publisherBalancePda : findAssociatedTokenAddress(
+    buyer,
+    paymentMint,
+    TOKEN_PROGRAM_ID
   );
 
-  if (!priceConfig) {
-    throw new Error("Selected payment mint is not configured for this game");
-  }
-
-  const pgcProgram = getSvmPgcProgramId();
-  const paymentTokenProgram = paymentMintAccount.owner;
-  const licenseAccount = findPgcLicenseAccountPda(
-    pgcProgram,
-    pgcGameState,
-    params.buyer,
+  const treasuryTokenAccount = isSol ? publisherBalancePda : findAssociatedTokenAddress(
+    store.treasury,
+    paymentMint,
+    TOKEN_PROGRAM_ID
   );
-  const existingLicense = await params.connection.getAccountInfo(licenseAccount);
 
-  if (existingLicense) {
-    throw new Error("Game already owned");
-  }
+  const publisherTokenAccount = isSol ? publisherBalancePda : findAssociatedTokenAddress(
+    publisher,
+    paymentMint,
+    TOKEN_PROGRAM_ID
+  );
 
   return {
-    gameId,
     accounts: {
       buyer: params.buyer,
-      storeState,
-      registryState,
-      pgcProgram,
-      pgcGameState,
-      gameAuthority: findPgcGameAuthorityPda(pgcProgram, pgcGameState),
-      storeMinterAuth: findPgcMinterAuthorityPda(
-        pgcProgram,
-        pgcGameState,
-        storeState,
-      ),
-      licenseAccount,
-      userGameTokenAccount: findAssociatedTokenAddress(
-        params.buyer,
-        pgcGame.mint,
-        TOKEN_2022_PROGRAM_ID,
-      ),
-      gameMint: pgcGame.mint,
+      storeState: storeStatePda,
       treasury: store.treasury,
-      paymentMint,
-      buyerPaymentTokenAccount: findAssociatedTokenAddress(
-        params.buyer,
-        paymentMint,
-        paymentTokenProgram,
-      ),
-      treasuryTokenAccount: findAssociatedTokenAddress(
-        store.treasury,
-        paymentMint,
-        paymentTokenProgram,
-      ),
-      storeVaultTokenAccount: findAssociatedTokenAddress(
-        storeState,
-        paymentMint,
-        paymentTokenProgram,
-      ),
-      paymentTokenProgram,
+      registryGame: pgcGameStatePda, // The store program expects the PGC Game PDA here
+      priceAccount: priceAccountPda,
+      publisher,
+      publisherBalance: publisherBalancePda,
+      pgcProgram: pgcProgramId,
+      pgcConfig: pgcConfigPda,
+      licensePda,
+      tokenProgram: isSol ? SYSTEM_PROGRAM_ID : TOKEN_PROGRAM_ID,
+      buyerTokenAccount,
+      treasuryTokenAccount,
+      publisherTokenAccount,
+      systemProgram: SYSTEM_PROGRAM_ID,
     },
-  } satisfies SvmBuyGameContext;
+    store,
+    pgc,
+    price,
+    game,
+  };
 }

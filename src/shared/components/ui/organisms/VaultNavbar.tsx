@@ -45,13 +45,22 @@ export const VaultNavbar = () => {
   });
 
   const selectedChain =
-    filteredChains.find((c) => c.caip_2_id === chainId) ?? filteredChains[0];
+    chainId === "" || !chainId
+      ? { name: "All Platform", icon_url: "/brand/logo-peridot.png" }
+      : filteredChains.find((c) => c.caip_2_id === chainId) ?? filteredChains[0];
 
-  const options: OptionComponent[] = filteredChains.map((c) => ({
-    value: c.caip_2_id,
-    label: c.name,
-    imageUrl: c.icon_url,
-  }));
+  const options: OptionComponent[] = [
+    {
+      value: "",
+      label: "All Platform",
+      imageUrl: "/brand/logo-peridot.png",
+    },
+    ...filteredChains.map((c) => ({
+      value: c.caip_2_id,
+      label: c.name,
+      imageUrl: c.icon_url,
+    })),
+  ];
 
   useEffect(() => {
     return () => {
