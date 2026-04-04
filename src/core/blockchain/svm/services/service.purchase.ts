@@ -72,6 +72,12 @@ export class SvmPurchaseService {
       input,
     });
     
+    // Explicitly check if the user already owns the game
+    const existingLicense = await connection.getAccountInfo(context.accounts.licensePda);
+    if (existingLicense) {
+      throw new Error("Game already owned. You can find it in your Library.");
+    }
+    
     console.log(`[SVM-PURCHASE-V2] Resolved context for ${buyer.toBase58()}`);
     console.log(`[SVM-PURCHASE-V2] 15 Accounts:`, {
       "01. Buyer (S, W)": context.accounts.buyer?.toBase58(),
