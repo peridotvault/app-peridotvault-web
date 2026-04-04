@@ -12,7 +12,7 @@ export type MyGameItem = Pick<
   | "distributions"
 > & {
   active: boolean;
-  pgc1_address: `0x${string}`;
+  pgc1_address: string;
   publisher: string;
   created_at: bigint;
   metadata_uri: string | null;

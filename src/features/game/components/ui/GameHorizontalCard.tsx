@@ -3,9 +3,12 @@
 
 import { EmbedLink } from "@/features/security/embed/embed.component";
 import { PriceCoin } from "@/shared/components/ui/molecules/CoinWithAmmount";
+import { resolveNativeTokenInfo } from "@/shared/utils/token";
 import { STYLE_ROUNDED_CARD } from "@/shared/constants/style";
 import { getAssetUrl } from "@/shared/utils/helper.url";
 import { urlGameDetail } from "../../configs/url.config";
+
+import { ChainApi } from "@/core/api/chain.api.type";
 
 export const GameHorizontalCard = ({
   gameId,
@@ -16,6 +19,7 @@ export const GameHorizontalCard = ({
   tokenSymbol,
   tokenDecimals,
   tokenLogo,
+  chain,
   onClick,
 }: {
   gameId: string;
@@ -26,6 +30,7 @@ export const GameHorizontalCard = ({
   tokenSymbol?: string;
   tokenDecimals?: number;
   tokenLogo?: string | null;
+  chain: ChainApi[] | undefined;
   onClick?: () => void;
 }) => {
   return (
@@ -71,14 +76,19 @@ export const GameHorizontalCard = ({
         <p className="font-medium text-white line-clamp-1">{gameName}</p>
         <div className="flex justify-end">
           <div className="bg-card/40 px-3 py-1 rounded-lg">
-            <PriceCoin
-              amount={price ?? 0}
-              tokenCanister={tokenCanister}
-              tokenSymbol={tokenSymbol}
-              tokenDecimals={tokenDecimals}
-              tokenLogo={tokenLogo}
-              textSize="sm"
-            />
+            {(() => {
+              const native = resolveNativeTokenInfo(chain?.[0]?.caip_2_id);
+              return (
+                <PriceCoin
+                  amount={price ?? 0}
+                  tokenCanister={tokenCanister}
+                  tokenSymbol={tokenSymbol ?? chain?.[0]?.native_symbol ?? native.symbol}
+                  tokenDecimals={tokenDecimals ?? native.decimals}
+                  tokenLogo={tokenLogo ?? chain?.[0]?.icon_url ?? native.logo}
+                  textSize="sm"
+                />
+              );
+            })()}
           </div>
         </div>
       </div>

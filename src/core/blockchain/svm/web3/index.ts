@@ -1,5 +1,5 @@
 import { clusterApiUrl, Connection } from "@solana/web3.js";
-import { DEFAULT_CHAIN_KEY } from "@/shared/constants/chain";
+import { DEFAULT_CHAIN_KEY, CHAIN_CONFIGS } from "@/shared/constants/chain";
 import { useChainStore } from "@/shared/states/chain.store";
 import type { ChainKey, SvmChainKey } from "@/shared/types/chain";
 
@@ -14,13 +14,20 @@ const SVM_RPC_URLS: Record<SvmChainKey, string> = {
 };
 
 export function getSvmChainKey(chainKey?: ChainKey): SvmChainKey {
-  const selected = chainKey ?? useChainStore.getState().chainKey ?? DEFAULT_CHAIN_KEY;
+  const selected =
+    chainKey ?? useChainStore.getState().chainKey ?? DEFAULT_CHAIN_KEY;
 
   if (selected === "solana-mainnet" || selected === "solana-testnet") {
     return selected;
   }
 
-  throw new Error(`SVM_UNSUPPORTED_CHAIN:${selected}`);
+  // Fallback: If an EVM chain is selected, use the corresponding Solana chain based on network
+  const config = CHAIN_CONFIGS[selected];
+  if (config?.network === "mainnet") {
+    return "solana-mainnet";
+  }
+
+  return "solana-testnet";
 }
 
 export function getSvmRpcUrl(chainKey?: ChainKey) {

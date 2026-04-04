@@ -49,6 +49,14 @@ export type SvmPgcGameAccount = {
   bump: number;
 };
 
+export type SvmLicenseAccount = {
+  owner: PublicKey;
+  game: PublicKey;
+  issuedAt: bigint;
+  expiresAt: bigint;
+  bump: number;
+};
+
 function getAccountDiscriminator(idl: { accounts?: Array<{ name: string; discriminator: number[] }> }, name: string) {
   const account = idl.accounts?.find((item) => item.name === name);
 
@@ -140,6 +148,23 @@ export function decodePgcGameAccount(data: Uint8Array): SvmPgcGameAccount {
     publisher: reader.readPublicKey(),
     metadataUri: reader.readString(),
     createdAt: reader.readI64(),
+    bump: reader.readU8(),
+  };
+}
+
+export function decodeLicenseAccount(data: Uint8Array): SvmLicenseAccount {
+  const bytes = stripAccountDiscriminator(
+    data,
+    getAccountDiscriminator(pgc1Idl, "LicenseAccount"),
+    "LicenseAccount",
+  );
+  const reader = new BorshReader(bytes);
+
+  return {
+    owner: reader.readPublicKey(),
+    game: reader.readPublicKey(),
+    issuedAt: reader.readI64(),
+    expiresAt: reader.readI64(),
     bump: reader.readU8(),
   };
 }
