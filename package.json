@@ -9,7 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "@antigane/wallet-adapters": "file:/Users/ranaufal/MyWork/Business/__AntiganeInc__/__Company__/lib/peridot-ui/packages/wallet-adapters/antigane-wallet-adapters-0.1.2.tgz",
+    "@antigane/wallet-adapters": "file:./vendor/antigane-wallet-adapters-0.1.2.tgz",
     "@fortawesome/fontawesome-svg-core": "^7.2.0",
     "@fortawesome/free-brands-svg-icons": "^7.2.0",
     "@fortawesome/free-regular-svg-icons": "^7.2.0",
