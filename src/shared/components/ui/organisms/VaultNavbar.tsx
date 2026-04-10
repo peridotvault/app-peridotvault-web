@@ -47,7 +47,8 @@ export const VaultNavbar = () => {
   const selectedChain =
     chainId === "" || !chainId
       ? { name: "All Platform", icon_url: "/brand/logo-peridot.png" }
-      : filteredChains.find((c) => c.caip_2_id === chainId) ?? filteredChains[0];
+      : (filteredChains.find((c) => c.caip_2_id === chainId) ??
+        filteredChains[0]);
 
   const options: OptionComponent[] = [
     {
@@ -235,20 +236,20 @@ function BrowseMenu({
       href: "/",
     },
     {
-      title: "My Library",
-      href: "/my-games",
+      title: "Top Games",
+      href: "/#top",
     },
     {
       title: "New Releases",
-      href: "/#",
-    },
-    {
-      title: "Top Games",
-      href: "/#",
+      href: "/#new",
     },
     {
       title: "All Games",
-      href: "/#",
+      href: "/#all",
+    },
+    {
+      title: "My Games",
+      href: "/my-games",
     },
   ];
   return (
@@ -298,7 +299,7 @@ function CategoriesMenu({
           <h3 className="sr-only">Find your next genre</h3>
         </div>
         <CategoryGrid
-          categories={categories}
+          categories={categories.slice(0, 6)}
           isLoading={isLoading}
           onNavigate={onNavigate}
         />

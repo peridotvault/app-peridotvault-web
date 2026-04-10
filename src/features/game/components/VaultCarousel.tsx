@@ -108,7 +108,7 @@ export function VaultCarousel({
       aria-label="Game showcase"
     >
       <h2 className="sr-only">Game Highlight Banner</h2>
-      <div className="w-full h-[50dvh] max-h-160 flex">
+      <div className="w-full h-[50dvh] min-h-100 max-h-160 flex">
         {/* LEFT: Description panel */}
         <div className="absolute z-5 left-0 bottom-0 w-full flex justify-between px-10 items-end">
           <div className="w-full h-full flex flex-col gap-6 justify-center">
@@ -116,7 +116,7 @@ export function VaultCarousel({
               <h3 className="font-semibold text-3xl leading-tight">
                 {active.name}
               </h3>
-              <p className="line-clamp-8/10 text-foreground/90">
+              <p className="line-clamp-3 text-foreground/90">
                 {active.description}
               </p>
             </div>

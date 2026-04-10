@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { TokenWithPrice } from "@/shared/components/ui/molecules/TokenWithPrice";
 import { GameOnChainPublish } from "../types/game.type";
 import { ButtonWithSound } from "@/shared/components/ui/atoms/ButtonWithSound";
@@ -18,7 +19,11 @@ export const SelectPaymentToken = ({
   game_onchain_publishes: GameOnChainPublish[] | undefined;
   price: number | undefined;
 }) => {
+  const [isBuying, setIsBuying] = useState(false);
+
   const handleBuyClick = async (item: GameOnChainPublish) => {
+    if (isBuying) return;
+    setIsBuying(true);
     const id = toastService.loading("Buying Game...");
     try {
       if (game_onchain_publishes) {
@@ -54,6 +59,8 @@ export const SelectPaymentToken = ({
       });
       useModal.getState().close(modalId);
       console.error(error);
+    } finally {
+      setIsBuying(false);
     }
   };
 
@@ -70,7 +77,8 @@ export const SelectPaymentToken = ({
           <ButtonWithSound
             key={item.id}
             onClick={() => handleBuyClick(item)}
-            className="hover:bg-foreground/5 cursor-pointer p-2 rounded-xl duration-300"
+            disabled={isBuying}
+            className="hover:bg-foreground/5 cursor-pointer p-2 rounded-xl duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <TokenWithPrice chain={chain} price={price} />
           </ButtonWithSound>

@@ -32,7 +32,7 @@ export const VaultTopGames: React.FC<Props> = ({
 
   return (
     <section className={"flex justify-center w-full px-6 " + className}>
-      <div className="flex flex-col gap-3 w-full items-center">
+      <div id="top" className="flex flex-col gap-3 w-full items-center">
         <div className="flex max-w-7xl mx-auto w-full">
           <TypographyH2 text="Top Games This Month" />
         </div>

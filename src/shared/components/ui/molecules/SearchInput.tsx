@@ -297,7 +297,7 @@ export function SearchInput({
       >
         <FontAwesomeIcon
           icon={faMagnifyingGlass}
-          className="text-muted-foreground"
+          className="h-4 w-4 text-muted-foreground"
         />
 
         <input

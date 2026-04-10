@@ -70,7 +70,7 @@ export default function Vault() {
          SECTION — New on PeridotVault (Latest Releases)
       ====================================================== */}
       <section
-        id="browse"
+        id="new"
         className="flex justify-center w-full scroll-mt-28 px-10"
       >
         <div className="flex flex-col gap-3 w-full items-center">
@@ -79,7 +79,7 @@ export default function Vault() {
           </div>
           {/* contents  */}
           <CarouselWrapper
-            items={publishedGames}
+            items={publishedGames.slice(0, 15)}
             pageSize={5}
             renderItem={(item, index) => (
               <GameVerticalCard
@@ -110,7 +110,7 @@ export default function Vault() {
          SECTION — All Games (Full Catalog)
       ====================================================== */}
       <section
-        id="categories"
+        id="all"
         className="flex justify-center w-full scroll-mt-28 px-10"
       >
         <div className="flex flex-col gap-6 w-full max-w-7xl">
