@@ -1,3 +1,4 @@
+import Image from "next/image";
 import clsx from "clsx";
 
 type Props = {
@@ -14,7 +15,13 @@ export default function Avatar({ src, alt, size = 40, className }: Props) {
       style={{ width: size, height: size }}
     >
       {src ? (
-        <img src={src} alt={alt} className="w-full h-full object-cover" />
+        <Image
+          src={src}
+          alt={alt}
+          width={size}
+          height={size}
+          className="w-full h-full object-cover"
+        />
       ) : (
         <span className="flex justify-center items-center text-gray-500">
           {alt?.[0]}

@@ -1,4 +1,3 @@
-import { IMAGE_IDR_COIN } from "../constants/image";
 import { CoinDisplayInfo } from "../types/coin";
 import { PowerOfTen } from "./calculation";
 

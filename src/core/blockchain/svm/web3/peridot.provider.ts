@@ -16,7 +16,11 @@ class PeridotInpageProvider {
         if (!msg || msg.target !== "PERIDOT_INPAGE" || msg.id !== id) return;
 
         window.removeEventListener("message", handler);
-        msg.error ? reject(new Error(msg.error)) : resolve(msg.result);
+        if (msg.error) {
+          reject(new Error(msg.error));
+        } else {
+          resolve(msg.result);
+        }
       };
 
       window.addEventListener("message", handler);

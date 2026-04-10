@@ -92,7 +92,7 @@ http.interceptors.response.use(
             original.headers.Authorization = `Bearer ${newToken}`;
 
             return http.request(original);
-        } catch (_e) {
+        } catch {
             await authRepo.clearSession();
             useAuthStore.getState().setToken(null);
             useAuthStore.getState().setStatus("anonymous");

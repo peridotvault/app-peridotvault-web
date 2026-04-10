@@ -1,3 +1,4 @@
+import Image from "next/image";
 import {
   formatCoinAmount,
   isZeroCoinAmount,
@@ -47,9 +48,11 @@ export const PriceCoin = ({
   return (
     <div className={`${textSizeClass} flex gap-2 items-center text-start`}>
       {logo ? (
-        <img
+        <Image
           src={logo}
-          className="h-5 aspect-square object-contain"
+          width={20}
+          height={20}
+          className="h-5 w-5 aspect-square object-contain"
           alt="Coin Image Logo"
         />
       ) : null}

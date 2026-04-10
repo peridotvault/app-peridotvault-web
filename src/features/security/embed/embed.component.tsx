@@ -22,8 +22,8 @@ export function EmbedLayout({ children }: EmbedLayoutProps) {
   }, [isEmbed]);
 
   useEffect(() => {
-    const handleInteraction = () => {
-      const { initAudioContext } = require("@/shared/utils/soundEngine");
+    const handleInteraction = async () => {
+      const { initAudioContext } = await import("@/shared/utils/soundEngine");
       initAudioContext();
       window.removeEventListener("mousedown", handleInteraction);
       window.removeEventListener("touchstart", handleInteraction);
