@@ -352,7 +352,7 @@ function CategoryGrid({
             alt={category.name}
             className="absolute inset-0 h-full w-full object-cover opacity-70 transition-transform duration-300 group-hover:scale-105"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/35 to-transparent" />
+          <div className="absolute inset-0 bg-linear-to-r from-black/80 via-black/35 to-transparent" />
           <div className="relative flex items-end p-4">
             <span className="rounded-lg bg-card/85 px-3 py-1 text-sm font-medium">
               {category.name}
