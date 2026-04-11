@@ -8,6 +8,8 @@ import { PublicKey } from "@solana/web3.js";
 import { getSvmConnection } from "@/core/blockchain/svm/web3";
 import { getSvmPgcProgramId } from "@/core/blockchain/svm/contracts/program.registry";
 import { decodeLicenseAccount, decodePgcGameAccount } from "@/core/blockchain/svm/contracts/account.state";
+import { getMyLibraryApi, getLibraryGameApi } from "@/core/api/library.api";
+import { LibraryGameApi } from "@/core/api/library.api.type";
 
 /* ======================================================
    ERROR CODES
@@ -301,6 +303,52 @@ export async function getMyGames(user: string): Promise<MyGameItem[]> {
 
 
 /* ======================================================
+   API-BASED LIBRARY (NEW)
+====================================================== */
+
+/**
+ * Convert LibraryGameApi from API to MyGameItem format
+ */
+function convertLibraryGameToMyGameItem(libraryGame: LibraryGameApi): MyGameItem {
+    return {
+        gameId: libraryGame.gameId,
+        pgc1: "", // Not available from API - would need to query blockchain
+        publisher: "", // Not available from API
+        createdAt: BigInt(new Date(libraryGame.purchasedAt).getTime()),
+        active: libraryGame.game.isPublished,
+        metadataUri: null, // Not available from API
+    };
+}
+
+/**
+ * Get user's games from Library API.
+ * Falls back to blockchain queries if API fails.
+ */
+export async function getMyGamesFromApi(): Promise<MyGameItem[]> {
+    try {
+        const response = await getMyLibraryApi({ limit: 100 });
+        console.log(`[Library] Fetched ${response.data.length} games from API`);
+        return response.data.map(convertLibraryGameToMyGameItem);
+    } catch (error) {
+        console.warn("[Library] API fetch failed, falling back to blockchain:", error);
+        return [];
+    }
+}
+
+/**
+ * Check if a specific game is in user's library via API
+ */
+export async function isGameInLibraryFromApi(gameId: string): Promise<boolean> {
+    try {
+        const game = await getLibraryGameApi(gameId);
+        return game !== null;
+    } catch (error) {
+        console.warn("[Library] API check failed:", error);
+        return false;
+    }
+}
+
+/* ======================================================
    SESSION WRAPPER
 ====================================================== */
 
@@ -311,6 +359,18 @@ export async function getMyGamesForSession(): Promise<MyGameItem[]> {
         throw createLibraryError(LIBRARY_ERROR_CODES.MissingSession);
     }
 
+    // First try to get games from API
+    try {
+        const apiGames = await getMyGamesFromApi();
+        if (apiGames.length > 0) {
+            console.log(`[Library] Using ${apiGames.length} games from API`);
+            return apiGames;
+        }
+    } catch (error) {
+        console.warn("[Library] API fetch failed, using blockchain fallback");
+    }
+
+    // Fallback to blockchain queries
     const accountType = session.account_type?.toLowerCase();
 
     if (accountType === "svm") {

@@ -33,13 +33,19 @@ export default function Navbar() {
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line no-console
+    console.log("[Navbar] authStatus changed:", authStatus);
     if (authStatus === "anonymous") {
       if (profileModalIdRef.current) {
         closeModal(profileModalIdRef.current);
         profileModalIdRef.current = null;
       }
 
-      const id = window.setTimeout(() => setState(null), 0);
+      const id = window.setTimeout(() => {
+        // eslint-disable-next-line no-console
+        console.log("[Navbar] Setting state to null");
+        setState(null);
+      }, 0);
       return () => window.clearTimeout(id);
     }
   }, [authStatus, closeModal]);
@@ -64,7 +70,23 @@ export default function Navbar() {
     });
   }
 
+  function handleWalletChange(newState: SignState | null) {
+    // eslint-disable-next-line no-console
+    console.log("[Navbar] handleWalletChange called:", newState);
+    // Sync local state with wallet adapter state
+    // This handles external disconnections (e.g., user disconnects from extension)
+    if (newState === null) {
+      setState(null);
+    } else {
+      setState(newState);
+    }
+  }
+
   const authed = authStatus === "authenticated";
+
+  // Debug logging
+  // eslint-disable-next-line no-console
+  console.log("[Navbar] Rendering ConnectButton with:", { authStatus, authed, signedState: authed ? state : null });
 
   const closeProfileModal = () => {
     const modalId = profileModalIdRef.current;
@@ -161,6 +183,7 @@ export default function Navbar() {
               }
               signedState={authStatus === "authenticated" ? state : null}
               onSigned={afterSign}
+              onChange={handleWalletChange}
               onClickAfterSigned={openProfileModal}
             />
           </div>
