@@ -7,10 +7,22 @@ WORKDIR /app
 COPY package.json package-lock.json* ./
 RUN npm install
 
+FROM base AS fonts
+RUN apk add --no-cache curl fontconfig freetype ttf-dejavu
+WORKDIR /fonts
+RUN mkdir -p /usr/share/fonts/truetype && \
+    curl -L -o Geist.zip "https://fonts.google.com/download?family=Geist" 2>/dev/null || true && \
+    curl -L -o "Geist%20Mono.zip" "https://fonts.google.com/download?family=Geist%20Mono" 2>/dev/null || true || true
+
 FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
+COPY --from=fonts /fonts /fonts
 COPY . .
+
+ARG NEXT_PUBLIC_API_BASE_URL
+
+ENV NEXT_PUBLIC_API_BASE_URL=${NEXT_PUBLIC_API_BASE_URL}
 
 RUN npm run build
 

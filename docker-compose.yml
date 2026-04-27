@@ -1,3 +1,6 @@
+# Local Development Docker Compose
+# Usage: docker compose up -d
+
 services:
   web:
     build:
@@ -8,9 +11,15 @@ services:
     env_file:
       - .env
     environment:
-      - NODE_ENV=${NODE_ENV:-production}
+      - NODE_ENV=${NODE_ENV:-development}
       - PORT=${PORT:-3000}
       - HOSTNAME=${HOSTNAME:-0.0.0.0}
-      - NEXT_PUBLIC_API_BASE_URL=${NEXT_PUBLIC_API_BASE_URL}
+      - NEXT_PUBLIC_API_BASE_URL=${NEXT_PUBLIC_API_BASE_URL:-http://localhost:4004}
     restart: unless-stopped
+    networks:
+      - peridotvault-local-network
 
+networks:
+  peridotvault-local-network:
+    name: peridotvault-local-network
+    external: true
