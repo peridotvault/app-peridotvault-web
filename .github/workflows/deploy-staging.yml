@@ -11,7 +11,7 @@ concurrency:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+  IMAGE_NAME: ${{ github.repository_owner }}/peridotvault-web
 
 jobs:
   build-and-push:
@@ -89,14 +89,15 @@ jobs:
                 -o ConnectionAttempts=3 \
                 -p "$VPS_PORT" \
                 "$VPS_USERNAME@$VPS_HOST" \
-                "cd /home/peridot/peridotvault-infra && \
-                 export \$(grep -v '^#' /home/peridot/peridotvault-infra/env/.env.staging | grep -v '^$' | xargs) && \
-                 echo '$GH_TOKEN' | docker login ghcr.io -u '$GH_ACTOR' --password-stdin && \
-                 docker compose -f docker-compose.yml -f docker-compose.staging.yml pull web && \
-                 docker compose -f docker-compose.yml -f docker-compose.staging.yml up -d web && \
-                 docker image prune -f && \
-                 sleep 5 && \
-                 docker logs --tail=30 peridotvault-web-staging || true"
+                "set -e
+                cd /home/peridot/peridotvault-infra
+                export \$(grep -v '^#' /home/peridot/peridotvault-infra/env/.env.staging | grep -v '^$' | xargs)
+                echo '$GH_TOKEN' | docker login ghcr.io -u '$GH_ACTOR' --password-stdin
+                docker compose -f docker-compose.yml -f docker-compose.staging.yml pull web
+                docker compose -f docker-compose.yml -f docker-compose.staging.yml up -d web
+                docker image prune -f
+                sleep 5
+                docker logs --tail=30 peridotvault-web-staging || true"
             then
               echo "✅ Deployment successful on attempt $i"
               exit 0
