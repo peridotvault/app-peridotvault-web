@@ -37,7 +37,7 @@ export function resolveChainKeyFromMetadata(
       reference.includes("devnet") ||
       reference.includes("testnet");
 
-    return testnet ? "solana-testnet" : "solana-mainnet";
+    return testnet ? "solana-devnet" : "solana-mainnet";
   }
 
   const isBase =

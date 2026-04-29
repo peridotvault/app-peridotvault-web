@@ -1,38 +1,48 @@
 {
-  "address": "DCYPxPtnVeBgy56SYMT6GPBMJp8NJNLmE46QfHYqCgGL",
+  "address": "CxQCfVWCBE6tLwmEi3z7gXpniR21UyjvVvE6VytVcnyf",
   "metadata": {
     "name": "registry",
     "version": "0.1.0",
-    "spec": "0.1.0",
-    "description": "Created with Anchor"
+    "spec": "0.1.0"
   },
   "instructions": [
     {
-      "name": "initialize",
+      "name": "add_payment_token",
       "discriminator": [
-        175,
-        175,
-        109,
-        31,
-        13,
-        152,
-        155,
-        237
+        19,
+        203,
+        48,
+        148,
+        80,
+        1,
+        179,
+        140
       ],
       "accounts": [
         {
           "name": "authority",
           "writable": true,
-          "signer": true
+          "signer": true,
+          "relations": [
+            "config"
+          ]
         },
         {
           "name": "config",
-          "writable": true,
           "pda": {
             "seeds": [
               {
                 "kind": "const",
                 "value": [
+                  114,
+                  101,
+                  103,
+                  105,
+                  115,
+                  116,
+                  114,
+                  121,
+                  95,
                   99,
                   111,
                   110,
@@ -45,23 +55,70 @@
           }
         },
         {
+          "name": "mint"
+        },
+        {
+          "name": "accepted_payment_token",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  99,
+                  99,
+                  101,
+                  112,
+                  116,
+                  101,
+                  100,
+                  95,
+                  112,
+                  97,
+                  121,
+                  109,
+                  101,
+                  110,
+                  116,
+                  95,
+                  116,
+                  111,
+                  107,
+                  101,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "mint"
+              }
+            ]
+          }
+        },
+        {
           "name": "system_program",
           "address": "11111111111111111111111111111111"
         }
       ],
-      "args": []
+      "args": [
+        {
+          "name": "fee_amount",
+          "type": "u64"
+        }
+      ]
     },
     {
-      "name": "register_game",
+      "name": "close_registry_game",
       "discriminator": [
-        122,
-        44,
-        95,
-        58,
-        89,
-        33,
-        40,
-        59
+        137,
+        24,
+        5,
+        199,
+        115,
+        15,
+        111,
+        244
       ],
       "accounts": [
         {
@@ -76,6 +133,15 @@
               {
                 "kind": "const",
                 "value": [
+                  114,
+                  101,
+                  103,
+                  105,
+                  115,
+                  116,
+                  114,
+                  121,
+                  95,
                   99,
                   111,
                   110,
@@ -88,17 +154,25 @@
           }
         },
         {
-          "name": "treasury",
-          "writable": true
+          "name": "game"
         },
         {
-          "name": "game",
+          "name": "registry_game",
           "writable": true,
           "pda": {
             "seeds": [
               {
                 "kind": "const",
                 "value": [
+                  114,
+                  101,
+                  103,
+                  105,
+                  115,
+                  116,
+                  114,
+                  121,
+                  95,
                   103,
                   97,
                   109,
@@ -106,11 +180,266 @@
                 ]
               },
               {
-                "kind": "arg",
-                "path": "game_id"
+                "kind": "account",
+                "path": "registry_game.game",
+                "account": "RegistryGame"
               }
             ]
           }
+        },
+        {
+          "name": "treasury",
+          "writable": true
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "create_game_and_register",
+      "discriminator": [
+        78,
+        43,
+        148,
+        255,
+        70,
+        148,
+        207,
+        218
+      ],
+      "accounts": [
+        {
+          "name": "publisher",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  103,
+                  105,
+                  115,
+                  116,
+                  114,
+                  121,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "payment_mint"
+        },
+        {
+          "name": "accepted_payment_token",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  99,
+                  99,
+                  101,
+                  112,
+                  116,
+                  101,
+                  100,
+                  95,
+                  112,
+                  97,
+                  121,
+                  109,
+                  101,
+                  110,
+                  116,
+                  95,
+                  116,
+                  111,
+                  107,
+                  101,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "payment_mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "publisher_payment_account",
+          "writable": true
+        },
+        {
+          "name": "treasury_payment_account",
+          "writable": true
+        },
+        {
+          "name": "registry_game",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  103,
+                  105,
+                  115,
+                  116,
+                  114,
+                  121,
+                  95,
+                  103,
+                  97,
+                  109,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "game"
+              }
+            ]
+          }
+        },
+        {
+          "name": "game",
+          "writable": true
+        },
+        {
+          "name": "pgl_creator_state",
+          "writable": true
+        },
+        {
+          "name": "pgl_config"
+        },
+        {
+          "name": "pgl_treasury",
+          "writable": true
+        },
+        {
+          "name": "pgl1_program",
+          "address": "7ddrr9b2ReD17kk73LLnW88tVT4fEpzGEY4rPb8hbQtT"
+        },
+        {
+          "name": "store_program"
+        },
+        {
+          "name": "store_authorized_source_program",
+          "docs": [
+            "This is an existence check only — the game-store program validates",
+            "the account data when it processes the CPI. Registry does not",
+            "deserialize or trust data from this account."
+          ],
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  122,
+                  101,
+                  100,
+                  95,
+                  115,
+                  111,
+                  117,
+                  114,
+                  99,
+                  101,
+                  95,
+                  112,
+                  114,
+                  111,
+                  103,
+                  114,
+                  97,
+                  109
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pgl1_program"
+              }
+            ]
+          }
+        },
+        {
+          "name": "store_authorized_registry_program",
+          "docs": [
+            "This is an existence check only — the game-store program validates",
+            "the account data when it processes the CPI. Registry does not",
+            "deserialize or trust data from this account."
+          ],
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  122,
+                  101,
+                  100,
+                  95,
+                  114,
+                  101,
+                  103,
+                  105,
+                  115,
+                  116,
+                  114,
+                  121,
+                  95,
+                  112,
+                  114,
+                  111,
+                  103,
+                  114,
+                  97,
+                  109
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "store_program"
+              }
+            ]
+          }
+        },
+        {
+          "name": "store_game_store_config",
+          "writable": true
+        },
+        {
+          "name": "token_program"
         },
         {
           "name": "system_program",
@@ -123,132 +452,269 @@
           "type": "string"
         },
         {
-          "name": "pgc_program",
-          "type": "pubkey"
-        },
-        {
-          "name": "pgc_game",
-          "type": "pubkey"
-        }
-      ]
-    },
-    {
-      "name": "set_registration_fee",
-      "discriminator": [
-        156,
-        222,
-        72,
-        107,
-        152,
-        183,
-        168,
-        199
-      ],
-      "accounts": [
-        {
-          "name": "authority",
-          "signer": true,
-          "relations": [
-            "config"
-          ]
-        },
-        {
-          "name": "config",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  99,
-                  111,
-                  110,
-                  102,
-                  105,
-                  103
-                ]
-              }
-            ]
-          }
-        }
-      ],
-      "args": [
-        {
-          "name": "fee",
-          "type": "u64"
-        }
-      ]
-    },
-    {
-      "name": "set_status",
-      "discriminator": [
-        181,
-        184,
-        224,
-        203,
-        193,
-        29,
-        177,
-        224
-      ],
-      "accounts": [
-        {
-          "name": "authority",
-          "signer": true,
-          "relations": [
-            "config"
-          ]
-        },
-        {
-          "name": "config",
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  99,
-                  111,
-                  110,
-                  102,
-                  105,
-                  103
-                ]
-              }
-            ]
-          }
-        },
-        {
-          "name": "game",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  103,
-                  97,
-                  109,
-                  101
-                ]
-              },
-              {
-                "kind": "arg",
-                "path": "game_id"
-              }
-            ]
-          }
-        }
-      ],
-      "args": [
-        {
-          "name": "game_id",
+          "name": "metadata_uri",
           "type": "string"
         },
         {
-          "name": "active",
-          "type": "bool"
+          "name": "base_price",
+          "type": {
+            "option": "u64"
+          }
+        },
+        {
+          "name": "mint_token",
+          "type": {
+            "option": "pubkey"
+          }
         }
       ]
+    },
+    {
+      "name": "create_publish_grant",
+      "discriminator": [
+        83,
+        236,
+        41,
+        49,
+        105,
+        161,
+        61,
+        173
+      ],
+      "accounts": [
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "config"
+          ]
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  103,
+                  105,
+                  115,
+                  116,
+                  114,
+                  121,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "publisher",
+          "signer": true
+        },
+        {
+          "name": "publish_grant",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  117,
+                  98,
+                  108,
+                  105,
+                  115,
+                  104,
+                  95,
+                  103,
+                  114,
+                  97,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "publisher"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "expired_at",
+          "type": {
+            "option": "i64"
+          }
+        }
+      ]
+    },
+    {
+      "name": "initialize_registry",
+      "discriminator": [
+        189,
+        181,
+        20,
+        17,
+        174,
+        57,
+        249,
+        59
+      ],
+      "accounts": [
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  103,
+                  105,
+                  115,
+                  116,
+                  114,
+                  121,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "treasury",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
+      "name": "remove_payment_token",
+      "discriminator": [
+        119,
+        18,
+        240,
+        223,
+        126,
+        168,
+        165,
+        117
+      ],
+      "accounts": [
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "config"
+          ]
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  103,
+                  105,
+                  115,
+                  116,
+                  114,
+                  121,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "mint"
+        },
+        {
+          "name": "accepted_payment_token",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  99,
+                  99,
+                  101,
+                  112,
+                  116,
+                  101,
+                  100,
+                  95,
+                  112,
+                  97,
+                  121,
+                  109,
+                  101,
+                  110,
+                  116,
+                  95,
+                  116,
+                  111,
+                  107,
+                  101,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "mint"
+              }
+            ]
+          }
+        }
+      ],
+      "args": []
     },
     {
       "name": "set_treasury",
@@ -278,6 +744,15 @@
               {
                 "kind": "const",
                 "value": [
+                  114,
+                  101,
+                  103,
+                  105,
+                  115,
+                  116,
+                  114,
+                  121,
+                  95,
                   99,
                   111,
                   110,
@@ -298,33 +773,69 @@
       ]
     },
     {
-      "name": "transfer_publisher",
+      "name": "update_game_status",
       "discriminator": [
-        157,
-        54,
+        31,
+        175,
+        127,
         242,
-        245,
-        198,
-        174,
-        250,
-        106
+        51,
+        244,
+        172,
+        185
       ],
       "accounts": [
         {
-          "name": "publisher",
+          "name": "authority",
           "signer": true,
           "relations": [
-            "game"
+            "config"
           ]
         },
         {
-          "name": "game",
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  103,
+                  105,
+                  115,
+                  116,
+                  114,
+                  121,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "registry_game",
           "writable": true,
           "pda": {
             "seeds": [
               {
                 "kind": "const",
                 "value": [
+                  114,
+                  101,
+                  103,
+                  105,
+                  115,
+                  116,
+                  114,
+                  121,
+                  95,
                   103,
                   97,
                   109,
@@ -332,8 +843,9 @@
                 ]
               },
               {
-                "kind": "arg",
-                "path": "game_id"
+                "kind": "account",
+                "path": "registry_game.game",
+                "account": "RegistryGame"
               }
             ]
           }
@@ -341,52 +853,96 @@
       ],
       "args": [
         {
-          "name": "game_id",
-          "type": "string"
-        },
-        {
-          "name": "new_publisher",
-          "type": "pubkey"
+          "name": "status",
+          "type": "u8"
         }
       ]
     },
     {
-      "name": "update_game",
+      "name": "update_payment_token",
       "discriminator": [
-        159,
-        61,
-        132,
-        131,
-        3,
-        234,
-        209,
-        220
+        240,
+        107,
+        161,
+        243,
+        84,
+        148,
+        183,
+        126
       ],
       "accounts": [
         {
-          "name": "publisher",
+          "name": "authority",
           "signer": true,
           "relations": [
-            "game"
+            "config"
           ]
         },
         {
-          "name": "game",
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  103,
+                  105,
+                  115,
+                  116,
+                  114,
+                  121,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "mint"
+        },
+        {
+          "name": "accepted_payment_token",
           "writable": true,
           "pda": {
             "seeds": [
               {
                 "kind": "const",
                 "value": [
-                  103,
                   97,
+                  99,
+                  99,
+                  101,
+                  112,
+                  116,
+                  101,
+                  100,
+                  95,
+                  112,
+                  97,
+                  121,
                   109,
-                  101
+                  101,
+                  110,
+                  116,
+                  95,
+                  116,
+                  111,
+                  107,
+                  101,
+                  110
                 ]
               },
               {
-                "kind": "arg",
-                "path": "game_id"
+                "kind": "account",
+                "path": "mint"
               }
             ]
           }
@@ -394,21 +950,161 @@
       ],
       "args": [
         {
-          "name": "game_id",
-          "type": "string"
+          "name": "active",
+          "type": "bool"
         },
         {
-          "name": "pgc_program",
-          "type": "pubkey"
+          "name": "fee_amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "update_publish_grant",
+      "discriminator": [
+        185,
+        215,
+        123,
+        61,
+        37,
+        3,
+        134,
+        206
+      ],
+      "accounts": [
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "config"
+          ]
         },
         {
-          "name": "pgc_game",
-          "type": "pubkey"
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  103,
+                  105,
+                  115,
+                  116,
+                  114,
+                  121,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "publisher",
+          "signer": true
+        },
+        {
+          "name": "publish_grant",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  117,
+                  98,
+                  108,
+                  105,
+                  115,
+                  104,
+                  95,
+                  103,
+                  114,
+                  97,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "publisher"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "expired_at",
+          "type": {
+            "option": "i64"
+          }
         }
       ]
     }
   ],
   "accounts": [
+    {
+      "name": "AcceptedPaymentToken",
+      "discriminator": [
+        101,
+        168,
+        82,
+        98,
+        20,
+        218,
+        130,
+        107
+      ]
+    },
+    {
+      "name": "Game",
+      "discriminator": [
+        27,
+        90,
+        166,
+        125,
+        74,
+        100,
+        121,
+        18
+      ]
+    },
+    {
+      "name": "PglConfig",
+      "discriminator": [
+        152,
+        183,
+        211,
+        24,
+        96,
+        186,
+        93,
+        22
+      ]
+    },
+    {
+      "name": "PublishGrant",
+      "discriminator": [
+        96,
+        84,
+        122,
+        50,
+        0,
+        193,
+        171,
+        194
+      ]
+    },
     {
       "name": "RegistryConfig",
       "discriminator": [
@@ -423,16 +1119,148 @@
       ]
     },
     {
-      "name": "RegistryGameAccount",
+      "name": "RegistryGame",
       "discriminator": [
-        17,
+        44,
+        59,
+        51,
+        135,
+        203,
         140,
-        126,
-        39,
-        63,
-        84,
+        48,
+        151
+      ]
+    }
+  ],
+  "events": [
+    {
+      "name": "GameClosed",
+      "discriminator": [
+        178,
+        203,
+        179,
+        224,
+        43,
+        18,
+        209,
+        4
+      ]
+    },
+    {
+      "name": "GameRegistered",
+      "discriminator": [
+        2,
+        83,
+        36,
+        122,
+        249,
+        190,
+        106,
+        31
+      ]
+    },
+    {
+      "name": "GameStatusUpdated",
+      "discriminator": [
+        247,
+        12,
+        74,
+        230,
+        132,
+        141,
+        74,
+        217
+      ]
+    },
+    {
+      "name": "PaymentTokenAdded",
+      "discriminator": [
+        181,
+        200,
+        132,
+        33,
+        4,
+        116,
+        83,
+        186
+      ]
+    },
+    {
+      "name": "PaymentTokenRemoved",
+      "discriminator": [
+        27,
         119,
-        73
+        226,
+        186,
+        75,
+        240,
+        81,
+        88
+      ]
+    },
+    {
+      "name": "PaymentTokenUpdated",
+      "discriminator": [
+        215,
+        110,
+        229,
+        224,
+        123,
+        151,
+        223,
+        230
+      ]
+    },
+    {
+      "name": "PublishGrantCreated",
+      "discriminator": [
+        230,
+        55,
+        123,
+        194,
+        87,
+        226,
+        125,
+        230
+      ]
+    },
+    {
+      "name": "PublishGrantUpdated",
+      "discriminator": [
+        78,
+        188,
+        110,
+        48,
+        49,
+        206,
+        215,
+        83
+      ]
+    },
+    {
+      "name": "RegistryInitialized",
+      "discriminator": [
+        144,
+        138,
+        62,
+        105,
+        58,
+        38,
+        100,
+        177
+      ]
+    },
+    {
+      "name": "TreasuryUpdated",
+      "discriminator": [
+        80,
+        239,
+        54,
+        168,
+        43,
+        38,
+        85,
+        145
       ]
     }
   ],
@@ -444,16 +1272,395 @@
     },
     {
       "code": 6001,
-      "name": "InvalidStatus",
-      "msg": "Invalid status"
+      "name": "PaymentTokenNotAllowed",
+      "msg": "Payment token not allowed"
     },
     {
       "code": 6002,
-      "name": "InvalidAuthority",
-      "msg": "Invalid authority"
+      "name": "PaymentTokenDisabled",
+      "msg": "Payment token disabled"
+    },
+    {
+      "code": 6003,
+      "name": "InvalidFeeAmount",
+      "msg": "Invalid fee amount"
+    },
+    {
+      "code": 6004,
+      "name": "RegistrationFeeNotSatisfied",
+      "msg": "Registration fee not satisfied"
+    },
+    {
+      "code": 6005,
+      "name": "GameAlreadyRegistered",
+      "msg": "Game already registered"
+    },
+    {
+      "code": 6006,
+      "name": "InvalidGameId",
+      "msg": "Invalid game id"
+    },
+    {
+      "code": 6007,
+      "name": "GameNotFound",
+      "msg": "Game not found"
+    },
+    {
+      "code": 6008,
+      "name": "InvalidStatusTransition",
+      "msg": "Invalid status transition"
+    },
+    {
+      "code": 6009,
+      "name": "InvalidExpiry",
+      "msg": "Invalid expiry"
+    },
+    {
+      "code": 6010,
+      "name": "InvalidMetadataUri",
+      "msg": "Invalid metadata URI"
+    },
+    {
+      "code": 6011,
+      "name": "InvalidPublishGrantAccount",
+      "msg": "Invalid publish grant account"
+    },
+    {
+      "code": 6012,
+      "name": "InvalidTreasury",
+      "msg": "Invalid treasury"
+    },
+    {
+      "code": 6013,
+      "name": "InvalidPgl1Program",
+      "msg": "Invalid PGL-1 program"
+    },
+    {
+      "code": 6014,
+      "name": "InvalidPgl1Config",
+      "msg": "Invalid PGL-1 config account"
+    },
+    {
+      "code": 6015,
+      "name": "InvalidStoreProgram",
+      "msg": "Invalid store program"
+    },
+    {
+      "code": 6016,
+      "name": "InvalidPrice",
+      "msg": "Invalid price"
+    },
+    {
+      "code": 6017,
+      "name": "MissingStoreAccounts",
+      "msg": "Missing store accounts for paid game"
+    },
+    {
+      "code": 6018,
+      "name": "GameNotClosable",
+      "msg": "Game not closable (must be Suspended or Banned)"
+    },
+    {
+      "code": 6019,
+      "name": "GameMismatch",
+      "msg": "Game mismatch (registry_game.game != game)"
+    },
+    {
+      "code": 6020,
+      "name": "InsufficientFeeBalance",
+      "msg": "Insufficient fee balance in publisher payment account"
     }
   ],
   "types": [
+    {
+      "name": "AcceptedPaymentToken",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "active",
+            "type": "bool"
+          },
+          {
+            "name": "fee_amount",
+            "type": "u64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Game",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "creator",
+            "type": "pubkey"
+          },
+          {
+            "name": "nonce",
+            "type": "u64"
+          },
+          {
+            "name": "publisher",
+            "type": "pubkey"
+          },
+          {
+            "name": "game_id",
+            "type": "string"
+          },
+          {
+            "name": "metadata_uri",
+            "type": "string"
+          },
+          {
+            "name": "created_at",
+            "type": "i64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "GameClosed",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "game",
+            "type": "pubkey"
+          },
+          {
+            "name": "game_id",
+            "type": "string"
+          },
+          {
+            "name": "closed_by",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "GameRegistered",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "game",
+            "type": "pubkey"
+          },
+          {
+            "name": "game_id",
+            "type": "string"
+          },
+          {
+            "name": "publisher",
+            "type": "pubkey"
+          },
+          {
+            "name": "status",
+            "type": "u8"
+          },
+          {
+            "name": "registered_at",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "GameStatus",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Active"
+          },
+          {
+            "name": "Suspended"
+          },
+          {
+            "name": "Banned"
+          }
+        ]
+      }
+    },
+    {
+      "name": "GameStatusUpdated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "game",
+            "type": "pubkey"
+          },
+          {
+            "name": "old_status",
+            "type": "u8"
+          },
+          {
+            "name": "new_status",
+            "type": "u8"
+          },
+          {
+            "name": "authority",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PaymentTokenAdded",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "fee_amount",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PaymentTokenRemoved",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "mint",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PaymentTokenUpdated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "old_active",
+            "type": "bool"
+          },
+          {
+            "name": "new_active",
+            "type": "bool"
+          },
+          {
+            "name": "old_fee_amount",
+            "type": "u64"
+          },
+          {
+            "name": "new_fee_amount",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PglConfig",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority",
+            "type": "pubkey"
+          },
+          {
+            "name": "treasury",
+            "type": "pubkey"
+          },
+          {
+            "name": "create_game_fee_lamports",
+            "type": "u64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PublishGrant",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "expired_at",
+            "type": {
+              "option": "i64"
+            }
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PublishGrantCreated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "publisher",
+            "type": "pubkey"
+          },
+          {
+            "name": "expired_at",
+            "type": {
+              "option": "i64"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "PublishGrantUpdated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "publisher",
+            "type": "pubkey"
+          },
+          {
+            "name": "old_expired_at",
+            "type": {
+              "option": "i64"
+            }
+          },
+          {
+            "name": "new_expired_at",
+            "type": {
+              "option": "i64"
+            }
+          }
+        ]
+      }
+    },
     {
       "name": "RegistryConfig",
       "type": {
@@ -468,11 +1675,7 @@
             "type": "pubkey"
           },
           {
-            "name": "registration_fee",
-            "type": "u64"
-          },
-          {
-            "name": "registration_currency",
+            "name": "pgl1_program",
             "type": "pubkey"
           },
           {
@@ -483,37 +1686,69 @@
       }
     },
     {
-      "name": "RegistryGameAccount",
+      "name": "RegistryGame",
       "type": {
         "kind": "struct",
         "fields": [
+          {
+            "name": "game",
+            "type": "pubkey"
+          },
           {
             "name": "game_id",
             "type": "string"
           },
           {
-            "name": "publisher",
-            "type": "pubkey"
-          },
-          {
-            "name": "pgc_pid",
-            "type": "pubkey"
-          },
-          {
-            "name": "pgc_pda",
-            "type": "pubkey"
-          },
-          {
-            "name": "active",
-            "type": "bool"
-          },
-          {
-            "name": "created_at",
+            "name": "registered_at",
             "type": "i64"
+          },
+          {
+            "name": "status",
+            "type": {
+              "defined": {
+                "name": "GameStatus"
+              }
+            }
           },
           {
             "name": "bump",
             "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "RegistryInitialized",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority",
+            "type": "pubkey"
+          },
+          {
+            "name": "treasury",
+            "type": "pubkey"
+          },
+          {
+            "name": "pgl1_program",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "TreasuryUpdated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "old_treasury",
+            "type": "pubkey"
+          },
+          {
+            "name": "new_treasury",
+            "type": "pubkey"
           }
         ]
       }

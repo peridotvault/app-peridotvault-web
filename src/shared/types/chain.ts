@@ -10,7 +10,7 @@ export type EvmChainKey =
   | "lisk-mainnet"
   | "lisk-testnet";
 
-export type SvmChainKey = "solana-mainnet" | "solana-testnet";
+export type SvmChainKey = "solana-mainnet" | "solana-devnet";
 
 export type ChainKey = EvmChainKey | SvmChainKey;
 

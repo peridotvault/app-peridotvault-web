@@ -1,4 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { useChainStore } from "@/shared/states/chain.store";
+import { getSvmChainKey } from "./index";
 
 class PeridotInpageProvider {
   request<T = any>({ method, params }: { method: string; params?: any }): Promise<T> {
@@ -47,21 +49,34 @@ export function injectPeridotWallet() {
   // Solana adapter (minimal)
   (window as any).solana = {
     isPeridotWallet: true,
-    connect: () => peridot.request({ method: "solana_connect" }),
-    signMessage: (msg: Uint8Array) =>
-      peridot.request({
+    connect: () => {
+      // Get current Solana chain and pass it to the wallet
+      const chainKey = getSvmChainKey(useChainStore.getState().chainKey);
+      return peridot.request({ 
+        method: "solana_connect",
+        params: { chainId: chainKey }
+      });
+    },
+    signMessage: (msg: Uint8Array) => {
+      const chainKey = getSvmChainKey(useChainStore.getState().chainKey);
+      return peridot.request({
         method: "solana_signMessage",
-        params: { message: Array.from(msg) },
-      }),
-    signTransaction: (transaction: string) =>
-      peridot.request({
+        params: { message: Array.from(msg), chainId: chainKey },
+      });
+    },
+    signTransaction: (transaction: string) => {
+      const chainKey = getSvmChainKey(useChainStore.getState().chainKey);
+      return peridot.request({
         method: "solana_signTransaction",
-        params: { transaction, encoding: "base64" },
-      }),
-    sendTransaction: (transaction: string) =>
-      peridot.request({
+        params: { transaction, encoding: "base64", chainId: chainKey },
+      });
+    },
+    sendTransaction: (transaction: string) => {
+      const chainKey = getSvmChainKey(useChainStore.getState().chainKey);
+      return peridot.request({
         method: "solana_sendTransaction",
-        params: { transaction, encoding: "base64" },
-      }),
+        params: { transaction, encoding: "base64", chainId: chainKey },
+      });
+    },
   };
 }

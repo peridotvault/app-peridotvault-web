@@ -46,7 +46,7 @@ export const CHAIN_LIST: ChainConfig[] = [
         type: "svm",
         name: "Solana Devnet",
         network: "testnet",
-        key: "solana-testnet",
+        key: "solana-devnet",
         icon: "/images/chains/solana.svg",
     },
 ];
