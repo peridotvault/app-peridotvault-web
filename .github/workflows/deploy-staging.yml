@@ -1,0 +1,109 @@
+name: Deploy Staging
+
+on:
+  push:
+    branches: [staging]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-staging-web-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GH_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=staging
+            type=sha,prefix=staging-
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            NEXT_PUBLIC_API_BASE_URL=https://api.staging.peridotvault.com
+            API_BASE_URL=https://api.staging.peridotvault.com
+            NEXT_PUBLIC_STORE_URL=https://web.staging.peridotvault.com
+
+  deploy:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Deploy to Staging VPS via SSH
+        env:
+          VPS_HOST: ${{ secrets.STAGING_VPS_HOST }}
+          VPS_USERNAME: ${{ secrets.STAGING_VPS_USERNAME }}
+          VPS_SSH_KEY: ${{ secrets.STAGING_VPS_SSH_KEY }}
+          VPS_PORT: ${{ secrets.STAGING_VPS_PORT || '22' }}
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          GH_ACTOR: ${{ github.actor }}
+        run: |
+          # Setup SSH key
+          mkdir -p ~/.ssh
+          echo "$VPS_SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          
+          # Add host to known hosts
+          ssh-keyscan -H -p "$VPS_PORT" "$VPS_HOST" >> ~/.ssh/known_hosts 2>/dev/null || true
+          
+          # Retry SSH connection up to 3 times
+          for i in {1..3}; do
+            echo "Attempt $i/3: Connecting to $VPS_HOST..."
+            if ssh -i ~/.ssh/deploy_key \
+                -o StrictHostKeyChecking=no \
+                -o ConnectTimeout=60 \
+                -o ConnectionAttempts=3 \
+                -p "$VPS_PORT" \
+                "$VPS_USERNAME@$VPS_HOST" \
+                "cd /home/peridot/peridotvault-infra && \
+                 export \$(grep -v '^#' /home/peridot/peridotvault-infra/env/.env.staging | grep -v '^$' | xargs) && \
+                 echo '$GH_TOKEN' | docker login ghcr.io -u '$GH_ACTOR' --password-stdin && \
+                 docker compose -f docker-compose.yml -f docker-compose.staging.yml pull web && \
+                 docker compose -f docker-compose.yml -f docker-compose.staging.yml up -d web && \
+                 docker image prune -f && \
+                 sleep 5 && \
+                 docker logs --tail=30 peridotvault-web-staging || true"
+            then
+              echo "✅ Deployment successful on attempt $i"
+              exit 0
+            fi
+            echo "❌ Attempt $i failed, waiting 30 seconds before retry..."
+            sleep 30
+          done
+          
+          echo "❌ All 3 attempts failed"
+          exit 1
