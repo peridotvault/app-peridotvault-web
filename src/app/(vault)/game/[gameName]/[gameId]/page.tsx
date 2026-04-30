@@ -42,6 +42,7 @@ import ModalShell from "@/core/ui-system/modal/ModalShell";
 import clsx from "clsx";
 import { Share } from "@/shared/components/ui/organisms/Share";
 import { SelectPaymentToken } from "@/features/game/components/SelectPaymentToken";
+import { resolveNativeTokenInfo } from "@/shared/utils/token";
 import { ChainApi } from "@/core/api/chain.api.type";
 
 /* ======================================================
@@ -422,7 +423,19 @@ export default function GameDetailPage(): React.ReactElement {
     return (
       <dl className={"flex flex-col gap-4 w-full " + SMALL_GRID}>
         <div className={"flex flex-col gap-3 bg-card p-6" + STYLE_ROUNDED_CARD}>
-          <PriceCoin amount={price} tokenCanister={""} textSize="xl" />
+          {(() => {
+            const native = resolveNativeTokenInfo(chainSupport?.[0]?.caip_2_id);
+            return (
+              <PriceCoin
+                amount={price}
+                tokenCanister={""}
+                tokenSymbol={chainSupport?.[0]?.native_symbol ?? native.symbol}
+                tokenDecimals={native.decimals}
+                tokenLogo={chainSupport?.[0]?.icon_url ?? native.logo}
+                textSize="xl"
+              />
+            );
+          })()}
           {purchaseState ? (
             <span
               className={`text-sm font-medium ${

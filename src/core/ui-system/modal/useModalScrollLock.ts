@@ -8,12 +8,14 @@ function getScrollbarWidth() {
 }
 
 export default function useModalScrollLock() {
-    const hasModal = useModal(s => s.stack.length > 0)
+    const shouldLockScroll = useModal(s =>
+        s.stack.some(modal => modal.options?.lockScroll !== false)
+    )
 
     useEffect(() => {
         const body = document.body
 
-        if (!hasModal) return
+        if (!shouldLockScroll) return
 
         const prevOverflow = body.style.overflow
         const prevPadding = body.style.paddingRight
@@ -30,5 +32,5 @@ export default function useModalScrollLock() {
             body.style.overflow = prevOverflow
             body.style.paddingRight = prevPadding
         }
-    }, [hasModal])
+    }, [shouldLockScroll])
 }

@@ -4,16 +4,21 @@ import { ReactNode } from "react"
 import { create } from "zustand"
 
 type ModalRender = (id: string) => ReactNode
+type ModalOptions = {
+    lockScroll?: boolean
+}
 
 interface ModalEntry {
     id: string
     render: ModalRender
+    options?: ModalOptions
 }
 
 interface ModalState {
     stack: ModalEntry[]
 
-    open: (render: ModalRender) => string
+    open: (render: ModalRender, options?: ModalOptions) => string
+    update: (id: string, render: ModalRender, options?: ModalOptions) => void
     close: (id?: string) => void
     closeAll: () => void
 }
@@ -21,14 +26,28 @@ interface ModalState {
 export const useModal = create<ModalState>((set) => ({
     stack: [],
 
-    open: (render) => {
+    open: (render, options) => {
         const id = crypto.randomUUID()
 
         set(s => ({
-            stack: [...s.stack, { id, render }]
+            stack: [...s.stack, { id, render, options }]
         }))
 
         return id
+    },
+
+    update: (id, render, options) => {
+        set(s => ({
+            stack: s.stack.map(m =>
+                m.id === id
+                    ? {
+                        ...m,
+                        render,
+                        options: options ?? m.options
+                    }
+                    : m
+            )
+        }))
     },
 
     close: (id) => {

@@ -12,50 +12,36 @@ import { getViemChain } from '../viem/chain.config'
 import { getPeridotRegistry } from '../contracts/contract.registry'
 import { getEvmPublicClient } from '../viem'
 import { useChainStore } from '@/shared/states/chain.store'
+import { BuyGameInput } from '@/core/blockchain/__core__/types/purchase.type'
 
 const LICENSE_ID = BigInt(1);
 
 export class EvmPurchaseService {
-    static async buyGame(input: { pgc1_address: `0x${string}`, payment_token: `0x${string}` }) {
+    static async buyGame(input: BuyGameInput) {
         if (!window.ethereum) {
             throw new Error('Wallet not found')
         }
 
-        if (!isAddress(input.pgc1_address) || !isAddress(input.payment_token)) {
-            throw new Error('Invalid purchase contract addresses')
+        const pgc1_address = input.pgc1_address;
+        const payment_token = input.payment_token || zeroAddress;
+
+        if (!isAddress(pgc1_address)) {
+            console.error('Invalid pgc1_address:', pgc1_address);
+            throw new Error(`Invalid purchase contract: pgc1_address is ${pgc1_address}`);
+        }
+        if (!isAddress(payment_token)) {
+            console.error('Invalid payment_token:', payment_token);
+            throw new Error(`Invalid payment token: payment_token is ${payment_token}`);
         }
 
-        /* ================= SETUP ================= */
-
-        const { chainKey } = useChainStore.getState()
-
+        /* ================= REGISTRY ================= */
+        const chainKey = input.chainKey ?? useChainStore.getState().chainKey
         const chain = getViemChain(chainKey)
         const registry = getPeridotRegistry(chainKey)
         const publicClient = getEvmPublicClient(chainKey)
 
-        const requestedPgc1 = getAddress(input.pgc1_address)
-        const selectedPaymentToken = getAddress(input.payment_token)
-
-        const walletClient = createWalletClient({
-            chain,
-            transport: custom(window.ethereum),
-        })
-
-        const [buyer] = await walletClient.getAddresses()
-
-        if (!buyer) {
-            throw new Error("Wallet not connected");
-        }
-
-        /* ================= ENSURE NETWORK ================= */
-
-        try {
-            await walletClient.switchChain({ id: chain.id });
-        } catch {
-            throw new Error("Please switch network in wallet");
-        }
-
-        /* ================= REGISTRY ================= */
+        const requestedPgc1 = getAddress(pgc1_address)
+        const selectedPaymentToken = getAddress(payment_token)
 
         let gameId: string;
         let active = false;
@@ -99,6 +85,27 @@ export class EvmPurchaseService {
         }
         if (!active) throw new Error('Game inactive')
 
+        /* ================= SETUP ================= */
+
+        const walletClient = createWalletClient({
+            chain,
+            transport: custom(window.ethereum),
+        })
+
+        const [buyer] = await walletClient.getAddresses()
+
+        if (!buyer) {
+            throw new Error("Wallet not connected");
+        }
+
+        /* ================= ENSURE NETWORK ================= */
+
+        try {
+            await walletClient.switchChain({ id: chain.id });
+        } catch {
+            throw new Error("Please switch network in wallet");
+        }
+
         /* ================= OWNERSHIP ================= */
 
         const owned = (await publicClient.readContract({
@@ -134,7 +141,7 @@ export class EvmPurchaseService {
         }
 
         if (contractPaymentToken === zeroAddress) {
-            await publicClient.simulateContract({
+            const gas = await publicClient.estimateContractGas({
                 address: requestedPgc1,
                 abi: PGC1Abi,
                 functionName: 'buy',
@@ -142,13 +149,17 @@ export class EvmPurchaseService {
                 value: price,
             })
 
-            return walletClient.writeContract({
+            const hash = await walletClient.writeContract({
                 address: requestedPgc1,
                 abi: PGC1Abi,
                 functionName: 'buy',
                 value: price,
                 account: buyer,
+                gas: (gas * BigInt(120)) / BigInt(100), // 20% buffer
             })
+            
+            await publicClient.waitForTransactionReceipt({ hash })
+            return hash
         }
 
         const allowance = (await publicClient.readContract({
@@ -159,7 +170,7 @@ export class EvmPurchaseService {
         })) as bigint
 
         if (allowance < price) {
-            const approvalHash = await walletClient.writeContract({
+            const approvalGas = await publicClient.estimateContractGas({
                 address: contractPaymentToken,
                 abi: ERC20Abi,
                 functionName: 'approve',
@@ -167,12 +178,21 @@ export class EvmPurchaseService {
                 account: buyer,
             })
 
+            const approvalHash = await walletClient.writeContract({
+                address: contractPaymentToken,
+                abi: ERC20Abi,
+                functionName: 'approve',
+                args: [requestedPgc1, price],
+                account: buyer,
+                gas: (approvalGas * BigInt(120)) / BigInt(100), // 20% buffer
+            })
+
             await publicClient.waitForTransactionReceipt({
                 hash: approvalHash,
             })
         }
 
-        await publicClient.simulateContract({
+        const buyGas = await publicClient.estimateContractGas({
             address: requestedPgc1,
             abi: PGC1Abi,
             functionName: 'buy',
@@ -180,12 +200,16 @@ export class EvmPurchaseService {
             value: BigInt(0),
         })
 
-        return walletClient.writeContract({
+        const hash = await walletClient.writeContract({
             address: requestedPgc1,
             abi: PGC1Abi,
             functionName: 'buy',
             value: BigInt(0),
             account: buyer,
+            gas: (buyGas * BigInt(120)) / BigInt(100), // 20% buffer
         })
+        
+        await publicClient.waitForTransactionReceipt({ hash })
+        return hash
     }
 }

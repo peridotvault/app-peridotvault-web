@@ -1,14 +1,12 @@
-import { IMAGE_IDR_COIN } from "../constants/image";
 import { CoinDisplayInfo } from "../types/coin";
 import { PowerOfTen } from "./calculation";
 
 const DEFAULT_TOKEN: CoinDisplayInfo = {
     principal: '',
-    symbol: 'IDRX',
-    decimals: 3,
-    // decimals: 8,
-    logo: IMAGE_IDR_COIN,
-    displayName: 'IDRX',
+    symbol: '---',
+    decimals: 0,
+    logo: "",
+    displayName: 'Unknown Token',
 };
 
 export const formatCoinAmount = (

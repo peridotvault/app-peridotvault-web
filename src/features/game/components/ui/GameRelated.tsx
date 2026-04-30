@@ -35,6 +35,7 @@ export const GameRelated = ({ games }: Props) => {
                 gameName={item.name}
                 imgUrl={item.cover_horizontal_image ?? IMAGE_LOADING}
                 price={item.price ?? 0}
+                chain={item.chains}
                 onClick={() =>
                   sendTrackGameView({
                     game_id: item.game_id,

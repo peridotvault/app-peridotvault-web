@@ -14,6 +14,14 @@ export interface PhantomSolanaProvider {
 
     connect(): Promise<{ publicKey: SolanaPublicKey }>;
     disconnect(): Promise<void>;
+    signAndSendTransaction(
+        transaction: unknown,
+        options?: {
+            preflightCommitment?: string;
+            skipPreflight?: boolean;
+            maxRetries?: number;
+        }
+    ): Promise<{ signature: string }>;
 
     // Phantom signMessage: accepts Uint8Array, returns signature bytes
     signMessage(

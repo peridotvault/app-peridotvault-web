@@ -1,0 +1,3203 @@
+{
+  "address": "G9roe9Dm2Rr261z3xKNcNKcFeQ5wovr8VwEwRDQ8YJVs",
+  "metadata": {
+    "name": "game_store",
+    "version": "0.1.0",
+    "spec": "0.1.0"
+  },
+  "instructions": [
+    {
+      "name": "add_authorized_program",
+      "discriminator": [
+        80,
+        106,
+        127,
+        205,
+        217,
+        53,
+        202,
+        202
+      ],
+      "accounts": [
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "store_config"
+          ]
+        },
+        {
+          "name": "store_config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  116,
+                  111,
+                  114,
+                  101,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "program_id"
+        },
+        {
+          "name": "authorized_program",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  122,
+                  101,
+                  100,
+                  95,
+                  112,
+                  114,
+                  111,
+                  103,
+                  114,
+                  97,
+                  109
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "program_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "role",
+          "type": "u8"
+        }
+      ]
+    },
+    {
+      "name": "add_payment_token",
+      "discriminator": [
+        19,
+        203,
+        48,
+        148,
+        80,
+        1,
+        179,
+        140
+      ],
+      "accounts": [
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "store_config"
+          ]
+        },
+        {
+          "name": "store_config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  116,
+                  111,
+                  114,
+                  101,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "mint"
+        },
+        {
+          "name": "accepted_payment_token",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  99,
+                  99,
+                  101,
+                  112,
+                  116,
+                  101,
+                  100,
+                  95,
+                  112,
+                  97,
+                  121,
+                  109,
+                  101,
+                  110,
+                  116,
+                  95,
+                  116,
+                  111,
+                  107,
+                  101,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "buy_game",
+      "discriminator": [
+        230,
+        118,
+        208,
+        28,
+        185,
+        30,
+        230,
+        155
+      ],
+      "accounts": [
+        {
+          "name": "buyer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "store_config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  116,
+                  111,
+                  114,
+                  101,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "authorized_source_program",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  122,
+                  101,
+                  100,
+                  95,
+                  112,
+                  114,
+                  111,
+                  103,
+                  114,
+                  97,
+                  109
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "source_program"
+              }
+            ]
+          }
+        },
+        {
+          "name": "source_program",
+          "address": "7ddrr9b2ReD17kk73LLnW88tVT4fEpzGEY4rPb8hbQtT"
+        },
+        {
+          "name": "authorized_registry_program",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  122,
+                  101,
+                  100,
+                  95,
+                  112,
+                  114,
+                  111,
+                  103,
+                  114,
+                  97,
+                  109
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "registry_program"
+              }
+            ]
+          }
+        },
+        {
+          "name": "registry_program",
+          "address": "CxQCfVWCBE6tLwmEi3z7gXpniR21UyjvVvE6VytVcnyf"
+        },
+        {
+          "name": "game",
+          "relations": [
+            "game_store_config",
+            "game_payment_option"
+          ]
+        },
+        {
+          "name": "registry_game"
+        },
+        {
+          "name": "game_store_config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  103,
+                  97,
+                  109,
+                  101,
+                  95,
+                  115,
+                  116,
+                  111,
+                  114,
+                  101,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "game"
+              }
+            ]
+          }
+        },
+        {
+          "name": "payment_mint"
+        },
+        {
+          "name": "accepted_payment_token",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  99,
+                  99,
+                  101,
+                  112,
+                  116,
+                  101,
+                  100,
+                  95,
+                  112,
+                  97,
+                  121,
+                  109,
+                  101,
+                  110,
+                  116,
+                  95,
+                  116,
+                  111,
+                  107,
+                  101,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "payment_mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "game_payment_option",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  103,
+                  97,
+                  109,
+                  101,
+                  95,
+                  112,
+                  97,
+                  121,
+                  109,
+                  101,
+                  110,
+                  116,
+                  95,
+                  111,
+                  112,
+                  116,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "game"
+              },
+              {
+                "kind": "account",
+                "path": "payment_mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "buyer_payment_account",
+          "writable": true
+        },
+        {
+          "name": "publisher_payment_account",
+          "writable": true
+        },
+        {
+          "name": "treasury_payment_account",
+          "writable": true
+        },
+        {
+          "name": "referrer_payment_account",
+          "writable": true,
+          "optional": true
+        },
+        {
+          "name": "store_actor",
+          "signer": true
+        },
+        {
+          "name": "authorized_actor",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  122,
+                  101,
+                  100,
+                  95,
+                  97,
+                  99,
+                  116,
+                  111,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "store_actor"
+              }
+            ],
+            "program": {
+              "kind": "account",
+              "path": "pgl1_program"
+            }
+          }
+        },
+        {
+          "name": "pgl1_program",
+          "address": "7ddrr9b2ReD17kk73LLnW88tVT4fEpzGEY4rPb8hbQtT"
+        },
+        {
+          "name": "license",
+          "writable": true
+        },
+        {
+          "name": "purchase_receipt",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  117,
+                  114,
+                  99,
+                  104,
+                  97,
+                  115,
+                  101,
+                  95,
+                  114,
+                  101,
+                  99,
+                  101,
+                  105,
+                  112,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "buyer"
+              },
+              {
+                "kind": "account",
+                "path": "game"
+              }
+            ]
+          }
+        },
+        {
+          "name": "token_program"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "paid_amount",
+          "type": "u64"
+        },
+        {
+          "name": "referrer",
+          "type": {
+            "option": "pubkey"
+          }
+        }
+      ]
+    },
+    {
+      "name": "clear_discount",
+      "discriminator": [
+        131,
+        52,
+        86,
+        51,
+        205,
+        130,
+        233,
+        36
+      ],
+      "accounts": [
+        {
+          "name": "publisher",
+          "signer": true
+        },
+        {
+          "name": "authorized_source_program",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  122,
+                  101,
+                  100,
+                  95,
+                  112,
+                  114,
+                  111,
+                  103,
+                  114,
+                  97,
+                  109
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "source_program"
+              }
+            ]
+          }
+        },
+        {
+          "name": "source_program",
+          "address": "7ddrr9b2ReD17kk73LLnW88tVT4fEpzGEY4rPb8hbQtT"
+        },
+        {
+          "name": "game",
+          "relations": [
+            "game_store_config"
+          ]
+        },
+        {
+          "name": "game_store_config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  103,
+                  97,
+                  109,
+                  101,
+                  95,
+                  115,
+                  116,
+                  111,
+                  114,
+                  101,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "game"
+              }
+            ]
+          }
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "init_game_store_config",
+      "discriminator": [
+        85,
+        106,
+        133,
+        8,
+        211,
+        20,
+        78,
+        108
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "publisher",
+          "signer": true,
+          "optional": true
+        },
+        {
+          "name": "source_program",
+          "address": "7ddrr9b2ReD17kk73LLnW88tVT4fEpzGEY4rPb8hbQtT"
+        },
+        {
+          "name": "authorized_source_program",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  122,
+                  101,
+                  100,
+                  95,
+                  112,
+                  114,
+                  111,
+                  103,
+                  114,
+                  97,
+                  109
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "source_program"
+              }
+            ]
+          }
+        },
+        {
+          "name": "registry_program",
+          "address": "CxQCfVWCBE6tLwmEi3z7gXpniR21UyjvVvE6VytVcnyf"
+        },
+        {
+          "name": "authorized_registry_program",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  122,
+                  101,
+                  100,
+                  95,
+                  112,
+                  114,
+                  111,
+                  103,
+                  114,
+                  97,
+                  109
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "registry_program"
+              }
+            ]
+          }
+        },
+        {
+          "name": "game"
+        },
+        {
+          "name": "registry_game"
+        },
+        {
+          "name": "game_store_config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  103,
+                  97,
+                  109,
+                  101,
+                  95,
+                  115,
+                  116,
+                  111,
+                  114,
+                  101,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "game"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "active",
+          "type": "bool"
+        }
+      ]
+    },
+    {
+      "name": "initialize_store",
+      "discriminator": [
+        109,
+        149,
+        210,
+        214,
+        188,
+        126,
+        220,
+        140
+      ],
+      "accounts": [
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "store_config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  116,
+                  111,
+                  114,
+                  101,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "treasury",
+          "type": "pubkey"
+        },
+        {
+          "name": "platform_fee_bps",
+          "type": "u16"
+        },
+        {
+          "name": "default_referral_bps",
+          "type": "u16"
+        },
+        {
+          "name": "max_referral_bps",
+          "type": "u16"
+        },
+        {
+          "name": "store_actor",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
+      "name": "remove_game_payment_option",
+      "discriminator": [
+        25,
+        2,
+        53,
+        66,
+        23,
+        57,
+        219,
+        154
+      ],
+      "accounts": [
+        {
+          "name": "publisher",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "authorized_source_program",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  122,
+                  101,
+                  100,
+                  95,
+                  112,
+                  114,
+                  111,
+                  103,
+                  114,
+                  97,
+                  109
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "source_program"
+              }
+            ]
+          }
+        },
+        {
+          "name": "source_program",
+          "address": "7ddrr9b2ReD17kk73LLnW88tVT4fEpzGEY4rPb8hbQtT"
+        },
+        {
+          "name": "game",
+          "relations": [
+            "game_payment_option"
+          ]
+        },
+        {
+          "name": "mint"
+        },
+        {
+          "name": "game_payment_option",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  103,
+                  97,
+                  109,
+                  101,
+                  95,
+                  112,
+                  97,
+                  121,
+                  109,
+                  101,
+                  110,
+                  116,
+                  95,
+                  111,
+                  112,
+                  116,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "game"
+              },
+              {
+                "kind": "account",
+                "path": "mint"
+              }
+            ]
+          }
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "set_default_referral",
+      "discriminator": [
+        17,
+        210,
+        30,
+        108,
+        163,
+        67,
+        215,
+        80
+      ],
+      "accounts": [
+        {
+          "name": "authority",
+          "signer": true,
+          "relations": [
+            "store_config"
+          ]
+        },
+        {
+          "name": "store_config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  116,
+                  111,
+                  114,
+                  101,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "default_referral_bps",
+          "type": "u16"
+        }
+      ]
+    },
+    {
+      "name": "set_discount",
+      "discriminator": [
+        185,
+        99,
+        11,
+        85,
+        175,
+        2,
+        42,
+        198
+      ],
+      "accounts": [
+        {
+          "name": "publisher",
+          "signer": true
+        },
+        {
+          "name": "authorized_source_program",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  122,
+                  101,
+                  100,
+                  95,
+                  112,
+                  114,
+                  111,
+                  103,
+                  114,
+                  97,
+                  109
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "source_program"
+              }
+            ]
+          }
+        },
+        {
+          "name": "source_program",
+          "address": "7ddrr9b2ReD17kk73LLnW88tVT4fEpzGEY4rPb8hbQtT"
+        },
+        {
+          "name": "registry_program",
+          "address": "CxQCfVWCBE6tLwmEi3z7gXpniR21UyjvVvE6VytVcnyf"
+        },
+        {
+          "name": "game",
+          "relations": [
+            "game_store_config"
+          ]
+        },
+        {
+          "name": "registry_game"
+        },
+        {
+          "name": "game_store_config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  103,
+                  97,
+                  109,
+                  101,
+                  95,
+                  115,
+                  116,
+                  111,
+                  114,
+                  101,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "game"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "discount_bps",
+          "type": {
+            "option": "u16"
+          }
+        },
+        {
+          "name": "discount_starts_at",
+          "type": {
+            "option": "i64"
+          }
+        },
+        {
+          "name": "discount_expires_at",
+          "type": {
+            "option": "i64"
+          }
+        }
+      ]
+    },
+    {
+      "name": "set_game_payment_option",
+      "discriminator": [
+        122,
+        86,
+        158,
+        12,
+        148,
+        161,
+        8,
+        46
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "publisher",
+          "signer": true,
+          "optional": true
+        },
+        {
+          "name": "source_program",
+          "address": "7ddrr9b2ReD17kk73LLnW88tVT4fEpzGEY4rPb8hbQtT"
+        },
+        {
+          "name": "authorized_source_program",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  122,
+                  101,
+                  100,
+                  95,
+                  112,
+                  114,
+                  111,
+                  103,
+                  114,
+                  97,
+                  109
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "source_program"
+              }
+            ]
+          }
+        },
+        {
+          "name": "registry_program",
+          "address": "CxQCfVWCBE6tLwmEi3z7gXpniR21UyjvVvE6VytVcnyf"
+        },
+        {
+          "name": "authorized_registry_program",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  122,
+                  101,
+                  100,
+                  95,
+                  112,
+                  114,
+                  111,
+                  103,
+                  114,
+                  97,
+                  109
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "registry_program"
+              }
+            ]
+          }
+        },
+        {
+          "name": "game",
+          "relations": [
+            "game_store_config"
+          ]
+        },
+        {
+          "name": "registry_game"
+        },
+        {
+          "name": "game_store_config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  103,
+                  97,
+                  109,
+                  101,
+                  95,
+                  115,
+                  116,
+                  111,
+                  114,
+                  101,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "game"
+              }
+            ]
+          }
+        },
+        {
+          "name": "mint"
+        },
+        {
+          "name": "accepted_payment_token",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  99,
+                  99,
+                  101,
+                  112,
+                  116,
+                  101,
+                  100,
+                  95,
+                  112,
+                  97,
+                  121,
+                  109,
+                  101,
+                  110,
+                  116,
+                  95,
+                  116,
+                  111,
+                  107,
+                  101,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "game_payment_option",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  103,
+                  97,
+                  109,
+                  101,
+                  95,
+                  112,
+                  97,
+                  121,
+                  109,
+                  101,
+                  110,
+                  116,
+                  95,
+                  111,
+                  112,
+                  116,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "game"
+              },
+              {
+                "kind": "account",
+                "path": "mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "base_price",
+          "type": "u64"
+        },
+        {
+          "name": "active",
+          "type": "bool"
+        }
+      ]
+    },
+    {
+      "name": "set_game_store_active",
+      "discriminator": [
+        89,
+        147,
+        76,
+        11,
+        9,
+        108,
+        85,
+        219
+      ],
+      "accounts": [
+        {
+          "name": "publisher",
+          "signer": true
+        },
+        {
+          "name": "authorized_source_program",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  122,
+                  101,
+                  100,
+                  95,
+                  112,
+                  114,
+                  111,
+                  103,
+                  114,
+                  97,
+                  109
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "source_program"
+              }
+            ]
+          }
+        },
+        {
+          "name": "source_program",
+          "address": "7ddrr9b2ReD17kk73LLnW88tVT4fEpzGEY4rPb8hbQtT"
+        },
+        {
+          "name": "registry_program",
+          "address": "CxQCfVWCBE6tLwmEi3z7gXpniR21UyjvVvE6VytVcnyf"
+        },
+        {
+          "name": "game",
+          "relations": [
+            "game_store_config"
+          ]
+        },
+        {
+          "name": "registry_game"
+        },
+        {
+          "name": "game_store_config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  103,
+                  97,
+                  109,
+                  101,
+                  95,
+                  115,
+                  116,
+                  111,
+                  114,
+                  101,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "game"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "active",
+          "type": "bool"
+        }
+      ]
+    },
+    {
+      "name": "set_max_referral",
+      "discriminator": [
+        136,
+        204,
+        233,
+        199,
+        249,
+        248,
+        137,
+        144
+      ],
+      "accounts": [
+        {
+          "name": "authority",
+          "signer": true,
+          "relations": [
+            "store_config"
+          ]
+        },
+        {
+          "name": "store_config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  116,
+                  111,
+                  114,
+                  101,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "max_referral_bps",
+          "type": "u16"
+        }
+      ]
+    },
+    {
+      "name": "set_platform_fee",
+      "discriminator": [
+        19,
+        70,
+        111,
+        182,
+        156,
+        58,
+        208,
+        203
+      ],
+      "accounts": [
+        {
+          "name": "authority",
+          "signer": true,
+          "relations": [
+            "store_config"
+          ]
+        },
+        {
+          "name": "store_config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  116,
+                  111,
+                  114,
+                  101,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "platform_fee_bps",
+          "type": "u16"
+        }
+      ]
+    },
+    {
+      "name": "set_referral_bps",
+      "discriminator": [
+        28,
+        213,
+        164,
+        214,
+        151,
+        184,
+        143,
+        136
+      ],
+      "accounts": [
+        {
+          "name": "publisher",
+          "signer": true
+        },
+        {
+          "name": "store_config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  116,
+                  111,
+                  114,
+                  101,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "authorized_source_program",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  122,
+                  101,
+                  100,
+                  95,
+                  112,
+                  114,
+                  111,
+                  103,
+                  114,
+                  97,
+                  109
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "source_program"
+              }
+            ]
+          }
+        },
+        {
+          "name": "source_program",
+          "address": "7ddrr9b2ReD17kk73LLnW88tVT4fEpzGEY4rPb8hbQtT"
+        },
+        {
+          "name": "game",
+          "relations": [
+            "game_store_config"
+          ]
+        },
+        {
+          "name": "game_store_config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  103,
+                  97,
+                  109,
+                  101,
+                  95,
+                  115,
+                  116,
+                  111,
+                  114,
+                  101,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "game"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "referral_bps",
+          "type": {
+            "option": "u16"
+          }
+        }
+      ]
+    },
+    {
+      "name": "set_store_actor",
+      "discriminator": [
+        52,
+        118,
+        95,
+        161,
+        244,
+        179,
+        250,
+        38
+      ],
+      "accounts": [
+        {
+          "name": "authority",
+          "signer": true,
+          "relations": [
+            "store_config"
+          ]
+        },
+        {
+          "name": "store_config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  116,
+                  111,
+                  114,
+                  101,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "new_store_actor",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
+      "name": "set_treasury",
+      "discriminator": [
+        57,
+        97,
+        196,
+        95,
+        195,
+        206,
+        106,
+        136
+      ],
+      "accounts": [
+        {
+          "name": "authority",
+          "signer": true,
+          "relations": [
+            "store_config"
+          ]
+        },
+        {
+          "name": "store_config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  116,
+                  111,
+                  114,
+                  101,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "treasury",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
+      "name": "update_authorized_program",
+      "discriminator": [
+        70,
+        84,
+        196,
+        221,
+        239,
+        138,
+        173,
+        238
+      ],
+      "accounts": [
+        {
+          "name": "authority",
+          "signer": true,
+          "relations": [
+            "store_config"
+          ]
+        },
+        {
+          "name": "store_config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  116,
+                  111,
+                  114,
+                  101,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "authorized_program",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  122,
+                  101,
+                  100,
+                  95,
+                  112,
+                  114,
+                  111,
+                  103,
+                  114,
+                  97,
+                  109
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "authorized_program.program_id",
+                "account": "AuthorizedProgram"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "active",
+          "type": "bool"
+        },
+        {
+          "name": "role",
+          "type": {
+            "option": "u8"
+          }
+        }
+      ]
+    },
+    {
+      "name": "update_payment_token",
+      "discriminator": [
+        240,
+        107,
+        161,
+        243,
+        84,
+        148,
+        183,
+        126
+      ],
+      "accounts": [
+        {
+          "name": "authority",
+          "signer": true,
+          "relations": [
+            "store_config"
+          ]
+        },
+        {
+          "name": "store_config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  116,
+                  111,
+                  114,
+                  101,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "accepted_payment_token",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  99,
+                  99,
+                  101,
+                  112,
+                  116,
+                  101,
+                  100,
+                  95,
+                  112,
+                  97,
+                  121,
+                  109,
+                  101,
+                  110,
+                  116,
+                  95,
+                  116,
+                  111,
+                  107,
+                  101,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "accepted_payment_token.mint",
+                "account": "AcceptedPaymentToken"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "active",
+          "type": "bool"
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "AcceptedPaymentToken",
+      "discriminator": [
+        101,
+        168,
+        82,
+        98,
+        20,
+        218,
+        130,
+        107
+      ]
+    },
+    {
+      "name": "AuthorizedActor",
+      "discriminator": [
+        155,
+        89,
+        1,
+        231,
+        51,
+        170,
+        32,
+        23
+      ]
+    },
+    {
+      "name": "AuthorizedProgram",
+      "discriminator": [
+        18,
+        164,
+        77,
+        11,
+        61,
+        253,
+        148,
+        223
+      ]
+    },
+    {
+      "name": "Game",
+      "discriminator": [
+        27,
+        90,
+        166,
+        125,
+        74,
+        100,
+        121,
+        18
+      ]
+    },
+    {
+      "name": "GamePaymentOption",
+      "discriminator": [
+        7,
+        115,
+        189,
+        102,
+        10,
+        48,
+        220,
+        137
+      ]
+    },
+    {
+      "name": "GameStoreConfig",
+      "discriminator": [
+        147,
+        51,
+        220,
+        95,
+        81,
+        151,
+        19,
+        208
+      ]
+    },
+    {
+      "name": "PurchaseReceipt",
+      "discriminator": [
+        79,
+        127,
+        222,
+        137,
+        154,
+        131,
+        150,
+        134
+      ]
+    },
+    {
+      "name": "RegistryGame",
+      "discriminator": [
+        44,
+        59,
+        51,
+        135,
+        203,
+        140,
+        48,
+        151
+      ]
+    },
+    {
+      "name": "StoreConfig",
+      "discriminator": [
+        108,
+        23,
+        66,
+        65,
+        67,
+        124,
+        167,
+        135
+      ]
+    }
+  ],
+  "events": [
+    {
+      "name": "AuthorizedProgramAdded",
+      "discriminator": [
+        93,
+        87,
+        39,
+        90,
+        59,
+        95,
+        83,
+        101
+      ]
+    },
+    {
+      "name": "AuthorizedProgramUpdated",
+      "discriminator": [
+        147,
+        69,
+        0,
+        236,
+        159,
+        224,
+        25,
+        132
+      ]
+    },
+    {
+      "name": "DefaultReferralUpdated",
+      "discriminator": [
+        250,
+        99,
+        212,
+        118,
+        114,
+        118,
+        67,
+        20
+      ]
+    },
+    {
+      "name": "DiscountCleared",
+      "discriminator": [
+        116,
+        185,
+        191,
+        70,
+        149,
+        105,
+        215,
+        75
+      ]
+    },
+    {
+      "name": "DiscountSet",
+      "discriminator": [
+        71,
+        35,
+        211,
+        93,
+        195,
+        190,
+        89,
+        76
+      ]
+    },
+    {
+      "name": "GamePaymentOptionRemoved",
+      "discriminator": [
+        143,
+        235,
+        209,
+        92,
+        104,
+        60,
+        43,
+        196
+      ]
+    },
+    {
+      "name": "GamePaymentOptionSet",
+      "discriminator": [
+        192,
+        72,
+        193,
+        135,
+        22,
+        100,
+        177,
+        220
+      ]
+    },
+    {
+      "name": "GamePurchased",
+      "discriminator": [
+        171,
+        159,
+        122,
+        155,
+        186,
+        98,
+        154,
+        92
+      ]
+    },
+    {
+      "name": "GameStoreActiveUpdated",
+      "discriminator": [
+        211,
+        94,
+        130,
+        226,
+        139,
+        210,
+        32,
+        204
+      ]
+    },
+    {
+      "name": "GameStoreConfigInitialized",
+      "discriminator": [
+        102,
+        197,
+        95,
+        106,
+        2,
+        26,
+        222,
+        46
+      ]
+    },
+    {
+      "name": "MaxReferralUpdated",
+      "discriminator": [
+        141,
+        6,
+        17,
+        123,
+        33,
+        45,
+        145,
+        211
+      ]
+    },
+    {
+      "name": "PaymentTokenAdded",
+      "discriminator": [
+        181,
+        200,
+        132,
+        33,
+        4,
+        116,
+        83,
+        186
+      ]
+    },
+    {
+      "name": "PaymentTokenUpdated",
+      "discriminator": [
+        215,
+        110,
+        229,
+        224,
+        123,
+        151,
+        223,
+        230
+      ]
+    },
+    {
+      "name": "PlatformFeeUpdated",
+      "discriminator": [
+        210,
+        134,
+        201,
+        4,
+        92,
+        228,
+        80,
+        26
+      ]
+    },
+    {
+      "name": "PurchaseReceiptCreated",
+      "discriminator": [
+        29,
+        241,
+        194,
+        245,
+        12,
+        114,
+        75,
+        134
+      ]
+    },
+    {
+      "name": "ReferralBpsUpdated",
+      "discriminator": [
+        76,
+        167,
+        56,
+        201,
+        99,
+        79,
+        117,
+        173
+      ]
+    },
+    {
+      "name": "StoreActorUpdated",
+      "discriminator": [
+        32,
+        168,
+        32,
+        150,
+        91,
+        110,
+        161,
+        9
+      ]
+    },
+    {
+      "name": "StoreInitialized",
+      "discriminator": [
+        227,
+        199,
+        199,
+        58,
+        219,
+        60,
+        250,
+        31
+      ]
+    },
+    {
+      "name": "TreasuryUpdated",
+      "discriminator": [
+        80,
+        239,
+        54,
+        168,
+        43,
+        38,
+        85,
+        145
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "Unauthorized",
+      "msg": "Unauthorized"
+    },
+    {
+      "code": 6001,
+      "name": "InvalidPlatformFeeBps",
+      "msg": "Invalid platform fee bps"
+    },
+    {
+      "code": 6002,
+      "name": "InvalidDefaultReferralBps",
+      "msg": "Invalid default referral bps"
+    },
+    {
+      "code": 6003,
+      "name": "InvalidMaxReferralBps",
+      "msg": "Invalid max referral bps"
+    },
+    {
+      "code": 6004,
+      "name": "ReferralAboveMax",
+      "msg": "Referral above max"
+    },
+    {
+      "code": 6005,
+      "name": "SourceProgramNotAuthorized",
+      "msg": "Source program not authorized"
+    },
+    {
+      "code": 6006,
+      "name": "RegistryProgramNotAuthorized",
+      "msg": "Registry program not authorized"
+    },
+    {
+      "code": 6007,
+      "name": "PaymentTokenNotAllowed",
+      "msg": "Payment token not allowed"
+    },
+    {
+      "code": 6008,
+      "name": "PaymentTokenDisabled",
+      "msg": "Payment token disabled"
+    },
+    {
+      "code": 6009,
+      "name": "InvalidPrice",
+      "msg": "Invalid price"
+    },
+    {
+      "code": 6010,
+      "name": "PriceNotFound",
+      "msg": "Price not found"
+    },
+    {
+      "code": 6011,
+      "name": "StoreGameInactive",
+      "msg": "Game not active in store"
+    },
+    {
+      "code": 6012,
+      "name": "GameNotActive",
+      "msg": "Game not active in registry"
+    },
+    {
+      "code": 6013,
+      "name": "GameNotRegistered",
+      "msg": "Game not registered"
+    },
+    {
+      "code": 6014,
+      "name": "AlreadyOwned",
+      "msg": "Already owned"
+    },
+    {
+      "code": 6015,
+      "name": "InvalidDiscountBps",
+      "msg": "Invalid discount bps"
+    },
+    {
+      "code": 6016,
+      "name": "InvalidDiscountWindow",
+      "msg": "Invalid discount window"
+    },
+    {
+      "code": 6017,
+      "name": "InvalidReferralBps",
+      "msg": "Invalid referral bps"
+    },
+    {
+      "code": 6018,
+      "name": "MathOverflow",
+      "msg": "Math overflow"
+    },
+    {
+      "code": 6019,
+      "name": "InvalidPaymentAmount",
+      "msg": "Invalid payment amount"
+    },
+    {
+      "code": 6020,
+      "name": "UnsupportedSourceGameOwner",
+      "msg": "Unsupported source game owner"
+    },
+    {
+      "code": 6021,
+      "name": "RegistryGameMismatch",
+      "msg": "Registry game mismatch"
+    },
+    {
+      "code": 6022,
+      "name": "PaymentFailed",
+      "msg": "Payment failed"
+    },
+    {
+      "code": 6023,
+      "name": "LicenseMintFailed",
+      "msg": "License mint failed"
+    },
+    {
+      "code": 6024,
+      "name": "MissingReferrerTokenAccount",
+      "msg": "Missing referrer token account"
+    },
+    {
+      "code": 6025,
+      "name": "InvalidReferrerTokenAccount",
+      "msg": "Invalid referrer token account"
+    },
+    {
+      "code": 6026,
+      "name": "InvalidTreasury",
+      "msg": "Invalid treasury"
+    },
+    {
+      "code": 6027,
+      "name": "InvalidStoreActor",
+      "msg": "Invalid store actor"
+    },
+    {
+      "code": 6028,
+      "name": "GamePaymentOptionMismatch",
+      "msg": "Game payment option mismatch"
+    },
+    {
+      "code": 6029,
+      "name": "InvalidRole",
+      "msg": "Invalid program role"
+    },
+    {
+      "code": 6030,
+      "name": "InsufficientRole",
+      "msg": "Program role insufficient for this action"
+    }
+  ],
+  "types": [
+    {
+      "name": "AcceptedPaymentToken",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "active",
+            "type": "bool"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "AuthorizedActor",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "actor",
+            "type": "pubkey"
+          },
+          {
+            "name": "active",
+            "type": "bool"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "AuthorizedProgram",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "program_id",
+            "type": "pubkey"
+          },
+          {
+            "name": "active",
+            "type": "bool"
+          },
+          {
+            "name": "role",
+            "type": "u8"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "AuthorizedProgramAdded",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "program_id",
+            "type": "pubkey"
+          },
+          {
+            "name": "role",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "AuthorizedProgramUpdated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "program_id",
+            "type": "pubkey"
+          },
+          {
+            "name": "active",
+            "type": "bool"
+          },
+          {
+            "name": "role",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "DefaultReferralUpdated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "default_referral_bps",
+            "type": "u16"
+          }
+        ]
+      }
+    },
+    {
+      "name": "DiscountCleared",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "game",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "DiscountSet",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "game",
+            "type": "pubkey"
+          },
+          {
+            "name": "discount_bps",
+            "type": {
+              "option": "u16"
+            }
+          },
+          {
+            "name": "discount_starts_at",
+            "type": {
+              "option": "i64"
+            }
+          },
+          {
+            "name": "discount_expires_at",
+            "type": {
+              "option": "i64"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Game",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "creator",
+            "type": "pubkey"
+          },
+          {
+            "name": "nonce",
+            "type": "u64"
+          },
+          {
+            "name": "publisher",
+            "type": "pubkey"
+          },
+          {
+            "name": "game_id",
+            "type": "string"
+          },
+          {
+            "name": "metadata_uri",
+            "type": "string"
+          },
+          {
+            "name": "created_at",
+            "type": "i64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "GamePaymentOption",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "game",
+            "type": "pubkey"
+          },
+          {
+            "name": "mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "base_price",
+            "type": "u64"
+          },
+          {
+            "name": "active",
+            "type": "bool"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "GamePaymentOptionRemoved",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "game",
+            "type": "pubkey"
+          },
+          {
+            "name": "mint",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "GamePaymentOptionSet",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "game",
+            "type": "pubkey"
+          },
+          {
+            "name": "mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "base_price",
+            "type": "u64"
+          },
+          {
+            "name": "active",
+            "type": "bool"
+          }
+        ]
+      }
+    },
+    {
+      "name": "GamePurchased",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "buyer",
+            "type": "pubkey"
+          },
+          {
+            "name": "game",
+            "type": "pubkey"
+          },
+          {
+            "name": "payment_mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "paid_amount",
+            "type": "u64"
+          },
+          {
+            "name": "final_price",
+            "type": "u64"
+          },
+          {
+            "name": "referrer",
+            "type": "pubkey"
+          },
+          {
+            "name": "referral_bps_applied",
+            "type": "u16"
+          }
+        ]
+      }
+    },
+    {
+      "name": "GameStatus",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Active"
+          },
+          {
+            "name": "Suspended"
+          },
+          {
+            "name": "Banned"
+          }
+        ]
+      }
+    },
+    {
+      "name": "GameStoreActiveUpdated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "game",
+            "type": "pubkey"
+          },
+          {
+            "name": "active",
+            "type": "bool"
+          }
+        ]
+      }
+    },
+    {
+      "name": "GameStoreConfig",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "game",
+            "type": "pubkey"
+          },
+          {
+            "name": "active",
+            "type": "bool"
+          },
+          {
+            "name": "referral_bps",
+            "type": {
+              "option": "u16"
+            }
+          },
+          {
+            "name": "discount_bps",
+            "type": {
+              "option": "u16"
+            }
+          },
+          {
+            "name": "discount_starts_at",
+            "type": {
+              "option": "i64"
+            }
+          },
+          {
+            "name": "discount_expires_at",
+            "type": {
+              "option": "i64"
+            }
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "GameStoreConfigInitialized",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "game",
+            "type": "pubkey"
+          },
+          {
+            "name": "active",
+            "type": "bool"
+          }
+        ]
+      }
+    },
+    {
+      "name": "MaxReferralUpdated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "max_referral_bps",
+            "type": "u16"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PaymentTokenAdded",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "mint",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PaymentTokenUpdated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "active",
+            "type": "bool"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PlatformFeeUpdated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "platform_fee_bps",
+            "type": "u16"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PurchaseReceipt",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "buyer",
+            "type": "pubkey"
+          },
+          {
+            "name": "game",
+            "type": "pubkey"
+          },
+          {
+            "name": "payment_mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "paid_amount",
+            "type": "u64"
+          },
+          {
+            "name": "final_price",
+            "type": "u64"
+          },
+          {
+            "name": "referrer",
+            "type": "pubkey"
+          },
+          {
+            "name": "referral_bps_applied",
+            "type": "u16"
+          },
+          {
+            "name": "purchased_at",
+            "type": "i64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PurchaseReceiptCreated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "buyer",
+            "type": "pubkey"
+          },
+          {
+            "name": "game",
+            "type": "pubkey"
+          },
+          {
+            "name": "referrer",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ReferralBpsUpdated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "game",
+            "type": "pubkey"
+          },
+          {
+            "name": "referral_bps",
+            "type": {
+              "option": "u16"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "RegistryGame",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "game",
+            "type": "pubkey"
+          },
+          {
+            "name": "game_id",
+            "type": "string"
+          },
+          {
+            "name": "registered_at",
+            "type": "i64"
+          },
+          {
+            "name": "status",
+            "type": {
+              "defined": {
+                "name": "GameStatus"
+              }
+            }
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "StoreActorUpdated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "old_store_actor",
+            "type": "pubkey"
+          },
+          {
+            "name": "new_store_actor",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "StoreConfig",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority",
+            "type": "pubkey"
+          },
+          {
+            "name": "treasury",
+            "type": "pubkey"
+          },
+          {
+            "name": "platform_fee_bps",
+            "type": "u16"
+          },
+          {
+            "name": "default_referral_bps",
+            "type": "u16"
+          },
+          {
+            "name": "max_referral_bps",
+            "type": "u16"
+          },
+          {
+            "name": "store_actor",
+            "type": "pubkey"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "StoreInitialized",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority",
+            "type": "pubkey"
+          },
+          {
+            "name": "treasury",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "TreasuryUpdated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "treasury",
+            "type": "pubkey"
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -4,6 +4,12 @@ import { getAddress, isAddress, type Hex } from "viem";
 import { getPeridotRegistry, PGC1_LICENSE_ID } from "../config/game.config";
 import { MyGameItem, RegistryGame } from "../types/library.type";
 import { authRepo } from "@/core/db/repositories/auth.repo";
+import { PublicKey } from "@solana/web3.js";
+import { getSvmConnection } from "@/core/blockchain/svm/web3";
+import { getSvmPgcProgramId } from "@/core/blockchain/svm/contracts/program.registry";
+import { decodeLicenseAccount, decodePgcGameAccount } from "@/core/blockchain/svm/contracts/account.state";
+import { getMyLibraryApi, getLibraryGameApi } from "@/core/api/library.api";
+import { LibraryGameApi } from "@/core/api/library.api.type";
 
 /* ======================================================
    ERROR CODES
@@ -143,7 +149,7 @@ export async function getMyGames(user: string): Promise<MyGameItem[]> {
 
         const parsedGames: Array<{
             gameId: string;
-            pgc1: `0x${string}`;
+            pgc1: string;
             publisher: string;
             createdAt: bigint;
             active: boolean;
@@ -171,7 +177,7 @@ export async function getMyGames(user: string): Promise<MyGameItem[]> {
 
         const balanceResults = await publicClient.multicall({
             contracts: parsedGames.map((g) => ({
-                address: g.pgc1,
+                address: g.pgc1 as Hex,
                 abi: PGC1Abi,
                 functionName: "balanceOf",
                 args: [address, PGC1_LICENSE_ID],
@@ -201,7 +207,7 @@ export async function getMyGames(user: string): Promise<MyGameItem[]> {
 
         const contractMetaVersionResults = await publicClient.multicall({
             contracts: ownedGames.map((g) => ({
-                address: g.pgc1,
+                address: g.pgc1 as Hex,
                 abi: PGC1Abi,
                 functionName: "contractMetaHeadVersion",
             })),
@@ -216,7 +222,7 @@ export async function getMyGames(user: string): Promise<MyGameItem[]> {
         };
 
         const metadataContracts: {
-            address: `0x${string}`;
+            address: Hex;
             abi: typeof PGC1Abi;
             functionName: "contractMetadataAt";
             args: [bigint];
@@ -237,7 +243,7 @@ export async function getMyGames(user: string): Promise<MyGameItem[]> {
             if (version === ZERO) continue;
 
             metadataContracts.push({
-                address: ownedGames[i].pgc1,
+                address: ownedGames[i].pgc1 as Hex,
                 abi: PGC1Abi,
                 functionName: "contractMetadataAt",
                 args: [version - BigInt(1)], // version starts at 1
@@ -297,6 +303,52 @@ export async function getMyGames(user: string): Promise<MyGameItem[]> {
 
 
 /* ======================================================
+   API-BASED LIBRARY (NEW)
+====================================================== */
+
+/**
+ * Convert LibraryGameApi from API to MyGameItem format
+ */
+function convertLibraryGameToMyGameItem(libraryGame: LibraryGameApi): MyGameItem {
+    return {
+        gameId: libraryGame.gameId,
+        pgc1: "", // Not available from API - would need to query blockchain
+        publisher: "", // Not available from API
+        createdAt: BigInt(new Date(libraryGame.purchasedAt).getTime()),
+        active: libraryGame.game.isPublished,
+        metadataUri: null, // Not available from API
+    };
+}
+
+/**
+ * Get user's games from Library API.
+ * Falls back to blockchain queries if API fails.
+ */
+export async function getMyGamesFromApi(): Promise<MyGameItem[]> {
+    try {
+        const response = await getMyLibraryApi({ limit: 100 });
+        console.log(`[Library] Fetched ${response.data.length} games from API`);
+        return response.data.map(convertLibraryGameToMyGameItem);
+    } catch (error) {
+        console.warn("[Library] API fetch failed, falling back to blockchain:", error);
+        return [];
+    }
+}
+
+/**
+ * Check if a specific game is in user's library via API
+ */
+export async function isGameInLibraryFromApi(gameId: string): Promise<boolean> {
+    try {
+        const game = await getLibraryGameApi(gameId);
+        return game !== null;
+    } catch (error) {
+        console.warn("[Library] API check failed:", error);
+        return false;
+    }
+}
+
+/* ======================================================
    SESSION WRAPPER
 ====================================================== */
 
@@ -307,11 +359,26 @@ export async function getMyGamesForSession(): Promise<MyGameItem[]> {
         throw createLibraryError(LIBRARY_ERROR_CODES.MissingSession);
     }
 
+    // First try to get games from API
+    try {
+        const apiGames = await getMyGamesFromApi();
+        if (apiGames.length > 0) {
+            console.log(`[Library] Using ${apiGames.length} games from API`);
+            return apiGames;
+        }
+    } catch (error) {
+        console.warn("[Library] API fetch failed, using blockchain fallback");
+    }
+
+    // Fallback to blockchain queries
     const accountType = session.account_type?.toLowerCase();
+
+    if (accountType === "svm") {
+        return getSvmMyGames(session.account_id);
+    }
+
     if (accountType !== "evm") {
-        throw createLibraryError(
-            LIBRARY_ERROR_CODES.UnsupportedAccountType
-        );
+        throw createLibraryError(LIBRARY_ERROR_CODES.UnsupportedAccountType);
     }
 
     if (!isAddress(session.account_id)) {
@@ -319,4 +386,63 @@ export async function getMyGamesForSession(): Promise<MyGameItem[]> {
     }
 
     return getMyGames(session.account_id);
+}
+
+/**
+ * Fetch and sync Solana games
+ */
+async function getSvmMyGames(accountId: string): Promise<MyGameItem[]> {
+    try {
+        const connection = getSvmConnection();
+        const pgcProgramId = getSvmPgcProgramId();
+        const userPubkey = new PublicKey(accountId);
+
+        // Get all License accounts owned by the user
+        const accounts = await connection.getProgramAccounts(pgcProgramId, {
+            filters: [
+                {
+                    memcmp: {
+                        offset: 8, // owner field offset (account.state decoder logic)
+                        bytes: userPubkey.toBase58(),
+                    },
+                },
+            ],
+        });
+
+        if (accounts.length === 0) return [];
+
+        const ownedGames: MyGameItem[] = [];
+
+        for (const { pubkey, account } of accounts) {
+            try {
+                const license = decodeLicenseAccount(account.data);
+                const gamePda = license.game;
+
+                // Fetch PGC Game Account to get metadataUri
+                const gameAccountInfo = await connection.getAccountInfo(gamePda);
+                if (!gameAccountInfo) continue;
+
+                const pgcGame = decodePgcGameAccount(gameAccountInfo.data);
+
+                ownedGames.push({
+                    gameId: pgcGame.gameId,
+                    pgc1: gamePda.toBase58(),
+                    publisher: pgcGame.publisher.toBase58(),
+                    createdAt: pgcGame.createdAt,
+                    active: true,
+                    metadataUri: pgcGame.metadataUri,
+                });
+            } catch (e) {
+                console.error(
+                    `[Library] Failed to decode SVM license ${pubkey.toBase58()}:`,
+                    e
+                );
+            }
+        }
+
+        return ownedGames;
+    } catch (error) {
+        console.error("[Library] SVM Fetch failed:", error);
+        throw createLibraryError(LIBRARY_ERROR_CODES.RpcFailed);
+    }
 }
