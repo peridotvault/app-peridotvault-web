@@ -5,7 +5,7 @@
  * IDL can be found at `target/idl/pgl1.json`.
  */
 export type Pgl1 = {
-  "address": "7ddrr9b2ReD17kk73LLnW88tVT4fEpzGEY4rPb8hbQtT",
+  "address": "GAt9373oMr9Ykc1Auudy4wNR9PL7tRPaXMwSKiYpyQpP",
   "metadata": {
     "name": "pgl1",
     "version": "0.1.0",

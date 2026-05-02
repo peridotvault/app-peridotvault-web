@@ -20,25 +20,34 @@ export function buildSvmBuyGameInstruction(
 
   const { accounts } = params;
 
+  const accountKeys: { pubkey: PublicKey; isSigner: boolean; isWritable: boolean }[] = [
+    { pubkey: accounts.buyer!, isSigner: true, isWritable: true },
+    { pubkey: accounts.storeConfig, isSigner: false, isWritable: false },
+    { pubkey: accounts.authorizedSourceProgram, isSigner: false, isWritable: false },
+    { pubkey: accounts.sourceProgram, isSigner: false, isWritable: false },
+    { pubkey: accounts.authorizedRegistryProgram, isSigner: false, isWritable: false },
+    { pubkey: accounts.registryProgram, isSigner: false, isWritable: false },
+    { pubkey: accounts.game, isSigner: false, isWritable: false },
+    { pubkey: accounts.registryGame, isSigner: false, isWritable: false },
+    { pubkey: accounts.gameStoreConfig, isSigner: false, isWritable: false },
+    { pubkey: accounts.paymentMint, isSigner: false, isWritable: false },
+    { pubkey: accounts.acceptedPaymentToken, isSigner: false, isWritable: false },
+    { pubkey: accounts.gamePaymentOption, isSigner: false, isWritable: false },
+    { pubkey: accounts.buyerPaymentAccount, isSigner: false, isWritable: true },
+    { pubkey: accounts.publisherPaymentAccount, isSigner: false, isWritable: true },
+    { pubkey: accounts.treasuryPaymentAccount, isSigner: false, isWritable: true },
+    { pubkey: accounts.storeActor, isSigner: true, isWritable: false },
+    { pubkey: accounts.authorizedActor, isSigner: false, isWritable: false },
+    { pubkey: accounts.pgl1Program, isSigner: false, isWritable: false },
+    { pubkey: accounts.license, isSigner: false, isWritable: true },
+    { pubkey: accounts.purchaseReceipt, isSigner: false, isWritable: true },
+    { pubkey: accounts.tokenProgram, isSigner: false, isWritable: false },
+    { pubkey: accounts.systemProgram, isSigner: false, isWritable: false },
+  ];
+
   return new TransactionInstruction({
     programId: params.programId,
-    keys: [
-      { pubkey: accounts.buyer!, isSigner: true, isWritable: true },
-      { pubkey: accounts.storeState, isSigner: false, isWritable: false },
-      { pubkey: accounts.treasury, isSigner: false, isWritable: true },
-      { pubkey: accounts.registryGame, isSigner: false, isWritable: false },
-      { pubkey: accounts.priceAccount, isSigner: false, isWritable: false },
-      { pubkey: accounts.publisher, isSigner: false, isWritable: false },
-      { pubkey: accounts.publisherBalance, isSigner: false, isWritable: true },
-      { pubkey: accounts.pgcProgram, isSigner: false, isWritable: false },
-      { pubkey: accounts.pgcConfig, isSigner: false, isWritable: false },
-      { pubkey: accounts.licensePda, isSigner: false, isWritable: true },
-      { pubkey: accounts.tokenProgram, isSigner: false, isWritable: false },
-      { pubkey: accounts.buyerTokenAccount, isSigner: false, isWritable: true },
-      { pubkey: accounts.treasuryTokenAccount, isSigner: false, isWritable: true },
-      { pubkey: accounts.publisherTokenAccount, isSigner: false, isWritable: true },
-      { pubkey: accounts.systemProgram, isSigner: false, isWritable: false },
-    ],
+    keys: accountKeys,
     data: Buffer.from(buyGame.discriminator),
   });
 }

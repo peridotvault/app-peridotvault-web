@@ -1,27 +1,83 @@
 import { PublicKey } from "@solana/web3.js";
 import { ASSOCIATED_TOKEN_PROGRAM_ID, NATIVE_SOL_MINT } from "./program.constants";
 
-export function findStoreStatePda(programId: PublicKey) {
+export function findStoreConfigPda(programId: PublicKey, gamePda: PublicKey) {
   return PublicKey.findProgramAddressSync(
-    [Buffer.from("config")],
+    [Buffer.from("game_store_config"), gamePda.toBuffer()],
     programId,
   )[0];
 }
 
-export function findPriceAccountPda(programId: PublicKey, gamePda: PublicKey) {
-  return PublicKey.findProgramAddressSync(
-    [Buffer.from("price"), gamePda.toBuffer()],
-    programId,
-  )[0];
-}
-
-export function findPublisherBalancePda(
+export function findGamePaymentOptionPda(
   programId: PublicKey,
-  publisher: PublicKey,
-  mint: PublicKey,
+  gamePda: PublicKey,
+  paymentMint: PublicKey,
 ) {
   return PublicKey.findProgramAddressSync(
-    [Buffer.from("balance"), publisher.toBuffer(), mint.toBuffer()],
+    [Buffer.from("game_payment_option"), gamePda.toBuffer(), paymentMint.toBuffer()],
+    programId,
+  )[0];
+}
+
+export function findPublisherPaymentAccountPda(
+  programId: PublicKey,
+  publisher: PublicKey,
+  paymentMint: PublicKey,
+) {
+  return PublicKey.findProgramAddressSync(
+    [Buffer.from("publisher_payment_account"), publisher.toBuffer(), paymentMint.toBuffer()],
+    programId,
+  )[0];
+}
+
+export function findTreasuryPaymentAccountPda(
+  programId: PublicKey,
+  treasury: PublicKey,
+  paymentMint: PublicKey,
+) {
+  return PublicKey.findProgramAddressSync(
+    [Buffer.from("treasury_payment_account"), treasury.toBuffer(), paymentMint.toBuffer()],
+    programId,
+  )[0];
+}
+
+export function findAuthorizedSourceProgramPda(
+  programId: PublicKey,
+  sourceProgram: PublicKey,
+) {
+  return PublicKey.findProgramAddressSync(
+    [Buffer.from("authorized_source_program"), sourceProgram.toBuffer()],
+    programId,
+  )[0];
+}
+
+export function findAuthorizedRegistryProgramPda(
+  programId: PublicKey,
+  registryProgram: PublicKey,
+) {
+  return PublicKey.findProgramAddressSync(
+    [Buffer.from("authorized_registry_program"), registryProgram.toBuffer()],
+    programId,
+  )[0];
+}
+
+export function findAuthorizedActorPda(
+  pgcProgramId: PublicKey,
+  actor: PublicKey,
+) {
+  return PublicKey.findProgramAddressSync(
+    [Buffer.from("authorized_actor"), actor.toBuffer()],
+    pgcProgramId,
+  )[0];
+}
+
+export function findPurchaseReceiptPda(
+  programId: PublicKey,
+  buyer: PublicKey,
+  gamePda: PublicKey,
+) {
+  return PublicKey.findProgramAddressSync(
+    [Buffer.from("purchase_receipt"), buyer.toBuffer(), gamePda.toBuffer()],
     programId,
   )[0];
 }

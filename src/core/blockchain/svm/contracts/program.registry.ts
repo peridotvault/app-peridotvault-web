@@ -2,15 +2,15 @@ import { PublicKey } from "@solana/web3.js";
 import type { ChainKey, SvmChainKey } from "@/shared/types/chain";
 import { getSvmChainKey } from "../web3";
 import gameStoreIdl from "../idl/game_store.json";
-import pgc1Idl from "../idl/pgc1.json";
+import pgl1Idl from "../idl/pgl1.json";
 import registryIdl from "../idl/registry.json";
 
 const SVM_PROGRAM_IDS: Record<SvmChainKey, string> = {
   "solana-mainnet":
     process.env.NEXT_PUBLIC_SOLANA_PROGRAM_ID_MAINNET ?? gameStoreIdl.address,
-  "solana-testnet":
-    process.env.NEXT_PUBLIC_SOLANA_PROGRAM_ID_TESTNET ??
+  "solana-devnet":
     process.env.NEXT_PUBLIC_SOLANA_PROGRAM_ID_DEVNET ??
+    process.env.NEXT_PUBLIC_SOLANA_PROGRAM_ID_TESTNET ??
     gameStoreIdl.address,
 };
 
@@ -30,5 +30,5 @@ export function getSvmRegistryProgramId() {
 }
 
 export function getSvmPgcProgramId() {
-  return new PublicKey(pgc1Idl.address);
+  return new PublicKey(pgl1Idl.address);
 }

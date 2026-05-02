@@ -5,7 +5,7 @@
  * IDL can be found at `target/idl/registry.json`.
  */
 export type Registry = {
-  "address": "CxQCfVWCBE6tLwmEi3z7gXpniR21UyjvVvE6VytVcnyf",
+  "address": "G2XvhJoEkjiu3rCysaAjTuDj1dT5NAS8RNUTVi9H7ggE",
   "metadata": {
     "name": "registry",
     "version": "0.1.0",
@@ -341,7 +341,7 @@ export type Registry = {
         },
         {
           "name": "pgl1Program",
-          "address": "7ddrr9b2ReD17kk73LLnW88tVT4fEpzGEY4rPb8hbQtT"
+          "address": "GAt9373oMr9Ykc1Auudy4wNR9PL7tRPaXMwSKiYpyQpP"
         },
         {
           "name": "storeProgram"
@@ -369,13 +369,6 @@ export type Registry = {
                   101,
                   100,
                   95,
-                  115,
-                  111,
-                  117,
-                  114,
-                  99,
-                  101,
-                  95,
                   112,
                   114,
                   111,
@@ -389,7 +382,11 @@ export type Registry = {
                 "kind": "account",
                 "path": "pgl1Program"
               }
-            ]
+            ],
+            "program": {
+              "kind": "account",
+              "path": "storeProgram"
+            }
           }
         },
         {
@@ -415,15 +412,6 @@ export type Registry = {
                   101,
                   100,
                   95,
-                  114,
-                  101,
-                  103,
-                  105,
-                  115,
-                  116,
-                  114,
-                  121,
-                  95,
                   112,
                   114,
                   111,
@@ -434,15 +422,55 @@ export type Registry = {
                 ]
               },
               {
-                "kind": "account",
-                "path": "storeProgram"
+                "kind": "const",
+                "value": [
+                  223,
+                  67,
+                  218,
+                  67,
+                  79,
+                  1,
+                  110,
+                  123,
+                  18,
+                  8,
+                  54,
+                  9,
+                  89,
+                  236,
+                  117,
+                  175,
+                  23,
+                  23,
+                  164,
+                  226,
+                  144,
+                  192,
+                  143,
+                  221,
+                  11,
+                  24,
+                  6,
+                  104,
+                  142,
+                  19,
+                  102,
+                  143
+                ]
               }
-            ]
+            ],
+            "program": {
+              "kind": "account",
+              "path": "storeProgram"
+            }
           }
         },
         {
           "name": "storeGameStoreConfig",
           "writable": true
+        },
+        {
+          "name": "registryProgram"
         },
         {
           "name": "tokenProgram"

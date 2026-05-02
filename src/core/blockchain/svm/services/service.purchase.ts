@@ -76,28 +76,35 @@ export class SvmPurchaseService {
     });
     
     // Explicitly check if the user already owns the game
-    const existingLicense = await connection.getAccountInfo(context.accounts.licensePda);
+    const existingLicense = await connection.getAccountInfo(context.accounts.license);
     if (existingLicense) {
       throw new Error("Game already owned. You can find it in your Library.");
     }
     
     console.log(`[SVM-PURCHASE-V2] Resolved context for ${buyer.toBase58()}`);
-    console.log(`[SVM-PURCHASE-V2] 15 Accounts:`, {
+    console.log(`[SVM-PURCHASE-V2] Accounts:`, {
       "01. Buyer (S, W)": context.accounts.buyer?.toBase58(),
-      "02. Store Config (W)": context.accounts.storeState.toBase58(),
-      "03. Treasury (W)": context.accounts.treasury.toBase58(),
-      "04. PGC Game State": context.accounts.registryGame.toBase58(),
-      "05. Price Account": context.accounts.priceAccount.toBase58(),
-      "06. Publisher": context.accounts.publisher.toBase58(),
-      "07. Publisher Balance (W)": context.accounts.publisherBalance.toBase58(),
-      "08. PGC Program": context.accounts.pgcProgram.toBase58(),
-      "09. PGC Config": context.accounts.pgcConfig.toBase58(),
-      "10. License PDA (W)": context.accounts.licensePda.toBase58(),
-      "11. Token Program": context.accounts.tokenProgram.toBase58(),
-      "12. Buyer Token Acc (W)": context.accounts.buyerTokenAccount.toBase58(),
-      "13. Treasury Token Acc (W)": context.accounts.treasuryTokenAccount.toBase58(),
-      "14. Publisher Token Acc (W)": context.accounts.publisherTokenAccount.toBase58(),
-      "15. System Program": context.accounts.systemProgram.toBase58(),
+      "02. Store Config": context.accounts.storeConfig.toBase58(),
+      "03. Auth Source Program": context.accounts.authorizedSourceProgram.toBase58(),
+      "04. Source Program (PGC)": context.accounts.sourceProgram.toBase58(),
+      "05. Auth Registry Program": context.accounts.authorizedRegistryProgram.toBase58(),
+      "06. Registry Program": context.accounts.registryProgram.toBase58(),
+      "07. Game (PGC PDA)": context.accounts.game.toBase58(),
+      "08. Registry Game": context.accounts.registryGame.toBase58(),
+      "09. Game Store Config": context.accounts.gameStoreConfig.toBase58(),
+      "10. Payment Mint": context.accounts.paymentMint.toBase58(),
+      "11. Accepted Payment Token": context.accounts.acceptedPaymentToken.toBase58(),
+      "12. Game Payment Option": context.accounts.gamePaymentOption.toBase58(),
+      "13. Buyer Payment Acc (W)": context.accounts.buyerPaymentAccount.toBase58(),
+      "14. Publisher Payment Acc (W)": context.accounts.publisherPaymentAccount.toBase58(),
+      "15. Treasury Payment Acc (W)": context.accounts.treasuryPaymentAccount.toBase58(),
+      "16. Store Actor (S)": context.accounts.storeActor.toBase58(),
+      "17. Authorized Actor": context.accounts.authorizedActor.toBase58(),
+      "18. PGL1 Program": context.accounts.pgl1Program.toBase58(),
+      "19. License (W)": context.accounts.license.toBase58(),
+      "20. Purchase Receipt (W)": context.accounts.purchaseReceipt.toBase58(),
+      "21. Token Program": context.accounts.tokenProgram.toBase58(),
+      "22. System Program": context.accounts.systemProgram.toBase58(),
     });
     
     const instruction = buildSvmBuyGameInstruction({

@@ -5,7 +5,7 @@
  * IDL can be found at `target/idl/game_store.json`.
  */
 export type GameStore = {
-  "address": "G9roe9Dm2Rr261z3xKNcNKcFeQ5wovr8VwEwRDQ8YJVs",
+  "address": "5fcEaw6eMUeCLzhEqzqqL5HczQm1yj9GZjQQeqL66h5g",
   "metadata": {
     "name": "gameStore",
     "version": "0.1.0",
@@ -279,7 +279,7 @@ export type GameStore = {
         },
         {
           "name": "sourceProgram",
-          "address": "7ddrr9b2ReD17kk73LLnW88tVT4fEpzGEY4rPb8hbQtT"
+          "address": "GAt9373oMr9Ykc1Auudy4wNR9PL7tRPaXMwSKiYpyQpP"
         },
         {
           "name": "authorizedRegistryProgram",
@@ -317,7 +317,7 @@ export type GameStore = {
         },
         {
           "name": "registryProgram",
-          "address": "CxQCfVWCBE6tLwmEi3z7gXpniR21UyjvVvE6VytVcnyf"
+          "address": "G2XvhJoEkjiu3rCysaAjTuDj1dT5NAS8RNUTVi9H7ggE"
         },
         {
           "name": "game",
@@ -501,7 +501,7 @@ export type GameStore = {
         },
         {
           "name": "pgl1Program",
-          "address": "7ddrr9b2ReD17kk73LLnW88tVT4fEpzGEY4rPb8hbQtT"
+          "address": "GAt9373oMr9Ykc1Auudy4wNR9PL7tRPaXMwSKiYpyQpP"
         },
         {
           "name": "license",
@@ -618,7 +618,7 @@ export type GameStore = {
         },
         {
           "name": "sourceProgram",
-          "address": "7ddrr9b2ReD17kk73LLnW88tVT4fEpzGEY4rPb8hbQtT"
+          "address": "GAt9373oMr9Ykc1Auudy4wNR9PL7tRPaXMwSKiYpyQpP"
         },
         {
           "name": "game",
@@ -688,7 +688,7 @@ export type GameStore = {
         },
         {
           "name": "sourceProgram",
-          "address": "7ddrr9b2ReD17kk73LLnW88tVT4fEpzGEY4rPb8hbQtT"
+          "address": "GAt9373oMr9Ykc1Auudy4wNR9PL7tRPaXMwSKiYpyQpP"
         },
         {
           "name": "authorizedSourceProgram",
@@ -726,7 +726,7 @@ export type GameStore = {
         },
         {
           "name": "registryProgram",
-          "address": "CxQCfVWCBE6tLwmEi3z7gXpniR21UyjvVvE6VytVcnyf"
+          "address": "G2XvhJoEkjiu3rCysaAjTuDj1dT5NAS8RNUTVi9H7ggE"
         },
         {
           "name": "authorizedRegistryProgram",
@@ -939,7 +939,7 @@ export type GameStore = {
         },
         {
           "name": "sourceProgram",
-          "address": "7ddrr9b2ReD17kk73LLnW88tVT4fEpzGEY4rPb8hbQtT"
+          "address": "GAt9373oMr9Ykc1Auudy4wNR9PL7tRPaXMwSKiYpyQpP"
         },
         {
           "name": "game",
@@ -1099,11 +1099,11 @@ export type GameStore = {
         },
         {
           "name": "sourceProgram",
-          "address": "7ddrr9b2ReD17kk73LLnW88tVT4fEpzGEY4rPb8hbQtT"
+          "address": "GAt9373oMr9Ykc1Auudy4wNR9PL7tRPaXMwSKiYpyQpP"
         },
         {
           "name": "registryProgram",
-          "address": "CxQCfVWCBE6tLwmEi3z7gXpniR21UyjvVvE6VytVcnyf"
+          "address": "G2XvhJoEkjiu3rCysaAjTuDj1dT5NAS8RNUTVi9H7ggE"
         },
         {
           "name": "game",
@@ -1195,7 +1195,7 @@ export type GameStore = {
         },
         {
           "name": "sourceProgram",
-          "address": "7ddrr9b2ReD17kk73LLnW88tVT4fEpzGEY4rPb8hbQtT"
+          "address": "GAt9373oMr9Ykc1Auudy4wNR9PL7tRPaXMwSKiYpyQpP"
         },
         {
           "name": "authorizedSourceProgram",
@@ -1233,7 +1233,7 @@ export type GameStore = {
         },
         {
           "name": "registryProgram",
-          "address": "CxQCfVWCBE6tLwmEi3z7gXpniR21UyjvVvE6VytVcnyf"
+          "address": "G2XvhJoEkjiu3rCysaAjTuDj1dT5NAS8RNUTVi9H7ggE"
         },
         {
           "name": "authorizedRegistryProgram",
@@ -1461,11 +1461,11 @@ export type GameStore = {
         },
         {
           "name": "sourceProgram",
-          "address": "7ddrr9b2ReD17kk73LLnW88tVT4fEpzGEY4rPb8hbQtT"
+          "address": "GAt9373oMr9Ykc1Auudy4wNR9PL7tRPaXMwSKiYpyQpP"
         },
         {
           "name": "registryProgram",
-          "address": "CxQCfVWCBE6tLwmEi3z7gXpniR21UyjvVvE6VytVcnyf"
+          "address": "G2XvhJoEkjiu3rCysaAjTuDj1dT5NAS8RNUTVi9H7ggE"
         },
         {
           "name": "game",
@@ -1701,7 +1701,7 @@ export type GameStore = {
         },
         {
           "name": "sourceProgram",
-          "address": "7ddrr9b2ReD17kk73LLnW88tVT4fEpzGEY4rPb8hbQtT"
+          "address": "GAt9373oMr9Ykc1Auudy4wNR9PL7tRPaXMwSKiYpyQpP"
         },
         {
           "name": "game",

@@ -7,7 +7,7 @@ import { authRepo } from "@/core/db/repositories/auth.repo";
 import { PublicKey } from "@solana/web3.js";
 import { getSvmConnection } from "@/core/blockchain/svm/web3";
 import { getSvmPgcProgramId } from "@/core/blockchain/svm/contracts/program.registry";
-import { decodeLicenseAccount, decodePgcGameAccount } from "@/core/blockchain/svm/contracts/account.state";
+import { decodeLicenseAccount, decodeGameAccount } from "@/core/blockchain/svm/contracts/account.state";
 import { getMyLibraryApi, getLibraryGameApi } from "@/core/api/library.api";
 import { LibraryGameApi } from "@/core/api/library.api.type";
 
@@ -422,15 +422,15 @@ async function getSvmMyGames(accountId: string): Promise<MyGameItem[]> {
                 const gameAccountInfo = await connection.getAccountInfo(gamePda);
                 if (!gameAccountInfo) continue;
 
-                const pgcGame = decodePgcGameAccount(gameAccountInfo.data);
+                const game = decodeGameAccount(gameAccountInfo.data);
 
                 ownedGames.push({
-                    gameId: pgcGame.gameId,
+                    gameId: game.gameId,
                     pgc1: gamePda.toBase58(),
-                    publisher: pgcGame.publisher.toBase58(),
-                    createdAt: pgcGame.createdAt,
+                    publisher: game.publisher.toBase58(),
+                    createdAt: game.createdAt,
                     active: true,
-                    metadataUri: pgcGame.metadataUri,
+                    metadataUri: game.metadataUri,
                 });
             } catch (e) {
                 console.error(

@@ -1,3 +1,5 @@
-export { default as RegistryIdl } from "../idl/registry.json";
-export { default as Pgl1Idl } from "../idl/pgl1.json";
-export { default as GameStoreIdl } from "../idl/game_store.json";
+import RegistryIdl from "./registry.json";
+import Pgl1Idl from "./pgl1.json";
+import GameStoreIdl from "./game_store.json";
+
+export { RegistryIdl, Pgl1Idl, GameStoreIdl };
