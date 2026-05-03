@@ -4,9 +4,10 @@ FROM base AS deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
-COPY package.json package-lock.json* ./
+RUN npm install -g pnpm
+COPY package.json pnpm-lock.yaml ./
 COPY vendor ./vendor
-RUN npm install
+RUN pnpm install --frozen-lockfile
 
 FROM base AS fonts
 RUN apk add --no-cache curl fontconfig freetype ttf-dejavu
@@ -29,7 +30,7 @@ ENV NEXT_PUBLIC_API_BASE_URL=${NEXT_PUBLIC_API_BASE_URL}
 ENV API_BASE_URL=${API_BASE_URL}
 ENV NEXT_PUBLIC_STORE_URL=${NEXT_PUBLIC_STORE_URL}
 
-RUN npm run build
+RUN pnpm run build
 
 FROM base AS runner
 WORKDIR /app
