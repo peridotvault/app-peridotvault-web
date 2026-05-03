@@ -316,8 +316,7 @@
         {
           "name": "game",
           "relations": [
-            "game_store_config",
-            "game_payment_option"
+            "game_store_config"
           ]
         },
         {
@@ -357,96 +356,31 @@
           }
         },
         {
-          "name": "payment_mint"
+          "name": "payment_mint",
+          "optional": true
         },
         {
           "name": "accepted_payment_token",
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  97,
-                  99,
-                  99,
-                  101,
-                  112,
-                  116,
-                  101,
-                  100,
-                  95,
-                  112,
-                  97,
-                  121,
-                  109,
-                  101,
-                  110,
-                  116,
-                  95,
-                  116,
-                  111,
-                  107,
-                  101,
-                  110
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "payment_mint"
-              }
-            ]
-          }
+          "optional": true
         },
         {
           "name": "game_payment_option",
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  103,
-                  97,
-                  109,
-                  101,
-                  95,
-                  112,
-                  97,
-                  121,
-                  109,
-                  101,
-                  110,
-                  116,
-                  95,
-                  111,
-                  112,
-                  116,
-                  105,
-                  111,
-                  110
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "game"
-              },
-              {
-                "kind": "account",
-                "path": "payment_mint"
-              }
-            ]
-          }
+          "optional": true
         },
         {
           "name": "buyer_payment_account",
-          "writable": true
+          "writable": true,
+          "optional": true
         },
         {
           "name": "publisher_payment_account",
-          "writable": true
+          "writable": true,
+          "optional": true
         },
         {
           "name": "treasury_payment_account",
-          "writable": true
+          "writable": true,
+          "optional": true
         },
         {
           "name": "referrer_payment_account",
@@ -548,8 +482,10 @@
       ],
       "args": [
         {
-          "name": "paid_amount",
-          "type": "u64"
+          "name": "mint_token",
+          "type": {
+            "option": "pubkey"
+          }
         },
         {
           "name": "referrer",

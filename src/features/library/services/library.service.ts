@@ -68,7 +68,7 @@ function parseRegistryGame(value: unknown): RegistryGame | null {
     }
 
     return {
-        pgc1: getAddress(pgc1),
+        pgl1: getAddress(pgc1),
         publisher: getAddress(publisher),
         createdAt:
             typeof createdAt === "bigint"
@@ -149,7 +149,7 @@ export async function getMyGames(user: string): Promise<MyGameItem[]> {
 
         const parsedGames: Array<{
             gameId: string;
-            pgc1: string;
+            pgl1: string;
             publisher: string;
             createdAt: bigint;
             active: boolean;
@@ -177,7 +177,7 @@ export async function getMyGames(user: string): Promise<MyGameItem[]> {
 
         const balanceResults = await publicClient.multicall({
             contracts: parsedGames.map((g) => ({
-                address: g.pgc1 as Hex,
+                address: g.pgl1 as Hex,
                 abi: PGC1Abi,
                 functionName: "balanceOf",
                 args: [address, PGC1_LICENSE_ID],
@@ -207,7 +207,7 @@ export async function getMyGames(user: string): Promise<MyGameItem[]> {
 
         const contractMetaVersionResults = await publicClient.multicall({
             contracts: ownedGames.map((g) => ({
-                address: g.pgc1 as Hex,
+                address: g.pgl1 as Hex,
                 abi: PGC1Abi,
                 functionName: "contractMetaHeadVersion",
             })),
@@ -243,7 +243,7 @@ export async function getMyGames(user: string): Promise<MyGameItem[]> {
             if (version === ZERO) continue;
 
             metadataContracts.push({
-                address: ownedGames[i].pgc1 as Hex,
+                address: ownedGames[i].pgl1 as Hex,
                 abi: PGC1Abi,
                 functionName: "contractMetadataAt",
                 args: [version - BigInt(1)], // version starts at 1
@@ -282,7 +282,7 @@ export async function getMyGames(user: string): Promise<MyGameItem[]> {
 
         const finalResults: MyGameItem[] = ownedGames.map((game, index) => ({
             gameId: game.gameId,
-            pgc1: game.pgc1,
+            pgl1: game.pgl1,
             publisher: game.publisher,
             createdAt: game.createdAt,
             active: game.active,
@@ -312,10 +312,10 @@ export async function getMyGames(user: string): Promise<MyGameItem[]> {
 function convertLibraryGameToMyGameItem(libraryGame: LibraryGameApi): MyGameItem {
     return {
         gameId: libraryGame.gameId,
-        pgc1: "", // Not available from API - would need to query blockchain
+        pgl1: "", // Not available from API - would need to query blockchain
         publisher: "", // Not available from API
         createdAt: BigInt(new Date(libraryGame.purchasedAt).getTime()),
-        active: libraryGame.game.isPublished,
+        active: libraryGame.purchaseStatus === "completed",
         metadataUri: null, // Not available from API
     };
 }
@@ -426,7 +426,7 @@ async function getSvmMyGames(accountId: string): Promise<MyGameItem[]> {
 
                 ownedGames.push({
                     gameId: game.gameId,
-                    pgc1: gamePda.toBase58(),
+                    pgl1: gamePda.toBase58(),
                     publisher: game.publisher.toBase58(),
                     createdAt: game.createdAt,
                     active: true,

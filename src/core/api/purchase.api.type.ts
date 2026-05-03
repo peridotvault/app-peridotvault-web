@@ -6,8 +6,8 @@ export type CreatePurchaseRequest = {
   gameId: string;
   purchasePrice: string;
   paymentToken: string;
-  paymentTokenId: number;
-  transactionHash: string;
+  paymentTokenId?: number;
+  transactionHash?: string;
 };
 
 export type CompletePurchaseRequest = {
@@ -34,7 +34,8 @@ export type PurchaseStats = {
   gameId: string;
   totalPurchases: number;
   totalRevenue: string;
-  uniqueBuyers: number;
+  completedPurchases: number;
+  pendingPurchases: number;
 };
 
 export type GetPurchasesQuery = {
@@ -59,13 +60,4 @@ export type PaginatedPurchasesResponse = {
     limit: number;
     totalPages: number;
   };
-};
-
-// Legacy types - kept for backwards compatibility
-/** @deprecated Use CreatePurchaseRequest instead */
-export type BuyGameParams = {
-  gameId: GameIdApi;
-  purchasePrice: number;
-  paymentToken: string;
-  transactionHash: string;
 };

@@ -110,6 +110,10 @@ export class SvmPurchaseService {
     const instruction = buildSvmBuyGameInstruction({
       programId,
       accounts: context.accounts,
+      mintToken: input.payment_token
+        ? context.accounts.paymentMint
+        : undefined,
+      referrer: context.accounts.referrerPaymentAccount,
     });
  
     const { blockhash, lastValidBlockHeight } =

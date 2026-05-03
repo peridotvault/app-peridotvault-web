@@ -1491,6 +1491,10 @@
             "type": "pubkey"
           },
           {
+            "name": "actor",
+            "type": "pubkey"
+          },
+          {
             "name": "holder",
             "type": "pubkey"
           },
@@ -1518,6 +1522,10 @@
         "fields": [
           {
             "name": "license",
+            "type": "pubkey"
+          },
+          {
+            "name": "actor",
             "type": "pubkey"
           },
           {

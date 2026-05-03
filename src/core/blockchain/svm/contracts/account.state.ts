@@ -5,19 +5,31 @@ import registryIdl from "../idl/registry.json";
 import { BorshReader, stripAccountDiscriminator } from "../codecs/borsh";
 
 export type SvmGamePaymentOption = {
-  bump: number;
   game: PublicKey;
-  paymentMint: PublicKey;
-  price: bigint;
-  discountBps: number;
+  mint: PublicKey;
+  basePrice: bigint;
   active: boolean;
+  bump: number;
 };
 
 export type SvmStoreConfig = {
-  bump: number;
+  authority: PublicKey;
   treasury: PublicKey;
-  governance: PublicKey;
   platformFeeBps: number;
+  defaultReferralBps: number;
+  maxReferralBps: number;
+  storeActor: PublicKey;
+  bump: number;
+};
+
+export type SvmGameStoreConfig = {
+  game: PublicKey;
+  active: boolean;
+  referralBps: number | null;
+  discountBps: number | null;
+  discountStartsAt: bigint | null;
+  discountExpiresAt: bigint | null;
+  bump: number;
 };
 
 export type SvmRegistrationFeeOption = {
@@ -26,39 +38,41 @@ export type SvmRegistrationFeeOption = {
 };
 
 export type SvmRegistryGame = {
+  game: PublicKey;
   gameId: string;
-  publisher: PublicKey;
-  pgcPid: PublicKey;
-  pgcPda: PublicKey;
-  active: boolean;
-  createdAt: bigint;
+  registeredAt: bigint;
+  status: number;
   bump: number;
 };
 
 export type SvmGameAccount = {
-  gameId: string;
+  creator: PublicKey;
+  nonce: bigint;
   publisher: PublicKey;
+  gameId: string;
   metadataUri: string;
   createdAt: bigint;
   bump: number;
 };
 
 export type SvmLicenseAccount = {
-  owner: PublicKey;
+  holder: PublicKey;
   game: PublicKey;
   issuedAt: bigint;
-  expiresAt: bigint;
+  expiresAt: bigint | null;
   bump: number;
 };
 
 export type SvmPurchaseReceipt = {
-  bump: number;
   buyer: PublicKey;
   game: PublicKey;
-  purchasedAt: bigint;
-  expiresAt: bigint;
-  price: bigint;
   paymentMint: PublicKey;
+  paidAmount: bigint;
+  finalPrice: bigint;
+  referrer: PublicKey;
+  referralBpsApplied: number;
+  purchasedAt: bigint;
+  bump: number;
 };
 
 function getAccountDiscriminator(idl: { accounts?: Array<{ name: string; discriminator: number[] }> }, name: string) {
@@ -71,55 +85,82 @@ function getAccountDiscriminator(idl: { accounts?: Array<{ name: string; discrim
   return account.discriminator;
 }
 
+function readOptionU16(reader: BorshReader): number | null {
+  return reader.readBool() ? reader.readU16() : null;
+}
+
+function readOptionI64(reader: BorshReader): bigint | null {
+  return reader.readBool() ? reader.readI64() : null;
+}
+
 export function decodeGamePaymentOption(data: Uint8Array): SvmGamePaymentOption {
   const bytes = stripAccountDiscriminator(
     data,
-    getAccountDiscriminator(gameStoreIdl, "gamePaymentOption"),
-    "gamePaymentOption",
+    getAccountDiscriminator(gameStoreIdl, "GamePaymentOption"),
+    "GamePaymentOption",
   );
   const reader = new BorshReader(bytes);
 
   return {
-    bump: reader.readU8(),
     game: reader.readPublicKey(),
-    paymentMint: reader.readPublicKey(),
-    price: reader.readU64(),
-    discountBps: reader.readU16(),
+    mint: reader.readPublicKey(),
+    basePrice: reader.readU64(),
     active: reader.readBool(),
+    bump: reader.readU8(),
   };
 }
 
 export function decodeStoreConfig(data: Uint8Array): SvmStoreConfig {
   const bytes = stripAccountDiscriminator(
     data,
-    getAccountDiscriminator(gameStoreIdl, "storeConfig"),
-    "storeConfig",
+    getAccountDiscriminator(gameStoreIdl, "StoreConfig"),
+    "StoreConfig",
   );
   const reader = new BorshReader(bytes);
 
   return {
-    bump: reader.readU8(),
+    authority: reader.readPublicKey(),
     treasury: reader.readPublicKey(),
-    governance: reader.readPublicKey(),
     platformFeeBps: reader.readU16(),
+    defaultReferralBps: reader.readU16(),
+    maxReferralBps: reader.readU16(),
+    storeActor: reader.readPublicKey(),
+    bump: reader.readU8(),
+  };
+}
+
+export function decodeGameStoreConfig(data: Uint8Array): SvmGameStoreConfig {
+  const bytes = stripAccountDiscriminator(
+    data,
+    getAccountDiscriminator(gameStoreIdl, "GameStoreConfig"),
+    "GameStoreConfig",
+  );
+  const reader = new BorshReader(bytes);
+
+  return {
+    game: reader.readPublicKey(),
+    active: reader.readBool(),
+    referralBps: readOptionU16(reader),
+    discountBps: readOptionU16(reader),
+    discountStartsAt: readOptionI64(reader),
+    discountExpiresAt: readOptionI64(reader),
+    bump: reader.readU8(),
   };
 }
 
 export function decodeRegistryGameAccount(data: Uint8Array): SvmRegistryGame {
   const bytes = stripAccountDiscriminator(
     data,
-    getAccountDiscriminator(registryIdl, "registryGame"),
-    "registryGame",
+    getAccountDiscriminator(registryIdl, "RegistryGame"),
+    "RegistryGame",
   );
   const reader = new BorshReader(bytes);
 
   return {
+    game: reader.readPublicKey(),
     gameId: reader.readString(),
-    publisher: reader.readPublicKey(),
-    pgcPid: reader.readPublicKey(),
-    pgcPda: reader.readPublicKey(),
-    active: reader.readBool(),
-    createdAt: reader.readI64(),
+    registeredAt: reader.readI64(),
+    status: reader.readU8(),
     bump: reader.readU8(),
   };
 }
@@ -127,14 +168,16 @@ export function decodeRegistryGameAccount(data: Uint8Array): SvmRegistryGame {
 export function decodeGameAccount(data: Uint8Array): SvmGameAccount {
   const bytes = stripAccountDiscriminator(
     data,
-    getAccountDiscriminator(pgl1Idl, "game"),
-    "game",
+    getAccountDiscriminator(pgl1Idl, "Game"),
+    "Game",
   );
   const reader = new BorshReader(bytes);
 
   return {
-    gameId: reader.readString(),
+    creator: reader.readPublicKey(),
+    nonce: reader.readU64(),
     publisher: reader.readPublicKey(),
+    gameId: reader.readString(),
     metadataUri: reader.readString(),
     createdAt: reader.readI64(),
     bump: reader.readU8(),
@@ -144,16 +187,16 @@ export function decodeGameAccount(data: Uint8Array): SvmGameAccount {
 export function decodeLicenseAccount(data: Uint8Array): SvmLicenseAccount {
   const bytes = stripAccountDiscriminator(
     data,
-    getAccountDiscriminator(pgl1Idl, "license"),
-    "license",
+    getAccountDiscriminator(pgl1Idl, "License"),
+    "License",
   );
   const reader = new BorshReader(bytes);
 
   return {
-    owner: reader.readPublicKey(),
+    holder: reader.readPublicKey(),
     game: reader.readPublicKey(),
     issuedAt: reader.readI64(),
-    expiresAt: reader.readI64(),
+    expiresAt: readOptionI64(reader),
     bump: reader.readU8(),
   };
 }
@@ -161,18 +204,20 @@ export function decodeLicenseAccount(data: Uint8Array): SvmLicenseAccount {
 export function decodePurchaseReceipt(data: Uint8Array): SvmPurchaseReceipt {
   const bytes = stripAccountDiscriminator(
     data,
-    getAccountDiscriminator(gameStoreIdl, "purchaseReceipt"),
-    "purchaseReceipt",
+    getAccountDiscriminator(gameStoreIdl, "PurchaseReceipt"),
+    "PurchaseReceipt",
   );
   const reader = new BorshReader(bytes);
 
   return {
-    bump: reader.readU8(),
     buyer: reader.readPublicKey(),
     game: reader.readPublicKey(),
-    purchasedAt: reader.readI64(),
-    expiresAt: reader.readI64(),
-    price: reader.readU64(),
     paymentMint: reader.readPublicKey(),
+    paidAmount: reader.readU64(),
+    finalPrice: reader.readU64(),
+    referrer: reader.readPublicKey(),
+    referralBpsApplied: reader.readU16(),
+    purchasedAt: reader.readI64(),
+    bump: reader.readU8(),
   };
 }

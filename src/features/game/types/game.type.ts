@@ -111,7 +111,7 @@ export interface GameOnChainPublish {
     game_id: string;
     caip_2_id?: string;
     publish_version: number;
-    pgc1_address: string;
+    pgl1_address: string;
     publish_tx_hash: string;
     payment_token: string;
     token_uri_1155?: string;

@@ -22,12 +22,12 @@ export class EvmPurchaseService {
             throw new Error('Wallet not found')
         }
 
-        const pgc1_address = input.pgc1_address;
+        const pgl1_address = input.pgl1_address;
         const payment_token = input.payment_token || zeroAddress;
 
-        if (!isAddress(pgc1_address)) {
-            console.error('Invalid pgc1_address:', pgc1_address);
-            throw new Error(`Invalid purchase contract: pgc1_address is ${pgc1_address}`);
+        if (!isAddress(pgl1_address)) {
+            console.error('Invalid pgl1_address:', pgl1_address);
+            throw new Error(`Invalid purchase contract: pgl1_address is ${pgl1_address}`);
         }
         if (!isAddress(payment_token)) {
             console.error('Invalid payment_token:', payment_token);
@@ -40,7 +40,7 @@ export class EvmPurchaseService {
         const registry = getPeridotRegistry(chainKey)
         const publicClient = getEvmPublicClient(chainKey)
 
-        const requestedPgc1 = getAddress(pgc1_address)
+        const requestedPgl1 = getAddress(pgl1_address)
         const selectedPaymentToken = getAddress(payment_token)
 
         let gameId: string;
@@ -51,7 +51,7 @@ export class EvmPurchaseService {
                 address: registry.address,
                 abi: registry.abi,
                 functionName: "gameIdOf",
-                args: [requestedPgc1],
+                args: [requestedPgl1],
             }) as string
 
             if (!gameId) {
@@ -67,7 +67,7 @@ export class EvmPurchaseService {
                 })) as readonly [Address, Address, bigint, boolean]
 
             if (!pgc1) throw new Error('Game not registered')
-            if (getAddress(pgc1) !== requestedPgc1) {
+            if (getAddress(pgc1) !== requestedPgl1) {
                 throw new Error('Selected game does not match registry')
             }
 
@@ -109,7 +109,7 @@ export class EvmPurchaseService {
         /* ================= OWNERSHIP ================= */
 
         const owned = (await publicClient.readContract({
-            address: requestedPgc1,
+            address: requestedPgl1,
             abi: PGC1Abi,
             functionName: 'balanceOf',
             args: [buyer, LICENSE_ID],
@@ -123,12 +123,12 @@ export class EvmPurchaseService {
 
         const [price, paymentToken] = await Promise.all([
             publicClient.readContract({
-                address: requestedPgc1,
+                address: requestedPgl1,
                 abi: PGC1Abi,
                 functionName: 'price',
             }) as Promise<bigint>,
             publicClient.readContract({
-                address: requestedPgc1,
+                address: requestedPgl1,
                 abi: PGC1Abi,
                 functionName: 'paymentToken',
             }) as Promise<Address>,
@@ -142,7 +142,7 @@ export class EvmPurchaseService {
 
         if (contractPaymentToken === zeroAddress) {
             const gas = await publicClient.estimateContractGas({
-                address: requestedPgc1,
+                address: requestedPgl1,
                 abi: PGC1Abi,
                 functionName: 'buy',
                 account: buyer,
@@ -150,7 +150,7 @@ export class EvmPurchaseService {
             })
 
             const hash = await walletClient.writeContract({
-                address: requestedPgc1,
+                address: requestedPgl1,
                 abi: PGC1Abi,
                 functionName: 'buy',
                 value: price,
@@ -166,7 +166,7 @@ export class EvmPurchaseService {
             address: contractPaymentToken,
             abi: ERC20Abi,
             functionName: 'allowance',
-            args: [buyer, requestedPgc1],
+            args: [buyer, requestedPgl1],
         })) as bigint
 
         if (allowance < price) {
@@ -174,7 +174,7 @@ export class EvmPurchaseService {
                 address: contractPaymentToken,
                 abi: ERC20Abi,
                 functionName: 'approve',
-                args: [requestedPgc1, price],
+                args: [requestedPgl1, price],
                 account: buyer,
             })
 
@@ -182,7 +182,7 @@ export class EvmPurchaseService {
                 address: contractPaymentToken,
                 abi: ERC20Abi,
                 functionName: 'approve',
-                args: [requestedPgc1, price],
+                args: [requestedPgl1, price],
                 account: buyer,
                 gas: (approvalGas * BigInt(120)) / BigInt(100), // 20% buffer
             })
@@ -193,7 +193,7 @@ export class EvmPurchaseService {
         }
 
         const buyGas = await publicClient.estimateContractGas({
-            address: requestedPgc1,
+            address: requestedPgl1,
             abi: PGC1Abi,
             functionName: 'buy',
             account: buyer,
@@ -201,7 +201,7 @@ export class EvmPurchaseService {
         })
 
         const hash = await walletClient.writeContract({
-            address: requestedPgc1,
+            address: requestedPgl1,
             abi: PGC1Abi,
             functionName: 'buy',
             value: BigInt(0),

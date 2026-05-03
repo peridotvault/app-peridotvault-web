@@ -322,8 +322,7 @@ export type GameStore = {
         {
           "name": "game",
           "relations": [
-            "gameStoreConfig",
-            "gamePaymentOption"
+            "gameStoreConfig"
           ]
         },
         {
@@ -363,96 +362,31 @@ export type GameStore = {
           }
         },
         {
-          "name": "paymentMint"
+          "name": "paymentMint",
+          "optional": true
         },
         {
           "name": "acceptedPaymentToken",
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  97,
-                  99,
-                  99,
-                  101,
-                  112,
-                  116,
-                  101,
-                  100,
-                  95,
-                  112,
-                  97,
-                  121,
-                  109,
-                  101,
-                  110,
-                  116,
-                  95,
-                  116,
-                  111,
-                  107,
-                  101,
-                  110
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "paymentMint"
-              }
-            ]
-          }
+          "optional": true
         },
         {
           "name": "gamePaymentOption",
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  103,
-                  97,
-                  109,
-                  101,
-                  95,
-                  112,
-                  97,
-                  121,
-                  109,
-                  101,
-                  110,
-                  116,
-                  95,
-                  111,
-                  112,
-                  116,
-                  105,
-                  111,
-                  110
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "game"
-              },
-              {
-                "kind": "account",
-                "path": "paymentMint"
-              }
-            ]
-          }
+          "optional": true
         },
         {
           "name": "buyerPaymentAccount",
-          "writable": true
+          "writable": true,
+          "optional": true
         },
         {
           "name": "publisherPaymentAccount",
-          "writable": true
+          "writable": true,
+          "optional": true
         },
         {
           "name": "treasuryPaymentAccount",
-          "writable": true
+          "writable": true,
+          "optional": true
         },
         {
           "name": "referrerPaymentAccount",
@@ -554,8 +488,10 @@ export type GameStore = {
       ],
       "args": [
         {
-          "name": "paidAmount",
-          "type": "u64"
+          "name": "mintToken",
+          "type": {
+            "option": "pubkey"
+          }
         },
         {
           "name": "referrer",

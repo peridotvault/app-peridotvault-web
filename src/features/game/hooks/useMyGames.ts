@@ -84,7 +84,7 @@ export function useMyGames(): UseMyGamesResult {
             website_url: detail?.website_url,
             distributions: detail?.distributions ?? [],
             active: owned.active,
-            pgc1_address: owned.pgc1,
+            pgl1_address: owned.pgl1,
             publisher: owned.publisher,
             created_at: owned.createdAt,
             metadata_uri: owned.metadataUri,

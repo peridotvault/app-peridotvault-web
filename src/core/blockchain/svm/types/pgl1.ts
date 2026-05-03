@@ -1497,6 +1497,10 @@ export type Pgl1 = {
             "type": "pubkey"
           },
           {
+            "name": "actor",
+            "type": "pubkey"
+          },
+          {
             "name": "holder",
             "type": "pubkey"
           },
@@ -1524,6 +1528,10 @@ export type Pgl1 = {
         "fields": [
           {
             "name": "license",
+            "type": "pubkey"
+          },
+          {
+            "name": "actor",
             "type": "pubkey"
           },
           {

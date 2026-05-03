@@ -1,6 +1,6 @@
 export type MyGameItem = {
     gameId: string;
-    pgc1: string;
+    pgl1: string;
     publisher: string;
     createdAt: bigint;
     active: boolean;
@@ -9,7 +9,7 @@ export type MyGameItem = {
 
 
 export type RegistryGame = {
-    pgc1: string;
+    pgl1: string;
     publisher: string;
     createdAt: bigint;
     active: boolean;

@@ -4,6 +4,7 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
       new URL('https://api.peridotvault.com/**'),
+      new URL('https://api.staging.peridotvault.com/**'),
       new URL('https://api-dev.peridotvault.com/**'),
       new URL('https://avatars.githubusercontent.com/**'),
       new URL('https://cryptologos.cc/**'),

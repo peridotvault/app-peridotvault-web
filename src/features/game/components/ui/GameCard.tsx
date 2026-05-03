@@ -219,8 +219,8 @@ export const GameCard = ({ item, loading }: Props) => {
           {!isSkeleton && item && (
             <div className="text-white/40 text-sm flex flex-col">
               <span>
-                PGC1: {item.pgc1_address.slice(0, 8)}…
-                {item.pgc1_address.slice(-4)}
+                PGL1: {item.pgl1_address.slice(0, 8)}…
+                {item.pgl1_address.slice(-4)}
               </span>
               <span>Release: {releaseDate}</span>
             </div>

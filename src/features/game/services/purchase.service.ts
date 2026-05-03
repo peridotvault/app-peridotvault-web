@@ -18,6 +18,7 @@ export class PurchaseService {
   static async buyGame(input: BuyGameInput): Promise<BuyGameResult> {
     const selectedChainKey = input.chainKey ?? useChainStore.getState().chainKey;
     const resolved = resolveChainExecution(selectedChainKey);
+    const isFree = !input.payment_token;
 
     // Step 1: Create pending purchase record via API
     let pendingTxHash: string;
@@ -28,21 +29,18 @@ export class PurchaseService {
 
       await createPurchaseApi({
         gameId: input.game_id,
-        purchasePrice: "0", // Will be updated after we get the actual price
-        paymentToken: input.payment_token,
+        purchasePrice: "0",
+        paymentToken: input.payment_token ?? "free",
         paymentTokenId: 1,
         transactionHash: pendingTxHash,
       });
 
-      console.log("[PurchaseService] Pending purchase record created");
+      console.log("[PurchaseService] Pending record created");
     } catch (error) {
       console.error("[PurchaseService] Failed to create pending purchase:", error);
       return {
         success: false,
-        error:
-          error instanceof Error
-            ? error.message
-            : "Failed to create purchase record",
+        error: error instanceof Error ? error.message : "Failed to create purchase record",
       };
     }
 
@@ -51,6 +49,7 @@ export class PurchaseService {
     try {
       switch (resolved.chainType) {
         case "evm": {
+          if (isFree) throw new Error("Free games not supported on EVM");
           const hash = await EvmPurchaseService.buyGame({
             ...input,
             chainKey: resolved.chainKey,
@@ -69,19 +68,12 @@ export class PurchaseService {
         default:
           throw new Error("Unsupported chain type");
       }
-
-      console.log(
-        "[PurchaseService] Blockchain transaction successful:",
-        transactionHash
-      );
+      console.log("[PurchaseService] Chain transaction successful:", transactionHash);
     } catch (error) {
-      console.error("[PurchaseService] Blockchain transaction failed:", error);
+      console.error("[PurchaseService] Chain transaction failed:", error);
       return {
         success: false,
-        error:
-          error instanceof Error
-            ? error.message
-            : "Blockchain transaction failed",
+        error: error instanceof Error ? error.message : "Blockchain transaction failed",
       };
     }
 
@@ -89,24 +81,16 @@ export class PurchaseService {
     try {
       await completePurchaseApi(input.game_id, {
         gameId: input.game_id,
-        transactionHash: transactionHash,
+        transactionHash,
       });
-
-      console.log("[PurchaseService] Purchase completed successfully");
-
-      return {
-        success: true,
-        transactionHash,
-      };
+      console.log("[PurchaseService] Purchase completed");
+      return { success: true, transactionHash };
     } catch (error) {
-      console.error("[PurchaseService] Failed to complete purchase:", error);
-      // The blockchain transaction succeeded but API update failed
-      // Return success but with a warning
+      console.error("[PurchaseService] Failed to complete:", error);
       return {
         success: true,
         transactionHash,
-        error:
-          "Purchase completed on-chain but failed to update backend. Please refresh your library.",
+        error: "On-chain success but backend update failed. Please refresh your library.",
       };
     }
   }

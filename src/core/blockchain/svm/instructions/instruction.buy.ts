@@ -5,6 +5,8 @@ import type { SvmBuyGameAccounts } from "../contracts/purchase.context";
 export type BuildSvmBuyInstructionParams = {
   programId: PublicKey;
   accounts: SvmBuyGameAccounts;
+  mintToken?: PublicKey;
+  referrer?: PublicKey;
 };
 
 export function buildSvmBuyGameInstruction(
@@ -30,13 +32,14 @@ export function buildSvmBuyGameInstruction(
     { pubkey: accounts.game, isSigner: false, isWritable: false },
     { pubkey: accounts.registryGame, isSigner: false, isWritable: false },
     { pubkey: accounts.gameStoreConfig, isSigner: false, isWritable: false },
-    { pubkey: accounts.paymentMint, isSigner: false, isWritable: false },
-    { pubkey: accounts.acceptedPaymentToken, isSigner: false, isWritable: false },
-    { pubkey: accounts.gamePaymentOption, isSigner: false, isWritable: false },
-    { pubkey: accounts.buyerPaymentAccount, isSigner: false, isWritable: true },
-    { pubkey: accounts.publisherPaymentAccount, isSigner: false, isWritable: true },
-    { pubkey: accounts.treasuryPaymentAccount, isSigner: false, isWritable: true },
-    { pubkey: accounts.storeActor, isSigner: true, isWritable: false },
+    { pubkey: accounts.paymentMint ?? PublicKey.default, isSigner: false, isWritable: false },
+    { pubkey: accounts.acceptedPaymentToken ?? PublicKey.default, isSigner: false, isWritable: false },
+    { pubkey: accounts.gamePaymentOption ?? PublicKey.default, isSigner: false, isWritable: false },
+    { pubkey: accounts.buyerPaymentAccount ?? PublicKey.default, isSigner: false, isWritable: true },
+    { pubkey: accounts.publisherPaymentAccount ?? PublicKey.default, isSigner: false, isWritable: true },
+    { pubkey: accounts.treasuryPaymentAccount ?? PublicKey.default, isSigner: false, isWritable: true },
+    { pubkey: accounts.referrerPaymentAccount ?? PublicKey.default, isSigner: false, isWritable: true },
+    { pubkey: accounts.storeActor, isSigner: false, isWritable: false },
     { pubkey: accounts.authorizedActor, isSigner: false, isWritable: false },
     { pubkey: accounts.pgl1Program, isSigner: false, isWritable: false },
     { pubkey: accounts.license, isSigner: false, isWritable: true },
@@ -45,9 +48,20 @@ export function buildSvmBuyGameInstruction(
     { pubkey: accounts.systemProgram, isSigner: false, isWritable: false },
   ];
 
+  // Encode args: discriminator (8) + mint_token (option<pubkey>) + referrer (option<pubkey>)
+  const discriminator = Buffer.from(buyGame.discriminator);
+  const mintTokenBuf = params.mintToken
+    ? Buffer.concat([Buffer.from([1]), params.mintToken.toBuffer()])
+    : Buffer.from([0]);
+  const referrerBuf = params.referrer
+    ? Buffer.concat([Buffer.from([1]), params.referrer.toBuffer()])
+    : Buffer.from([0]);
+
+  const data = Buffer.concat([discriminator, mintTokenBuf, referrerBuf]);
+
   return new TransactionInstruction({
     programId: params.programId,
     keys: accountKeys,
-    data: Buffer.from(buyGame.discriminator),
+    data,
   });
 }
