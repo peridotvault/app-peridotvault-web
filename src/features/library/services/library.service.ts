@@ -402,7 +402,13 @@ async function getSvmMyGames(accountId: string): Promise<MyGameItem[]> {
             filters: [
                 {
                     memcmp: {
-                        offset: 8, // owner field offset (account.state decoder logic)
+                        offset: 0,
+                        bytes: "iahantz4EVL", // License account discriminator from PGL1 IDL
+                    },
+                },
+                {
+                    memcmp: {
+                        offset: 8, // holder field offset after discriminator
                         bytes: userPubkey.toBase58(),
                     },
                 },

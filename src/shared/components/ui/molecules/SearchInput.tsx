@@ -18,6 +18,7 @@ import { useModal } from "@/core/ui-system/modal/modal.store";
 import ModalShell from "@/core/ui-system/modal/ModalShell";
 import { useClickSound } from "@/shared/hooks/useClickSound";
 import { EmbedLink } from "@/features/security/embed/embed.component";
+import { resolveGamePaymentToken } from "@/shared/utils/token";
 
 interface SearchInputProps {
   value: string;
@@ -335,6 +336,11 @@ function SearchResultCard({
   const imageSrc = game.cover_horizontal_image || IMAGE_LOADING;
   const playClick = useClickSound("/sounds/click.mp3", 0.6);
 
+  const token = resolveGamePaymentToken(
+    game.game_onchain_publishes,
+    game.chains?.[0]?.caip_2_id,
+  );
+
   return (
     <EmbedLink
       href={urlGameDetail({
@@ -363,7 +369,13 @@ function SearchResultCard({
       </div>
 
       <div className="shrink-0 rounded-lg bg-background/80 px-3 py-2">
-        <PriceCoin amount={game.price ?? 0} textSize="sm" />
+        <PriceCoin
+          amount={game.price ?? 0}
+          tokenSymbol={token.symbol}
+          tokenDecimals={token.decimals}
+          tokenLogo={token.logo}
+          textSize="sm"
+        />
       </div>
     </EmbedLink>
   );

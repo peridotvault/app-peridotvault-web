@@ -9,9 +9,10 @@ import { sendTrackGameView } from "@/features/event/services/sendTrackGameView";
 
 type Props = {
   games: GameApi[];
+  tokenLookup?: Map<string, { symbol: string; decimals: number }>;
 };
 
-export const GameRelated = ({ games }: Props) => {
+export const GameRelated = ({ games, tokenLookup }: Props) => {
   return (
     <section className="flex justify-center w-full">
       <ContainerPadding>
@@ -36,6 +37,8 @@ export const GameRelated = ({ games }: Props) => {
                 imgUrl={item.cover_horizontal_image ?? IMAGE_LOADING}
                 price={item.price ?? 0}
                 chain={item.chains}
+                gameOnChainPublishes={item.game_onchain_publishes}
+                tokenLookup={tokenLookup}
                 onClick={() =>
                   sendTrackGameView({
                     game_id: item.game_id,

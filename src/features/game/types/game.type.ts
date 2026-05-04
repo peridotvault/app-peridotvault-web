@@ -91,6 +91,7 @@ export interface GameCard {
     cover_horizontal_image: string,
     categories: Category[];
     chains: ChainType[] | undefined;
+    game_onchain_publishes?: GameOnChainPublish[];
 }
 
 /* ======================================================

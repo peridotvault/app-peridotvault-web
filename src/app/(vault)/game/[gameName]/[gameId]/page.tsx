@@ -43,9 +43,11 @@ import ModalShell from "@/core/ui-system/modal/ModalShell";
 import clsx from "clsx";
 import { Share } from "@/shared/components/ui/organisms/Share";
 import { SelectPaymentToken } from "@/features/game/components/SelectPaymentToken";
-import { resolveNativeTokenInfo } from "@/shared/utils/token";
+import { resolveGamePaymentToken } from "@/shared/utils/token";
 import { ChainApi } from "@/core/api/chain.api.type";
 import { hasPurchasedGameApi } from "@/core/api/purchase.api";
+import { useTokenMetadata } from "@/shared/hooks/useTokenMetadata";
+import { useGamePaymentOptions } from "@/shared/hooks/useGamePaymentOptions";
 
 /* ======================================================
    PAGE — Game Detail
@@ -60,6 +62,22 @@ export default function GameDetailPage(): React.ReactElement {
   const gameId = Array.isArray(raw) ? raw[0] : raw;
 
   const { game, isLoading, hasFetched, error } = useGameDetail({ gameId });
+  const { metadataMap } = useTokenMetadata(
+    game?.game_onchain_publishes ? [game.game_onchain_publishes] : [],
+  );
+  const { tokenMetadataMap } = useGamePaymentOptions(gameId);
+
+  const mergedTokenLookup = new Map<
+    string,
+    { symbol: string; decimals: number }
+  >();
+  if (metadataMap) {
+    for (const [k, v] of metadataMap) mergedTokenLookup.set(k, v);
+  }
+  for (const [k, v] of tokenMetadataMap) {
+    mergedTokenLookup.set(k, { symbol: v.symbol, decimals: v.decimals });
+  }
+
   const {
     games: relatedGames,
     isLoading: relatedIsLoading,
@@ -191,6 +209,8 @@ export default function GameDetailPage(): React.ReactElement {
             price={game.price}
             website_url={game.website_url}
             gameId={gameId}
+            gameOnChainPublishes={game.game_onchain_publishes}
+            tokenLookup={mergedTokenLookup}
           />
         </ContainerPadding>
 
@@ -198,7 +218,7 @@ export default function GameDetailPage(): React.ReactElement {
           SECTION — GAME RELATED
           ====================================================== */}
         {!relatedIsLoading && !relatedError && relatedGames && (
-          <GameRelated games={relatedGames} />
+          <GameRelated games={relatedGames} tokenLookup={mergedTokenLookup} />
         )}
         <div className="mb-4"></div>
       </div>
@@ -425,6 +445,8 @@ export default function GameDetailPage(): React.ReactElement {
     price,
     website_url,
     gameId,
+    gameOnChainPublishes,
+    tokenLookup,
   }: {
     chainSupport: ChainApi[] | undefined;
     game_onchain_publishes: Array<GameOnChainPublish> | undefined;
@@ -434,6 +456,8 @@ export default function GameDetailPage(): React.ReactElement {
     price: number;
     website_url?: string;
     gameId: string;
+    gameOnChainPublishes?: GameOnChainPublish[];
+    tokenLookup: Map<string, { symbol: string; decimals: number }>;
   }) {
     const releaseDate = new Date(releaseDateMs).toLocaleDateString();
 
@@ -477,6 +501,12 @@ export default function GameDetailPage(): React.ReactElement {
             chainSupports={game?.chains}
             game_onchain_publishes={game?.game_onchain_publishes}
             price={game?.price}
+            tokenMetadataMap={new Map(
+              [...tokenMetadataMap].map(([k, v]) => [
+                k,
+                { symbol: v.symbol, name: v.name, logo: v.iconUrl },
+              ]),
+            )}
           />
         </ModalShell>
       ));
@@ -492,14 +522,25 @@ export default function GameDetailPage(): React.ReactElement {
       <dl className={"flex flex-col gap-4 w-full " + SMALL_GRID}>
         <div className={"flex flex-col gap-3 bg-card p-6" + STYLE_ROUNDED_CARD}>
           {(() => {
-            const native = resolveNativeTokenInfo(chainSupport?.[0]?.caip_2_id);
+            const publish = gameOnChainPublishes?.[0];
+            const apiMeta =
+              publish?.payment_token
+                ? tokenMetadataMap.get(
+                    publish.payment_token.toLowerCase(),
+                  )
+                : undefined;
+            const token = resolveGamePaymentToken(
+              gameOnChainPublishes,
+              chainSupport?.[0]?.caip_2_id,
+              tokenLookup,
+            );
             return (
               <PriceCoin
                 amount={price}
                 tokenCanister={""}
-                tokenSymbol={chainSupport?.[0]?.native_symbol ?? native.symbol}
-                tokenDecimals={native.decimals}
-                tokenLogo={chainSupport?.[0]?.icon_url ?? native.logo}
+                tokenSymbol={token.symbol}
+                tokenDecimals={token.decimals}
+                tokenLogo={apiMeta?.iconUrl ?? token.logo}
                 textSize="xl"
               />
             );

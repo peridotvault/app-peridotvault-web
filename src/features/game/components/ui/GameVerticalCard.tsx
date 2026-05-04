@@ -4,11 +4,12 @@
 import { BlockchainStack } from "@/core/blockchain/__core__/components/BlockchainStack";
 import { EmbedLink } from "@/features/security/embed/embed.component";
 import { PriceCoin } from "@/shared/components/ui/molecules/CoinWithAmmount";
-import { resolveNativeTokenInfo } from "@/shared/utils/token";
+import { resolveGamePaymentToken } from "@/shared/utils/token";
 import { STYLE_ROUNDED_CARD } from "@/shared/constants/style";
 import { getAssetUrl } from "@/shared/utils/helper.url";
 import { urlGameDetail } from "../../configs/url.config";
 import { ChainApi } from "@/core/api/chain.api.type";
+import { GameOnChainPublish } from "@/features/game/types/game.type";
 
 export const GameVerticalCard = ({
   gameId,
@@ -20,6 +21,8 @@ export const GameVerticalCard = ({
   tokenDecimals,
   tokenLogo,
   chain,
+  gameOnChainPublishes,
+  tokenLookup,
   onClick,
 }: {
   gameId: string;
@@ -31,8 +34,12 @@ export const GameVerticalCard = ({
   tokenDecimals?: number;
   tokenLogo?: string | null;
   chain: ChainApi[] | undefined;
+  gameOnChainPublishes?: GameOnChainPublish[];
+  tokenLookup?: Map<string, { symbol: string; decimals: number }>;
   onClick?: () => void;
 }) => {
+  const resolved = resolveGamePaymentToken(gameOnChainPublishes, chain?.[0]?.caip_2_id, tokenLookup);
+
   return (
     <EmbedLink
       href={urlGameDetail({
@@ -43,7 +50,6 @@ export const GameVerticalCard = ({
       className={`w-full group relative overflow-hidden  ${STYLE_ROUNDED_CARD}`}
     >
       <div className="w-full aspect-3/4 bg-muted">
-        {/* IMAGE */}
         <img
           src={getAssetUrl(imgUrl)}
           alt={gameName}
@@ -51,9 +57,6 @@ export const GameVerticalCard = ({
           className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
         />
       </div>
-      {/* =========================
-            SMOOTH GRADIENT BLUR
-        ========================= */}
       <div
         className="
             pointer-events-none
@@ -71,25 +74,19 @@ export const GameVerticalCard = ({
         }}
       />
 
-      {/* CONTENT */}
       <div className="absolute inset-x-0 bottom-0 p-4 flex flex-col gap-2">
         <p className="font-medium text-white line-clamp-2">{gameName}</p>
         <div className="flex justify-between items-center">
           <BlockchainStack chain={chain} />
           <div className="bg-card/40 px-3 py-1 rounded-lg">
-            {(() => {
-              const native = resolveNativeTokenInfo(chain?.[0]?.caip_2_id);
-              return (
-                <PriceCoin
-                  amount={price ?? 0}
-                  tokenCanister={tokenCanister}
-                  tokenSymbol={tokenSymbol ?? chain?.[0]?.native_symbol ?? native.symbol}
-                  tokenDecimals={tokenDecimals ?? native.decimals}
-                  tokenLogo={tokenLogo ?? chain?.[0]?.icon_url ?? native.logo}
-                  textSize="sm"
-                />
-              );
-            })()}
+            <PriceCoin
+              amount={price ?? 0}
+              tokenCanister={tokenCanister}
+              tokenSymbol={tokenSymbol ?? resolved.symbol}
+              tokenDecimals={tokenDecimals ?? resolved.decimals}
+              tokenLogo={tokenLogo ?? resolved.logo}
+              textSize="sm"
+            />
           </div>
         </div>
       </div>

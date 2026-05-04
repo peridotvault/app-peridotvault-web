@@ -2,18 +2,25 @@
 import { ChainApi } from "@/core/api/chain.api.type";
 import Image from "next/image";
 
+type TokenMeta = {
+  symbol: string;
+  name: string;
+  logo: string | null;
+};
+
 type Props = {
   chain: ChainApi | undefined;
   price: number | undefined;
+  tokenMeta?: TokenMeta;
 };
 
 import { resolveNativeTokenInfo } from "@/shared/utils/token";
 
-export const TokenWithPrice = ({ chain, price }: Props) => {
+export const TokenWithPrice = ({ chain, price, tokenMeta }: Props) => {
   const nativeInfo = resolveNativeTokenInfo(chain?.caip_2_id);
-  const symbol = chain?.native_symbol || nativeInfo.symbol;
-  const name = chain?.name || nativeInfo.name;
-  const icon = chain?.icon_url || nativeInfo.logo;
+  const symbol = tokenMeta?.symbol ?? chain?.native_symbol ?? nativeInfo.symbol;
+  const name = tokenMeta?.name ?? chain?.name ?? nativeInfo.name;
+  const icon = tokenMeta?.logo ?? chain?.icon_url ?? nativeInfo.logo;
 
   return (
     <section className="flex justify-between">

@@ -19,6 +19,9 @@ import {
 import { CarouselWrapper } from "@/shared/components/ui/organisms/CarouselWrapper";
 import { getAssetUrl } from "@/shared/utils/helper.url";
 import { sendTrackGameView } from "@/features/event/services/sendTrackGameView";
+import { useTokenMetadata } from "@/shared/hooks/useTokenMetadata";
+import { useGamePaymentOptionsBatch } from "@/shared/hooks/useGamePaymentOptionsBatch";
+import { useMemo } from "react";
 
 /* ======================================================
    PAGE — Vault (Main Discovery Page)
@@ -43,6 +46,37 @@ export default function Vault() {
   } = useTopGames();
 
   const { categories } = useGetCategories();
+
+  const { metadataMap } = useTokenMetadata(
+    publishedGames.map((g) => g.game_onchain_publishes),
+  );
+
+  const { metaByGame } = useGamePaymentOptionsBatch(
+    publishedGames.map((g) => g.game_id),
+  );
+
+  const mergedLookup = useMemo(() => {
+    const merged = new Map<string, { symbol: string; decimals: number }>();
+    if (metadataMap) {
+      for (const [k, v] of metadataMap) merged.set(k, v);
+    }
+    for (const [, tokenMap] of metaByGame) {
+      for (const [addr, meta] of tokenMap) {
+        merged.set(addr, { symbol: meta.symbol, decimals: meta.decimals });
+      }
+    }
+    return merged;
+  }, [metadataMap, metaByGame]);
+
+  const priceTokenLogoMap = useMemo(() => {
+    const map = new Map<string, string | null>();
+    for (const [, tokenMap] of metaByGame) {
+      for (const [addr, meta] of tokenMap) {
+        if (meta.iconUrl) map.set(addr, meta.iconUrl);
+      }
+    }
+    return map;
+  }, [metaByGame]);
 
   return (
     <main className="flex flex-col items-center gap-10">
@@ -89,6 +123,15 @@ export default function Vault() {
                 imgUrl={item.cover_vertical_image ?? IMAGE_LOADING}
                 price={item.price ?? 0}
                 chain={item.chains}
+                gameOnChainPublishes={item.game_onchain_publishes}
+                tokenLookup={mergedLookup}
+                tokenLogo={
+                  item.game_onchain_publishes?.[0]?.payment_token
+                    ? priceTokenLogoMap.get(
+                        item.game_onchain_publishes[0].payment_token.toLowerCase(),
+                      )
+                    : undefined
+                }
                 onClick={() =>
                   sendTrackGameView({
                     game_id: item.game_id,
@@ -125,6 +168,15 @@ export default function Vault() {
                 imgUrl={item.cover_vertical_image ?? IMAGE_LOADING}
                 price={item.price ?? 0}
                 chain={item.chains}
+                gameOnChainPublishes={item.game_onchain_publishes}
+                tokenLookup={mergedLookup}
+                tokenLogo={
+                  item.game_onchain_publishes?.[0]?.payment_token
+                    ? priceTokenLogoMap.get(
+                        item.game_onchain_publishes[0].payment_token.toLowerCase(),
+                      )
+                    : undefined
+                }
                 onClick={() =>
                   sendTrackGameView({
                     game_id: item.game_id,

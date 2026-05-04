@@ -31,7 +31,7 @@ export interface GameApi {
     // wallet_address: null,
     categories: CategoryApi[],
     chains?: Array<ChainApi>;
-
+    game_onchain_publishes?: Array<GameOnChainPublish>;
 }
 
 /* ======================================================

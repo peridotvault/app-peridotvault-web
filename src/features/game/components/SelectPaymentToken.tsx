@@ -18,11 +18,16 @@ export const SelectPaymentToken = ({
   chainSupports,
   game_onchain_publishes,
   price,
+  tokenMetadataMap,
 }: {
   modalId: string;
   chainSupports: ChainApi[] | undefined;
   game_onchain_publishes: GameOnChainPublish[] | undefined;
   price: number | undefined;
+  tokenMetadataMap?: Map<
+    string,
+    { symbol: string; name: string; logo: string | null }
+  >;
 }) => {
   const [isBuying, setIsBuying] = useState(false);
   const [purchaseSteps, setPurchaseSteps] = useState<Step[]>([
@@ -187,6 +192,9 @@ export const SelectPaymentToken = ({
       {game_onchain_publishes.map((item) => {
         const chain = chainSupports.find((c) => c.caip_2_id === item.caip_2_id);
         const nativeInfo = resolveNativeTokenInfo(item.caip_2_id);
+        const tokenMeta = tokenMetadataMap?.get(
+          item.payment_token?.toLowerCase() ?? "",
+        );
 
         if (isFree) {
           return (
@@ -198,7 +206,7 @@ export const SelectPaymentToken = ({
             >
               <div className="flex gap-2 items-center w-full">
                 <Image
-                  src={chain?.icon_url ?? nativeInfo.logo}
+                  src={tokenMeta?.logo ?? chain?.icon_url ?? nativeInfo.logo}
                   alt={chain?.name ?? nativeInfo.name}
                   width={520}
                   height={520}
@@ -222,7 +230,19 @@ export const SelectPaymentToken = ({
             disabled={isBuying}
             className="hover:bg-foreground/5 cursor-pointer p-2 rounded-xl duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <TokenWithPrice chain={chain} price={price} />
+            <TokenWithPrice
+              chain={chain}
+              price={price}
+              tokenMeta={
+                tokenMeta
+                  ? {
+                      symbol: tokenMeta.symbol,
+                      name: tokenMeta.name,
+                      logo: tokenMeta.logo,
+                    }
+                  : undefined
+              }
+            />
           </ButtonWithSound>
         );
       })}

@@ -3,12 +3,13 @@
 
 import { EmbedLink } from "@/features/security/embed/embed.component";
 import { PriceCoin } from "@/shared/components/ui/molecules/CoinWithAmmount";
-import { resolveNativeTokenInfo } from "@/shared/utils/token";
+import { resolveGamePaymentToken, resolveNativeTokenInfo } from "@/shared/utils/token";
 import { STYLE_ROUNDED_CARD } from "@/shared/constants/style";
 import { getAssetUrl } from "@/shared/utils/helper.url";
 import { urlGameDetail } from "../../configs/url.config";
 
 import { ChainApi } from "@/core/api/chain.api.type";
+import { GameOnChainPublish } from "@/features/game/types/game.type";
 
 export const GameHorizontalCard = ({
   gameId,
@@ -20,6 +21,8 @@ export const GameHorizontalCard = ({
   tokenDecimals,
   tokenLogo,
   chain,
+  gameOnChainPublishes,
+  tokenLookup,
   onClick,
 }: {
   gameId: string;
@@ -31,8 +34,16 @@ export const GameHorizontalCard = ({
   tokenDecimals?: number;
   tokenLogo?: string | null;
   chain: ChainApi[] | undefined;
+  gameOnChainPublishes?: GameOnChainPublish[];
+  tokenLookup?: Map<string, { symbol: string; decimals: number }>;
   onClick?: () => void;
 }) => {
+  const resolved = resolveGamePaymentToken(
+    gameOnChainPublishes,
+    chain?.[0]?.caip_2_id,
+    tokenLookup,
+  );
+
   return (
     <EmbedLink
       href={urlGameDetail({
@@ -82,9 +93,17 @@ export const GameHorizontalCard = ({
                 <PriceCoin
                   amount={price ?? 0}
                   tokenCanister={tokenCanister}
-                  tokenSymbol={tokenSymbol ?? chain?.[0]?.native_symbol ?? native.symbol}
-                  tokenDecimals={tokenDecimals ?? native.decimals}
-                  tokenLogo={tokenLogo ?? chain?.[0]?.icon_url ?? native.logo}
+                  tokenSymbol={
+                    tokenSymbol ??
+                    chain?.[0]?.native_symbol ??
+                    resolved.symbol
+                  }
+                  tokenDecimals={tokenDecimals ?? resolved.decimals}
+                  tokenLogo={
+                    tokenLogo ??
+                    chain?.[0]?.icon_url ??
+                    resolved.logo
+                  }
                   textSize="sm"
                 />
               );

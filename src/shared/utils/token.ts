@@ -8,42 +8,95 @@ export type NativeTokenInfo = {
 export function resolveNativeTokenInfo(caip2Id?: string | null): NativeTokenInfo {
   const normalized = caip2Id?.toLowerCase() ?? "";
 
-  // Solana
   if (normalized.includes("solana") || normalized.includes("5eykt4usfvxuy2ai9rwtrban1b6badn")) {
     return {
       symbol: "SOL",
       decimals: 9,
-      logo: "/images/token/solana.png",
+      logo: "/images/chains/solana.svg",
       name: "solana",
     };
   }
 
-  // EVM (Ethereum, Base, Lisk, etc.)
   if (normalized.includes("eip155")) {
-    // Base Mainnet: eip155:8453, Base Testnet: eip155:84532
     if (normalized.includes("8453")) {
-        return {
-            symbol: "ETH",
-            decimals: 18,
-            logo: "/images/token/base.png", // Assuming this exists
-            name: "base",
-          };
+      return {
+        symbol: "ETH",
+        decimals: 18,
+        logo: "/images/chains/base.svg",
+        name: "base",
+      };
     }
-    
-    // Default EVM (Ethereum / Generic)
     return {
       symbol: "ETH",
       decimals: 18,
-      logo: "/images/token/eth.png", // Assuming this exists
+      logo: "/images/chains/ethereum.svg",
       name: "ethereum",
     };
   }
 
-  // Fallback (Default to Solana as it's the primary chain for existing games)
   return {
     symbol: "SOL",
     decimals: 9,
-    logo: "/images/token/solana.png",
+    logo: "/images/chains/solana.svg",
     name: "solana",
+  };
+}
+
+const EVM_ZERO = "0x0000000000000000000000000000000000000000";
+
+export { EVM_ZERO };
+
+export interface TokenDeploymentInfo {
+  symbol: string;
+  name: string;
+  decimals: number;
+  logoUrl: string | null;
+}
+
+export interface GameOnChainPublishLike {
+  caip_2_id?: string;
+  payment_token: string;
+}
+
+export function resolveGamePaymentToken(
+  publishes: GameOnChainPublishLike[] | undefined,
+  chainCaip2Id?: string,
+  tokenLookup?: Map<string, { symbol: string; decimals: number }>,
+): NativeTokenInfo {
+  const publish = publishes?.[0];
+  if (!publish) {
+    return resolveNativeTokenInfo(chainCaip2Id);
+  }
+
+  const paymentToken = publish.payment_token?.toLowerCase() ?? "";
+  const isNative =
+    !paymentToken ||
+    paymentToken === "native" ||
+    paymentToken === EVM_ZERO ||
+    paymentToken === "11111111111111111111111111111111";
+
+  if (isNative) {
+    return resolveNativeTokenInfo(publish.caip_2_id ?? chainCaip2Id);
+  }
+
+  if (tokenLookup) {
+    const match = tokenLookup.get(paymentToken);
+    if (match) {
+      const fallbackLogo = resolveNativeTokenInfo(publish.caip_2_id ?? chainCaip2Id).logo;
+      return {
+        symbol: match.symbol,
+        decimals: match.decimals,
+        logo: fallbackLogo,
+        name: match.symbol.toLowerCase(),
+      };
+    }
+  }
+
+  const native = resolveNativeTokenInfo(publish.caip_2_id ?? chainCaip2Id);
+  return {
+    ...native,
+    symbol: paymentToken.length > 12
+      ? `${paymentToken.slice(0, 4)}...${paymentToken.slice(-4)}`
+      : paymentToken.toUpperCase(),
   };
 }
