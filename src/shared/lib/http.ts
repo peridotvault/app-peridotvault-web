@@ -1,12 +1,12 @@
-
 import { authRepo } from "@/core/db/repositories/auth.repo";
 import { useAuthStore } from "@/features/auth/_store/auth.store";
 import { refreshApi } from "@/features/auth/refresh/refresh.api";
+import { toastService } from "@/core/ui-system/toast/toast.service";
 import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
 
 const baseURL =
     process.env.NEXT_PUBLIC_API_BASE_URL ??
-    process.env.PUBLIC_API_BASE_URL ?? // fallback kalau Anda belum rename env
+    process.env.PUBLIC_API_BASE_URL ??
     "https://api.peridotvault.com";
 
 export const http = axios.create({
@@ -14,15 +14,75 @@ export const http = axios.create({
     timeout: 15_000,
 });
 
-// http.interceptors.response.use(
-//     (response) => response,
-//     (error) => {
-//         return Promise.reject(error);
-//     }
-// );
+// ─── Proactive refresh timer ───────────────────────────────────────
+let refreshTimer: ReturnType<typeof setTimeout> | null = null;
 
-// ---------- REQUEST: attach Authorization ----------
+const FIVE_MINUTES = 5 * 60 * 1000;
+
+function scheduleProactiveRefresh(expiresAtIso: string) {
+    cancelProactiveRefresh();
+
+    const expiresAt = new Date(expiresAtIso).getTime();
+    if (isNaN(expiresAt)) return;
+
+    const now = Date.now();
+    const delay = expiresAt - now - FIVE_MINUTES;
+
+    // Already expired or too close — refresh now
+    if (delay <= 0) {
+        refreshTokenSingleFlight().catch(() => {});
+        return;
+    }
+
+    refreshTimer = setTimeout(() => {
+        refreshTokenSingleFlight().catch(() => {});
+    }, delay);
+}
+
+function cancelProactiveRefresh() {
+    if (refreshTimer) {
+        clearTimeout(refreshTimer);
+        refreshTimer = null;
+    }
+}
+
+// ─── Session hydration on app init ─────────────────────────────────
+let hydrated = false;
+
+async function hydrateSession() {
+    if (hydrated) return;
+    hydrated = true;
+
+    const session = await authRepo.getSession();
+    if (!session?.token || !session?.refresh_token) {
+        useAuthStore.getState().setStatus("anonymous");
+        return;
+    }
+
+    const expiresAt = session.expires_at ? new Date(session.expires_at).getTime() : 0;
+
+    if (expiresAt && expiresAt < Date.now()) {
+        // Token expired — try refresh immediately
+        try {
+            await refreshTokenSingleFlight();
+        } catch {
+            useAuthStore.getState().setStatus("expired");
+        }
+        return;
+    }
+
+    useAuthStore.getState().setToken(session.token);
+    useAuthStore.getState().setStatus("authenticated");
+
+    if (session.expires_at) {
+        scheduleProactiveRefresh(session.expires_at);
+    }
+}
+
+// ─── REQUEST: attach Authorization + hydrate ────────────────────────
 http.interceptors.request.use(async (config: InternalAxiosRequestConfig) => {
+    await hydrateSession();
+
     const inMemory = useAuthStore.getState().token;
     if (inMemory) {
         config.headers.Authorization = `Bearer ${inMemory}`;
@@ -32,15 +92,13 @@ http.interceptors.request.use(async (config: InternalAxiosRequestConfig) => {
     const session = await authRepo.getSession();
     if (session?.token) {
         config.headers.Authorization = `Bearer ${session.token}`;
-        // hydrate memory agar request berikutnya cepat
         useAuthStore.getState().setToken(session.token);
     }
 
     return config;
 });
 
-
-// ---------- RESPONSE: refresh on 401 (single-flight) ----------
+// ─── RESPONSE: refresh on 401 (single-flight) ──────────────────────
 let refreshPromise: Promise<string> | null = null;
 
 async function refreshTokenSingleFlight(): Promise<string> {
@@ -51,10 +109,12 @@ async function refreshTokenSingleFlight(): Promise<string> {
         if (!session?.refresh_token) throw new Error("NO_REFRESH_TOKEN");
 
         const refreshed = await refreshApi({ refreshToken: session.refresh_token });
-        // refresh response Anda: data.token + data.expiresAt
         await authRepo.updateToken(refreshed.token, refreshed.expiresAt);
         useAuthStore.getState().setToken(refreshed.token);
         useAuthStore.getState().setStatus("authenticated");
+
+        // Schedule next proactive refresh
+        scheduleProactiveRefresh(refreshed.expiresAt);
 
         return refreshed.token;
     })();
@@ -72,16 +132,15 @@ http.interceptors.response.use(
         const status = error.response?.status;
         const original = error.config as (InternalAxiosRequestConfig & { _retry?: boolean }) | undefined;
 
-        // kalau bukan 401 atau tidak ada config, lempar
         if (status !== 401 || !original) {
             return Promise.reject(error);
         }
 
-        // hindari loop retry
         if (original._retry) {
-            await authRepo.clearSession();
+            // Refresh already attempted and failed — session truly expired
+            cancelProactiveRefresh();
             useAuthStore.getState().setToken(null);
-            useAuthStore.getState().setStatus("anonymous");
+            useAuthStore.getState().setStatus("expired");
             return Promise.reject(error);
         }
         original._retry = true;
@@ -90,12 +149,12 @@ http.interceptors.response.use(
             const newToken = await refreshTokenSingleFlight();
             original.headers = original.headers ?? {};
             original.headers.Authorization = `Bearer ${newToken}`;
-
             return http.request(original);
         } catch {
-            await authRepo.clearSession();
+            // Refresh failed — expire gracefully (keep Dexie for re-login context)
+            cancelProactiveRefresh();
             useAuthStore.getState().setToken(null);
-            useAuthStore.getState().setStatus("anonymous");
+            useAuthStore.getState().setStatus("expired");
             return Promise.reject(error);
         }
     }

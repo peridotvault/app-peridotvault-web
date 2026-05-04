@@ -10,6 +10,7 @@ import {
   GameOnChainPublish,
   GamePreview,
   NativeBuild,
+  WebBuild,
 } from "@/features/game/types/game.type";
 import { PriceCoin } from "@/shared/components/ui/molecules/CoinWithAmmount";
 import { ContainerPadding } from "@/shared/components/ContainerPadding";
@@ -111,22 +112,34 @@ export default function GameDetailPage(): React.ReactElement {
     );
   }
 
-  // Distributions
+  // Distributions — collect all platform builds
   const distributions: GameDistribution[] = game.distributions ?? [];
 
-  // Cari distribusi web (kalau ada)
-  const webDist = distributions.find((d) => "web" in d);
-  const webSpec = webDist && "web" in webDist ? webDist.web : undefined;
-  const nativeDist = game.distributions.find(
-    (d): d is { native: NativeBuild } => "native" in d,
-  )?.native;
+  interface PlatformBuild {
+    key: string;
+    label: string;
+    build: NativeBuild | WebBuild;
+    os?: string;
+  }
 
-  // Platform list sederhana untuk About
-  const availablePlatforms: string[] = [];
-  if (webSpec) availablePlatforms.push("Web");
-  if (distributions.some((d) => "native" in d)) {
-    // Kamu bisa ganti jadi OS detail, ini minimal saja
-    availablePlatforms.push("Native");
+  const platformBuilds: PlatformBuild[] = [];
+  for (const dist of distributions) {
+    if ("web" in dist) {
+      platformBuilds.push({ key: "web", label: "Web", build: dist.web });
+    }
+    if ("native" in dist) {
+      const native = dist.native;
+      const os = native.os.toLowerCase();
+      if (os.includes("win")) {
+        platformBuilds.push({ key: "windows", label: "Windows", build: native, os: native.os });
+      } else if (os.includes("mac") || os.includes("osx")) {
+        platformBuilds.push({ key: "macos", label: "macOS", build: native, os: native.os });
+      } else if (os.includes("linux")) {
+        platformBuilds.push({ key: "linux", label: "Linux", build: native, os: native.os });
+      } else {
+        platformBuilds.push({ key: "other", label: native.os, build: native, os: native.os });
+      }
+    }
   }
 
   /* =========================
@@ -165,7 +178,7 @@ export default function GameDetailPage(): React.ReactElement {
         <ContainerPadding className="flex gap-12 max-lg:flex-col">
           {/* left  */}
           <div className="max-lg:order-2 w-full">
-            <SystemRequirement sysReq={nativeDist} />
+            <SystemRequirement platformBuilds={platformBuilds} />
           </div>
 
           {/* right  */}
@@ -195,41 +208,78 @@ export default function GameDetailPage(): React.ReactElement {
   /* =========================
      UI FUNCTIONS
   ========================= */
-  function SystemRequirement({ sysReq }: { sysReq: NativeBuild | undefined }) {
-    const list = [
-      {
-        title: "OS",
-        description: sysReq ? sysReq.os : "Peridot",
-      },
-      {
-        title: "CPU",
-        description: sysReq ? sysReq.processor : "Peridot",
-      },
-      {
-        title: "Memory",
-        description: sysReq && formatStorageFromMB(sysReq.memory),
-      },
-      {
-        title: "GPU",
-        description: sysReq ? sysReq.graphics : "Peridot",
-      },
-      {
-        title: "Storage",
-        description: sysReq && formatStorageFromMB(sysReq.storage),
-      },
-    ];
+  function SystemRequirement({
+    platformBuilds,
+  }: {
+    platformBuilds: PlatformBuild[];
+  }) {
+    const [activeTab, setActiveTab] = useState(0);
+
+    if (platformBuilds.length === 0) return null;
+
+    const current = platformBuilds[activeTab] ?? platformBuilds[0];
+    const build = current.build;
+
+    const isWeb = "url" in build;
+    const specs = isWeb
+      ? [
+          { title: "Platform", description: "Web Browser" },
+          { title: "CPU", description: build.processor || "-" },
+          { title: "Memory", description: formatStorageFromMB(build.memory) },
+          { title: "GPU", description: build.graphics || "-" },
+          { title: "Storage", description: formatStorageFromMB(build.storage) },
+        ]
+      : [
+          { title: "OS", description: (build as NativeBuild).os || "-" },
+          { title: "CPU", description: (build as NativeBuild).processor || "-" },
+          { title: "Memory", description: formatStorageFromMB(build.memory) },
+          { title: "GPU", description: (build as NativeBuild).graphics || "-" },
+          { title: "Storage", description: formatStorageFromMB(build.storage) },
+        ];
+
     return (
       <section className="flex flex-col gap-4 w-full">
         <TypographyH2 text="System Requirements" />
+
+        {/* Platform Tabs */}
+        {platformBuilds.length > 1 && (
+          <div className="flex gap-1">
+            {platformBuilds.map((pb, idx) => (
+              <button
+                key={pb.key}
+                onClick={() => setActiveTab(idx)}
+                className={clsx(
+                  "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors duration-150",
+                  idx === activeTab
+                    ? "bg-foreground/15 text-foreground"
+                    : "text-foreground/50 hover:text-foreground/80 hover:bg-foreground/5"
+                )}
+              >
+                <FontAwesomeIcon
+                  icon={PLATFORM_ICON_MAP[pb.key] ?? faFlag}
+                  className="w-4 h-4"
+                />
+                {pb.label}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* Specs Grid */}
         <div className={"bg-card p-10 " + STYLE_ROUNDED_CARD}>
           <dl className="grid grid-cols-2 gap-6">
-            {list.map((item, index) => (
+            {specs.map((item, index) => (
               <div className="flex flex-col gap-1" key={index}>
                 <dt className="text-white/50">{item.title}</dt>
                 <dd className="text-xl">{item.description}</dd>
               </div>
             ))}
           </dl>
+          {build.additionalNotes && (
+            <p className="mt-6 text-sm text-foreground/50 border-t border-white/10 pt-4">
+              {build.additionalNotes}
+            </p>
+          )}
         </div>
       </section>
     );

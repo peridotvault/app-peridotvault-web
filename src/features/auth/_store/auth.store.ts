@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-export type AuthStatus = "anonymous" | "authenticated" | "loading";
+export type AuthStatus = "anonymous" | "authenticated" | "loading" | "expired";
 
 type AuthState = {
     status: AuthStatus;
@@ -11,7 +11,7 @@ type AuthState = {
 };
 
 export const useAuthStore = create<AuthState>((set) => ({
-    status: "authenticated",
+    status: "loading",
     token: null,
     setToken: (t) => set({ token: t }),
     setStatus: (s) => set({ status: s }),

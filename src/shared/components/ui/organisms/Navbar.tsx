@@ -10,6 +10,7 @@ import { STYLE_PADDING } from "@/shared/constants/style";
 import { ModalProfile } from "@/features/user/components/ModalProfile";
 import { authRepo } from "@/core/db/repositories/auth.repo";
 import { useModal } from "@/core/ui-system/modal/modal.store";
+import { toastService } from "@/core/ui-system/toast/toast.service";
 import ModalShell from "@/core/ui-system/modal/ModalShell";
 import { EmbedLink } from "@/features/security/embed/embed.component";
 
@@ -47,6 +48,13 @@ export default function Navbar() {
         setState(null);
       }, 0);
       return () => window.clearTimeout(id);
+    }
+
+    if (authStatus === "expired") {
+      // Keep wallet address visible but prompt re-login
+      toastService.error("Session Expired", {
+        desc: "Please connect your wallet again to refresh your session.",
+      });
     }
   }, [authStatus, closeModal]);
 
