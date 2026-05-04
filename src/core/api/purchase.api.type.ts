@@ -13,6 +13,7 @@ export type CreatePurchaseRequest = {
 export type CompletePurchaseRequest = {
   gameId: string;
   transactionHash: string;
+  pendingTransactionHash: string;
 };
 
 export type Purchase = {

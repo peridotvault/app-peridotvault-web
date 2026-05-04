@@ -30,7 +30,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useParams } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { BlockchainStack } from "@/core/blockchain/__core__/components/BlockchainStack";
 import igrs from "@/shared/assets/rating/igrs.json";
 import { ButtonWithSound } from "@/shared/components/ui/atoms/ButtonWithSound";
@@ -44,6 +44,7 @@ import { Share } from "@/shared/components/ui/organisms/Share";
 import { SelectPaymentToken } from "@/features/game/components/SelectPaymentToken";
 import { resolveNativeTokenInfo } from "@/shared/utils/token";
 import { ChainApi } from "@/core/api/chain.api.type";
+import { hasPurchasedGameApi } from "@/core/api/purchase.api";
 
 /* ======================================================
    PAGE — Game Detail
@@ -176,6 +177,7 @@ export default function GameDetailPage(): React.ReactElement {
             requiredAge={game.required_age}
             price={game.price}
             website_url={game.website_url}
+            gameId={gameId}
           />
         </ContainerPadding>
 
@@ -372,6 +374,7 @@ export default function GameDetailPage(): React.ReactElement {
     requiredAge,
     price,
     website_url,
+    gameId,
   }: {
     chainSupport: ChainApi[] | undefined;
     game_onchain_publishes: Array<GameOnChainPublish> | undefined;
@@ -380,8 +383,23 @@ export default function GameDetailPage(): React.ReactElement {
     requiredAge: number;
     price: number;
     website_url?: string;
+    gameId: string;
   }) {
     const releaseDate = new Date(releaseDateMs).toLocaleDateString();
+
+    const [isOwned, setIsOwned] = useState(false);
+    const [checkingOwnership, setCheckingOwnership] = useState(true);
+
+    useEffect(() => {
+      if (gameId) {
+        hasPurchasedGameApi(gameId).then((owned) => {
+          setIsOwned(owned);
+          setCheckingOwnership(false);
+        }).catch(() => {
+          setCheckingOwnership(false);
+        });
+      }
+    }, [gameId]);
 
     const [purchaseState] = useState<{
       status: "success" | "error";
@@ -448,17 +466,30 @@ export default function GameDetailPage(): React.ReactElement {
             </span>
           ) : null}
           <div className="flex gap-4">
-            <ButtonWithSound
-              // onClick={handleBuyClick}
-              onClick={openBuyNowModal}
-              className={
-                "w-full cursor-pointer " +
-                BUTTON_HIGHLIGHT_COLOR +
-                STYLE_ROUNDED_BUTTON
-              }
-            >
-              Buy Now
-            </ButtonWithSound>
+            {isOwned ? (
+              <ButtonWithSound
+                disabled
+                className={
+                  "w-full cursor-not-allowed opacity-50 " +
+                  BUTTON_HIGHLIGHT_COLOR +
+                  STYLE_ROUNDED_BUTTON
+                }
+              >
+                Game Owned
+              </ButtonWithSound>
+            ) : (
+              <ButtonWithSound
+                onClick={openBuyNowModal}
+                disabled={checkingOwnership}
+                className={
+                  "w-full cursor-pointer " +
+                  BUTTON_HIGHLIGHT_COLOR +
+                  STYLE_ROUNDED_BUTTON
+                }
+              >
+                Buy Now
+              </ButtonWithSound>
+            )}
             <ButtonWithSound
               disabled={true}
               className={
