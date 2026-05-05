@@ -52,7 +52,7 @@ export const PriceCoin = ({
           src={logo}
           width={20}
           height={20}
-          className="h-5 w-5 aspect-square object-contain"
+          className="h-5 w-5 aspect-square rounded-full object-cover"
           alt="Coin Image Logo"
         />
       ) : null}

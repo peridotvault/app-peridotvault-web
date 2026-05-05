@@ -38,7 +38,7 @@ export function buildSvmBuyGameInstruction(
     { pubkey: accounts.buyerPaymentAccount ?? PublicKey.default, isSigner: false, isWritable: true },
     { pubkey: accounts.publisherPaymentAccount ?? PublicKey.default, isSigner: false, isWritable: true },
     { pubkey: accounts.treasuryPaymentAccount ?? PublicKey.default, isSigner: false, isWritable: true },
-    { pubkey: accounts.referrerPaymentAccount ?? PublicKey.default, isSigner: false, isWritable: true },
+    { pubkey: accounts.referrerPaymentAccount ?? PublicKey.default, isSigner: false, isWritable: false },
     { pubkey: accounts.storeActor, isSigner: false, isWritable: false },
     { pubkey: accounts.authorizedActor, isSigner: false, isWritable: false },
     { pubkey: accounts.pgl1Program, isSigner: false, isWritable: false },

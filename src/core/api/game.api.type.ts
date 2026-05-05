@@ -104,6 +104,7 @@ export interface GameOnChainPublish {
     pgl1_address: string;
     publish_tx_hash: string;
     payment_token: string;
+    payment_token_id?: number;
     token_uri_1155?: string;
     contract_meta_uri?: string;
     max_supply: string;

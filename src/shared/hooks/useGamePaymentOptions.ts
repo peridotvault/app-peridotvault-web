@@ -35,7 +35,13 @@ export function useGamePaymentOptions(gameId: string | undefined) {
   const tokenMetadataMap = useMemo(() => {
     const map = new Map<
       string,
-      { symbol: string; decimals: number; name: string; iconUrl: string | null }
+      {
+        symbol: string;
+        decimals: number;
+        name: string;
+        iconUrl: string | null;
+        paymentOptionId: number;
+      }
     >();
     for (const opt of options) {
       const td = opt.token_deployment;
@@ -45,6 +51,7 @@ export function useGamePaymentOptions(gameId: string | undefined) {
           decimals: td.token_asset.decimals,
           name: td.token_asset.name,
           iconUrl: td.token_asset.icon_url,
+          paymentOptionId: opt.id,
         });
       }
     }

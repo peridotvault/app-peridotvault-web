@@ -3,14 +3,14 @@ import { CategoryApi } from "./category.api.type";
 import { ApiResponse, ApiResponseWithPagination } from "./types/response.type";
 
 function getPaginatedItems<T>(res: { data?: ApiResponseWithPagination<T> }): T[] {
-    return res.data?.data?.data ?? [];
+    return res.data?.data ?? [];
 }
 
 export async function getCategoriesApi(params?: {
     page?: number;
     limit?: number
 }): Promise<Array<CategoryApi>> {
-    const res = await http.get<ApiResponseWithPagination<CategoryApi>>("/api/categories", {
+    const res = await http.get<ApiResponseWithPagination<CategoryApi>>("/api/v1/categories", {
         params,
     });
 
@@ -21,19 +21,19 @@ export async function getFavoriteCategoriesApi(params?: {
     page?: number;
     limit?: number
 }): Promise<Array<CategoryApi>> {
-    const res = await http.get<ApiResponseWithPagination<CategoryApi>>("/api/categories", {
+    const res = await http.get<ApiResponseWithPagination<CategoryApi>>("/api/v1/categories/favorites", {
         params,
     });
 
     return getPaginatedItems(res);
 }
 
-export async function getCategorieByIdApi(params: {
+export async function getCategoryByIdApi(params: {
     page?: number;
     limit?: number;
     category_id: string;
 }): Promise<CategoryApi> {
-    const res = await http.get<ApiResponse<CategoryApi>>(`/api/categories/${params?.category_id}`, {
+    const res = await http.get<ApiResponse<CategoryApi>>(`/api/v1/categories/${params?.category_id}`, {
         params,
     });
 

@@ -28,6 +28,7 @@ import {
   faShirt,
   faShare,
   faFlag,
+  faLock,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useParams } from "next/navigation";
@@ -48,6 +49,7 @@ import { ChainApi } from "@/core/api/chain.api.type";
 import { hasPurchasedGameApi } from "@/core/api/purchase.api";
 import { useTokenMetadata } from "@/shared/hooks/useTokenMetadata";
 import { useGamePaymentOptions } from "@/shared/hooks/useGamePaymentOptions";
+import { useAuthStore } from "@/features/auth/_store/auth.store";
 
 /* ======================================================
    PAGE — Game Detail
@@ -493,7 +495,30 @@ export default function GameDetailPage(): React.ReactElement {
 
     const ageRating = getAgeRating(requiredAge);
 
-    const openBuyNowModal = () =>
+    const openBuyNowModal = () => {
+      const isAuth = useAuthStore.getState().status === "authenticated";
+
+      if (!isAuth) {
+        useModal.getState().open((id) => (
+          <ModalShell id={id}>
+            <div className="w-110 flex flex-col items-center gap-6 p-8 text-center">
+              <FontAwesomeIcon
+                icon={faLock}
+                className="text-4xl text-muted-foreground"
+              />
+              <div className="flex flex-col gap-2">
+                <h2 className="text-xl font-semibold">Login Required</h2>
+                <p className="text-muted-foreground">
+                  Please connect your wallet to purchase this game. Use the
+                  Connect button in the top right corner.
+                </p>
+              </div>
+            </div>
+          </ModalShell>
+        ));
+        return;
+      }
+
       useModal.getState().open((id) => (
         <ModalShell id={id}>
           <SelectPaymentToken
@@ -504,12 +529,18 @@ export default function GameDetailPage(): React.ReactElement {
             tokenMetadataMap={new Map(
               [...tokenMetadataMap].map(([k, v]) => [
                 k,
-                { symbol: v.symbol, name: v.name, logo: v.iconUrl },
+                {
+                  symbol: v.symbol,
+                  name: v.name,
+                  logo: v.iconUrl,
+                  paymentOptionId: v.paymentOptionId,
+                },
               ]),
             )}
           />
         </ModalShell>
       ));
+    };
 
     const openShareModal = () =>
       useModal.getState().open((id) => (

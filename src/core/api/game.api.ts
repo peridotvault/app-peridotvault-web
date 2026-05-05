@@ -3,7 +3,7 @@ import { GameApi, GameDetailApi, GameSortApi, GameTopApi } from "./game.api.type
 import { ApiResponse, ApiResponseWithPagination } from "./types/response.type";
 
 function getPaginatedItems<T>(res: { data?: ApiResponseWithPagination<T> }): T[] {
-    return res.data?.data?.data ?? [];
+    return res.data?.data ?? [];
 }
 
 export async function getGamesApi(params?: {
@@ -16,7 +16,7 @@ export async function getGamesApi(params?: {
     page?: number;
     limit?: number;
 }): Promise<Array<GameApi>> {
-    const res = await http.get<ApiResponseWithPagination<GameApi>>("/api/games", {
+    const res = await http.get<ApiResponseWithPagination<GameApi>>("/api/v1/games", {
         params,
     });
 
@@ -24,7 +24,7 @@ export async function getGamesApi(params?: {
 }
 
 export async function getTopGamesApi(): Promise<GameTopApi[]> {
-    const res = await http.get<ApiResponse<GameTopApi[]>>("/api/games/top-games");
+    const res = await http.get<ApiResponse<GameTopApi[]>>("/api/v1/games/top-games");
 
     return res.data.data ?? [];
 }
@@ -33,7 +33,7 @@ export async function getBannerGamesApi(params?: {
     page?: number;
     limit?: number;
 }): Promise<GameApi[]> {
-    const res = await http.get<ApiResponseWithPagination<GameApi>>("/api/games/banners", {
+    const res = await http.get<ApiResponseWithPagination<GameApi>>("/api/v1/games/banners", {
         params,
     });
 
@@ -45,30 +45,30 @@ export async function getGameMetadataApi(gameId: string, params?: {
     limit?: number;
     category?: string;
 }): Promise<GameDetailApi> {
-    const res = await http.get<ApiResponse<GameDetailApi>>(`/api/games/${gameId}/metadata`, {
-        params,
+  const res = await http.get<ApiResponse<GameDetailApi>>(`/api/v1/games/${gameId}/metadata`, {
+      params,
     });
 
     return res.data.data;
-}
+  }
 
-export async function getGameRelatedApi(gameId: string, params?: {
+  export async function getGameRelatedApi(gameId: string, params?: {
     limit?: number;
-}): Promise<GameApi[]> {
-    const res = await http.get<ApiResponseWithPagination<GameApi>>(`/api/games/${gameId}/related`, {
-        params,
+  }): Promise<GameApi[]> {
+    const res = await http.get<ApiResponseWithPagination<GameApi>>(`/api/v1/games/${gameId}/related`, {
+      params,
     });
 
     return getPaginatedItems(res);
-}
+  }
 
-export async function getGameDetailApi(gameId: string, params?: {
+  export async function getGameDetailApi(gameId: string, params?: {
     page?: number;
     limit?: number;
     category?: string;
-}): Promise<GameDetailApi> {
-    const res = await http.get<ApiResponse<GameDetailApi>>(`/api/games/${gameId}`, {
-        params,
+  }): Promise<GameDetailApi> {
+    const res = await http.get<ApiResponse<GameDetailApi>>(`/api/v1/games/${gameId}`, {
+      params,
     });
 
     return res.data.data;

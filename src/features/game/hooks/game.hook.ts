@@ -27,8 +27,6 @@ export function usePublishedGames({ page, limit, category_id }: {
 
                 const resAllGames = await getGamesApi({ page, limit, category_id });
 
-                console.log(resAllGames);
-
                 setGames(resAllGames);
             } catch {
                 setError("Failed to fetch games");
@@ -175,7 +173,6 @@ export function useGameDetail({ gameId }: { gameId: string }): {
                 setError(null);
 
                 const res = await getGameDetailApi(gameId);
-                console.log(res);
                 setGame(res);
             } catch (e: any) {
                 setError(e?.message ?? "Failed to load game");
