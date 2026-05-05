@@ -68,15 +68,37 @@ export default function Vault() {
     return merged;
   }, [metadataMap, metaByGame]);
 
-  const priceTokenLogoMap = useMemo(() => {
-    const map = new Map<string, string | null>();
-    for (const [, tokenMap] of metaByGame) {
-      for (const [addr, meta] of tokenMap) {
-        if (meta.iconUrl) map.set(addr, meta.iconUrl);
+  const gameTokenMetaMap = useMemo(() => {
+    const map = new Map<
+      string,
+      { symbol: string; decimals: number; logo: string | null }
+    >();
+    for (const [gameId, tokenMap] of metaByGame) {
+      const first = tokenMap.values().next().value;
+      if (first) {
+        map.set(gameId, {
+          symbol: first.symbol,
+          decimals: first.decimals,
+          logo: first.iconUrl,
+        });
       }
     }
     return map;
   }, [metaByGame]);
+
+  function resolveTokenLogo(
+    publishes: typeof publishedGames[number]["game_onchain_publishes"],
+    gameId: string,
+  ): string | null | undefined {
+    const publishAddr = publishes?.[0]?.payment_token?.toLowerCase();
+    if (publishAddr) {
+      for (const [, tokenMap] of metaByGame) {
+        const meta = tokenMap.get(publishAddr);
+        if (meta?.iconUrl) return meta.iconUrl;
+      }
+    }
+    return gameTokenMetaMap.get(gameId)?.logo;
+  }
 
   return (
     <main className="flex flex-col items-center gap-10">
@@ -115,31 +137,35 @@ export default function Vault() {
           <CarouselWrapper
             items={publishedGames.slice(0, 15)}
             pageSize={5}
-            renderItem={(item, index) => (
-              <GameVerticalCard
-                key={index}
-                gameId={item.game_id}
-                gameName={item.name}
-                imgUrl={item.cover_vertical_image ?? IMAGE_LOADING}
-                price={item.price ?? 0}
-                chain={item.chains}
-                gameOnChainPublishes={item.game_onchain_publishes}
-                tokenLookup={mergedLookup}
-                tokenLogo={
-                  item.game_onchain_publishes?.[0]?.payment_token
-                    ? priceTokenLogoMap.get(
-                        item.game_onchain_publishes[0].payment_token.toLowerCase(),
-                      )
-                    : undefined
-                }
-                onClick={() =>
-                  sendTrackGameView({
-                    game_id: item.game_id,
-                    source: "homepage",
-                  })
-                }
-              />
-            )}
+            renderItem={(item, index) => {
+              const meta = gameTokenMetaMap.get(item.game_id);
+              return (
+                <GameVerticalCard
+                  key={index}
+                  gameId={item.game_id}
+                  gameName={item.name}
+                  imgUrl={item.cover_vertical_image ?? IMAGE_LOADING}
+                  price={item.price ?? 0}
+                  chain={item.chains}
+                  gameOnChainPublishes={item.game_onchain_publishes}
+                  tokenLookup={mergedLookup}
+                  tokenSymbol={meta?.symbol}
+                  tokenDecimals={meta?.decimals}
+                  tokenLogo={
+                    resolveTokenLogo(
+                      item.game_onchain_publishes,
+                      item.game_id,
+                    ) ?? meta?.logo
+                  }
+                  onClick={() =>
+                    sendTrackGameView({
+                      game_id: item.game_id,
+                      source: "homepage",
+                    })
+                  }
+                />
+              );
+            }}
           />
         </div>
       </section>
@@ -160,31 +186,35 @@ export default function Vault() {
           <TypographyH2 text="All Games" />
           {/* contents  */}
           <div className="grid grid-cols-5 max-xl:grid-cols-4 max-md:grid-cols-3 max-sm:grid-cols-2 gap-6">
-            {publishedGames?.map((item, idx) => (
-              <GameVerticalCard
-                key={idx}
-                gameId={item.game_id}
-                gameName={item.name}
-                imgUrl={item.cover_vertical_image ?? IMAGE_LOADING}
-                price={item.price ?? 0}
-                chain={item.chains}
-                gameOnChainPublishes={item.game_onchain_publishes}
-                tokenLookup={mergedLookup}
-                tokenLogo={
-                  item.game_onchain_publishes?.[0]?.payment_token
-                    ? priceTokenLogoMap.get(
-                        item.game_onchain_publishes[0].payment_token.toLowerCase(),
-                      )
-                    : undefined
-                }
-                onClick={() =>
-                  sendTrackGameView({
-                    game_id: item.game_id,
-                    source: "homepage",
-                  })
-                }
-              />
-            ))}
+            {publishedGames?.map((item, idx) => {
+              const meta = gameTokenMetaMap.get(item.game_id);
+              return (
+                <GameVerticalCard
+                  key={idx}
+                  gameId={item.game_id}
+                  gameName={item.name}
+                  imgUrl={item.cover_vertical_image ?? IMAGE_LOADING}
+                  price={item.price ?? 0}
+                  chain={item.chains}
+                  gameOnChainPublishes={item.game_onchain_publishes}
+                  tokenLookup={mergedLookup}
+                  tokenSymbol={meta?.symbol}
+                  tokenDecimals={meta?.decimals}
+                  tokenLogo={
+                    resolveTokenLogo(
+                      item.game_onchain_publishes,
+                      item.game_id,
+                    ) ?? meta?.logo
+                  }
+                  onClick={() =>
+                    sendTrackGameView({
+                      game_id: item.game_id,
+                      source: "homepage",
+                    })
+                  }
+                />
+              );
+            })}
           </div>
         </div>
       </section>

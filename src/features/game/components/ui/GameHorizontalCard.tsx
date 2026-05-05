@@ -95,14 +95,16 @@ export const GameHorizontalCard = ({
                   tokenCanister={tokenCanister}
                   tokenSymbol={
                     tokenSymbol ??
+                    resolved.symbol ??
                     chain?.[0]?.native_symbol ??
-                    resolved.symbol
+                    native.symbol
                   }
                   tokenDecimals={tokenDecimals ?? resolved.decimals}
                   tokenLogo={
                     tokenLogo ??
+                    resolved.logo ??
                     chain?.[0]?.icon_url ??
-                    resolved.logo
+                    native.logo
                   }
                   textSize="sm"
                 />
