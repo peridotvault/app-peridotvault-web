@@ -3,7 +3,7 @@ import { GameApi, GameDetailApi, GameSortApi, GameTopApi } from "./game.api.type
 import { ApiResponse, ApiResponseWithPagination } from "./types/response.type";
 
 function getPaginatedItems<T>(res: { data?: ApiResponseWithPagination<T> }): T[] {
-    return res.data?.data ?? [];
+    return (res.data?.data as unknown as T[]) ?? [];
 }
 
 export async function getGamesApi(params?: {

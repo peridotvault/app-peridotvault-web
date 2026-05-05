@@ -7,7 +7,7 @@ import {
 import { ApiResponse, ApiResponseWithPagination } from "./types/response.type";
 
 function getPaginatedItems<T>(res: { data?: ApiResponseWithPagination<T> }): T[] {
-  return res.data?.data ?? [];
+  return (res.data?.data as unknown as T[]) ?? [];
 }
 
 function getPaginatedMeta<T>(res: { data?: ApiResponseWithPagination<T> }) {
