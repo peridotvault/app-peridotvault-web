@@ -1,0 +1,106 @@
+name: Deploy Production
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-prod-web-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  REGISTRY: ghcr
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GH_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=latest
+            type=sha,prefix=prod-
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            NEXT_PUBLIC_API_BASE_URL=https://api.peridotvault.com
+            API_BASE_URL=https://api.peridotvault.com
+            NEXT_PUBLIC_STORE_URL=https://peridotvault.com
+
+  deploy:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to Production VPS via SSH
+        env:
+          VPS_HOST: ${{ secrets.PROD_VPS_HOST }}
+          VPS_USERNAME: ${{ secrets.PROD_VPS_USERNAME }}
+          VPS_SSH_KEY: ${{ secrets.PROD_VPS_SSH_KEY }}
+          VPS_PORT: ${{ secrets.PROD_VPS_PORT || '22' }}
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          GH_ACTOR: ${{ github.actor }}
+        run: |
+          # Setup SSH key
+          mkdir -p ~/.ssh
+          echo "$VPS_SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          
+          # Add host to known hosts
+          ssh-keyscan -H -p "$VPS_PORT" "$VPS_HOST" >> ~/.ssh/known_hosts 2>/dev/null || true
+          
+          # Execute deployment commands via SSH
+          ssh -i ~/.ssh/deploy_key \
+              -o StrictHostKeyChecking=no \
+              -o ConnectTimeout=30 \
+              -p "$VPS_PORT" \
+              "$VPS_USERNAME@$VPS_HOST" << EOF
+            cd /home/peridot/peridotvault-infra
+            
+            # Export environment variables
+            export \$(cat /home/peridot/peridotvault-infra/env/.env.prod | xargs)
+            
+            # Login to GHCR
+            echo "$GH_TOKEN" | docker login ghcr.io -u "$GH_ACTOR" --password-stdin
+            
+            # Pull and restart web
+            docker compose -f docker-compose.yml -f docker-compose.prod.yml pull web
+            docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d web
+            
+            # Cleanup
+            docker image prune -f
+            
+            # Logs
+            sleep 5
+            docker logs --tail=30 peridotvault-web || true
+          EOF
