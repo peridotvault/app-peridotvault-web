@@ -3,7 +3,7 @@
 /* eslint-disable @next/next/no-img-element */
 import { useEffect, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
+import { faChevronDown, faStar } from "@fortawesome/free-solid-svg-icons";
 import {
   Dropdown,
   OptionComponent,
@@ -23,6 +23,9 @@ import clsx from "clsx";
 import { ButtonWithSound } from "../atoms/ButtonWithSound";
 import { useClickSound } from "@/shared/hooks/useClickSound";
 import { EmbedLink } from "@/features/security/embed/embed.component";
+import { useAuthStore } from "@/features/auth/_store/auth.store";
+import { getWishlistApi } from "@/core/api/wishlist.api";
+import { compactCount } from "@/shared/utils/number";
 
 type NavMenu = "browse" | "categories" | null;
 
@@ -37,6 +40,30 @@ export const VaultNavbar = () => {
   const { chains } = useGetChains();
   const { chainId, setSelectedChain } = useSelectedChain();
   const { categories, isLoading: isLoadingCategories } = useGetCategories();
+
+  const [wishlistCount, setWishlistCount] = useState(0);
+  const authStatus = useAuthStore((s) => s.status);
+
+  useEffect(() => {
+    if (authStatus !== "authenticated") {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setWishlistCount(0);
+      return;
+    }
+    let mounted = true;
+    getWishlistApi({ page: 1, limit: 1 })
+      .then((res) => {
+        if (!mounted) return;
+        const meta = (
+          res as unknown as { meta?: { pagination?: { total?: number } } }
+        ).meta;
+        setWishlistCount(meta?.pagination?.total ?? 0);
+      })
+      .catch(() => {});
+    return () => {
+      mounted = false;
+    };
+  }, [authStatus]);
 
   const filteredChains = chains.filter((c) => {
     if (network === "testnet") return c.is_testnet;
@@ -177,6 +204,19 @@ export const VaultNavbar = () => {
               }}
             />
           </div>
+
+          <EmbedLink
+            href="/wishlist"
+            className="shrink-0 flex items-center gap-1.5 text-foreground hover:opacity-70 duration-300"
+          >
+            <FontAwesomeIcon icon={faStar} className="text-lg" />
+            <span className="text-sm font-medium">Wishlist</span>
+            {authStatus === "authenticated" && wishlistCount > 0 && (
+              <span className="text-xs text-muted-foreground">
+                {compactCount(wishlistCount)}
+              </span>
+            )}
+          </EmbedLink>
         </div>
       </div>
 

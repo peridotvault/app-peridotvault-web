@@ -24,11 +24,11 @@ import {
 } from "@/shared/constants/style";
 import { getAssetUrl } from "@/shared/utils/helper.url";
 import {
-  faBookmark,
   faShirt,
   faShare,
   faFlag,
   faLock,
+  faStar,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useParams } from "next/navigation";
@@ -50,6 +50,8 @@ import { hasPurchasedGameApi } from "@/core/api/purchase.api";
 import { useTokenMetadata } from "@/shared/hooks/useTokenMetadata";
 import { useGamePaymentOptions } from "@/shared/hooks/useGamePaymentOptions";
 import { useAuthStore } from "@/features/auth/_store/auth.store";
+import { useWishlistWithCount } from "@/features/wishlist/hooks/useWishlist";
+import { compactCount } from "@/shared/utils/number";
 
 /* ======================================================
    PAGE — Game Detail
@@ -466,6 +468,8 @@ export default function GameDetailPage(): React.ReactElement {
     const [isOwned, setIsOwned] = useState(false);
     const [checkingOwnership, setCheckingOwnership] = useState(true);
 
+    const { isWishlisted, isToggling, toggle: toggleWishlist, count: wishlistCount } = useWishlistWithCount(gameId);
+
     useEffect(() => {
       if (gameId) {
         hasPurchasedGameApi(gameId).then((owned) => {
@@ -613,14 +617,27 @@ export default function GameDetailPage(): React.ReactElement {
               </ButtonWithSound>
             )}
             <ButtonWithSound
-              disabled={true}
+              onClick={toggleWishlist}
+              disabled={isToggling}
               className={
-                "aspect-square shrink-0 opacity-20 cursor-not-allowed " +
+                "aspect-4/3 shrink-0 flex items-center justify-center gap-1.5 px-3 " +
+                (isWishlisted
+                  ? "bg-accent/20 text-accent hover:bg-accent/30"
+                  : "opacity-60 hover:opacity-100") +
+                " cursor-pointer " +
                 BUTTON_COLOR +
                 STYLE_ROUNDED_BUTTON
               }
             >
-              <FontAwesomeIcon icon={faBookmark} />
+              <FontAwesomeIcon
+                icon={faStar}
+                className={isToggling ? "animate-spin text-sm" : "text-lg"}
+              />
+              {wishlistCount > 0 && !isWishlisted && (
+                <span className="text-sm font-medium text-muted-foreground">
+                  {compactCount(wishlistCount)}
+                </span>
+              )}
             </ButtonWithSound>
           </div>
           <ButtonWithSound
