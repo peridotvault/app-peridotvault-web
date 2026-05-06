@@ -10,7 +10,7 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  REGISTRY: ghcr
+  REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
