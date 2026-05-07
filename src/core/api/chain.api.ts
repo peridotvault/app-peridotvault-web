@@ -7,17 +7,17 @@ export async function getAllChainsApi(params?: {
     limit?: number;
     network_type?: NetworkTypeApi;
 }): Promise<ChainApi[]> {
-    const res = await http.get<ApiResponseWithPagination<ChainApi>>("/api/chains", {
+    const res = await http.get<ApiResponseWithPagination<ChainApi>>("/api/v1/chains", {
         params,
     });
 
-    return res.data.data.data;
+    return res.data?.data?.data ?? [];
 }
 
 export async function getChainDetailsApi(params: {
     caip_2_id: string;
 }): Promise<ChainDetailsApi> {
-    const res = await http.get<ApiResponse<ChainDetailsApi>>(`/api/chains/${params.caip_2_id}`);
+    const res = await http.get<ApiResponse<ChainDetailsApi>>(`/api/v1/chains/${params.caip_2_id}`);
 
     return res.data.data;
 }

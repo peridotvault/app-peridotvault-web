@@ -7,7 +7,7 @@ import {
 import { ApiResponse, ApiResponseWithPagination } from "./types/response.type";
 
 function getPaginatedItems<T>(res: { data?: ApiResponseWithPagination<T> }): T[] {
-  return res.data?.data?.data ?? [];
+  return (res.data?.data as unknown as T[]) ?? [];
 }
 
 function getPaginatedMeta<T>(res: { data?: ApiResponseWithPagination<T> }) {
@@ -34,7 +34,7 @@ export async function getMyLibraryApi(
   if (query.limit) params.append("limit", query.limit.toString());
 
   const res = await http.get<ApiResponseWithPagination<LibraryGameApi>>(
-    `/api/library?${params.toString()}`
+    `/api/v1/library?${params.toString()}`
   );
 
   return {
@@ -51,7 +51,7 @@ export async function getLibraryGameApi(
 ): Promise<ApiResponse<LibraryGameApi> | null> {
   try {
     const res = await http.get<ApiResponse<LibraryGameApi>>(
-      `/api/library/${encodeURIComponent(gameId)}`
+      `/api/v1/library/${encodeURIComponent(gameId)}`
     );
     return res.data;
   } catch (error) {

@@ -26,7 +26,7 @@ export const SelectPaymentToken = ({
   price: number | undefined;
   tokenMetadataMap?: Map<
     string,
-    { symbol: string; name: string; logo: string | null }
+    { symbol: string; name: string; logo: string | null; paymentOptionId: number }
   >;
 }) => {
   const [isBuying, setIsBuying] = useState(false);
@@ -81,6 +81,10 @@ export const SelectPaymentToken = ({
     const label = free ? "Claiming Game..." : "Buying Game...";
     const id = toastService.loading(label);
 
+    const tokenMeta = tokenMetadataMap?.get(
+      item.payment_token?.toLowerCase() ?? "",
+    );
+
     try {
       const chain = chainSupports?.find((c) => c.caip_2_id === item.caip_2_id);
       const chainKey = resolveChainKeyFromMetadata({
@@ -100,6 +104,8 @@ export const SelectPaymentToken = ({
           game_id: item.game_id,
           pgl1_address: item.pgl1_address,
           payment_token: free ? undefined : item.payment_token,
+          payment_token_id: tokenMeta?.paymentOptionId,
+          price: free ? 0 : price,
           chainKey,
         },
         (step, message) => {

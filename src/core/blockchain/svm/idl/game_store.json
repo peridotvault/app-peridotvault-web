@@ -369,27 +369,22 @@
         },
         {
           "name": "buyer_payment_account",
-          "writable": true,
           "optional": true
         },
         {
           "name": "publisher_payment_account",
-          "writable": true,
           "optional": true
         },
         {
           "name": "treasury_payment_account",
-          "writable": true,
           "optional": true
         },
         {
           "name": "referrer_payment_account",
-          "writable": true,
           "optional": true
         },
         {
-          "name": "store_actor",
-          "signer": true
+          "name": "store_actor"
         },
         {
           "name": "authorized_actor",

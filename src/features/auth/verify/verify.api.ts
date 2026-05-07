@@ -4,7 +4,7 @@ import type { AxiosError } from "axios";
 
 export async function verifyApi(payload: VerifyRequest): Promise<VerifyResponse> {
     try {
-        const res = await http.post<VerifyResponse>("/api/auth/verify", payload);
+        const res = await http.post<VerifyResponse>("/api/v1/auth/verify", payload);
         return res.data;
     } catch (err) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any

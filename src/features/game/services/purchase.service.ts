@@ -43,19 +43,32 @@ export class PurchaseService {
         .toString(36)
         .substring(2, 15)}`;
 
-      await createPurchaseApi({
+      const response = await createPurchaseApi({
         gameId: input.game_id,
-        purchasePrice: "0",
+        purchasePrice: String(input.price ?? 0),
         paymentToken: input.payment_token ?? "free",
-        paymentTokenId: 1,
+        paymentTokenId: input.payment_token_id,
         transactionHash: pendingTxHash,
       });
 
-      console.log("[PurchaseService] Pending record created");
+      // If backend returned existing pending purchase, use its transaction hash
+      if (response.data?.status === "pending") {
+        pendingTxHash =
+          response.data.transactionHash ||
+          `pending_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`;
+        console.log("[PurchaseService] Using existing pending purchase record");
+      }
+
+      console.log("[PurchaseService] Purchase record ready");
     } catch (error) {
       console.error("[PurchaseService] Failed to create pending purchase:", error);
 
       const status = isAxiosError(error) ? error.response?.status : undefined;
+      const errorMessage = isAxiosError(error) 
+        ? error.response?.data?.message || error.message 
+        : error instanceof Error 
+          ? error.message 
+          : "Failed to create purchase record";
 
       if (status === 409) {
         const existing = await getPurchaseByGameIdApi(input.game_id).catch(() => null);
@@ -70,16 +83,20 @@ export class PurchaseService {
             `pending_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`;
           console.log("[PurchaseService] Existing pending purchase found, continuing to blockchain step");
           // fall through to Step 2
+        } else if (existing?.data?.status === "failed") {
+          pendingTxHash = `pending_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`;
+          console.log("[PurchaseService] Retrying failed purchase, continuing to blockchain step");
+          // fall through to Step 2
         } else {
           return {
             success: false,
-            error: error instanceof Error ? error.message : "Failed to create purchase record",
+            error: errorMessage,
           };
         }
       } else {
         return {
           success: false,
-          error: error instanceof Error ? error.message : "Failed to create purchase record",
+          error: errorMessage,
         };
       }
     }
@@ -180,7 +197,10 @@ export class PurchaseService {
 }
 
 function normalizeSvmPaymentToken(token?: string): string | undefined {
-  if (!token || token === "native" || token === EVM_ZERO_ADDRESS) {
+  if (token === undefined || token === null) {
+    return undefined;
+  }
+  if (token === "native" || token === EVM_ZERO_ADDRESS) {
     return SOL_WRAPPED_MINT;
   }
   return token;

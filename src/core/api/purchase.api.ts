@@ -10,7 +10,7 @@ import {
 import { ApiResponse, ApiResponseWithPagination } from "./types/response.type";
 
 function getPaginatedItems<T>(res: { data?: ApiResponseWithPagination<T> }): T[] {
-  return res.data?.data?.data ?? [];
+  return (res.data?.data as unknown as T[]) ?? [];
 }
 
 function getPaginatedMeta<T>(res: { data?: ApiResponseWithPagination<T> }) {
@@ -29,7 +29,7 @@ function getPaginatedMeta<T>(res: { data?: ApiResponseWithPagination<T> }) {
 export async function createPurchaseApi(
   request: CreatePurchaseRequest
 ): Promise<ApiResponse<Purchase>> {
-  const res = await http.post<ApiResponse<Purchase>>("/api/purchases", request);
+  const res = await http.post<ApiResponse<Purchase>>("/api/v1/purchases", request);
   return res.data;
 }
 
@@ -42,7 +42,7 @@ export async function completePurchaseApi(
   request: CompletePurchaseRequest
 ): Promise<ApiResponse<Purchase>> {
   const res = await http.put<ApiResponse<Purchase>>(
-    `/api/purchases/${encodeURIComponent(gameId)}/complete`,
+    `/api/v1/purchases/${encodeURIComponent(gameId)}/complete`,
     request
   );
   return res.data;
@@ -66,7 +66,7 @@ export async function getMyPurchasesApi(
   if (query.limit) params.append("limit", query.limit.toString());
 
   const res = await http.get<ApiResponseWithPagination<Purchase>>(
-    `/api/purchases?${params.toString()}`
+    `/api/v1/purchases?${params.toString()}`
   );
 
   return {
@@ -83,7 +83,7 @@ export async function getPurchaseByGameIdApi(
 ): Promise<ApiResponse<Purchase> | null> {
   try {
     const res = await http.get<ApiResponse<Purchase>>(
-      `/api/purchases/${encodeURIComponent(gameId)}`
+      `/api/v1/purchases/${encodeURIComponent(gameId)}`
     );
     return res.data;
   } catch (error) {
@@ -111,7 +111,7 @@ export async function getPurchaseStatsApi(
 ): Promise<ApiResponse<PurchaseStats> | null> {
   try {
     const res = await http.get<ApiResponse<PurchaseStats>>(
-      `/api/purchases/games/${encodeURIComponent(gameId)}/stats`
+      `/api/v1/purchases/games/${encodeURIComponent(gameId)}/stats`
     );
     return res.data;
   } catch (error) {

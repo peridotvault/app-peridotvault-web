@@ -40,9 +40,14 @@ export const chainService = {
     },
 
     async syncAndReturn(): Promise<ChainRow[]> {
-        const data = await this.fetchDetailedChains();
-        await chainRepo.bulkSave(data);
-        return data;
+        try {
+            const data = await this.fetchDetailedChains();
+            await chainRepo.bulkSave(data);
+            return data;
+        } catch (err) {
+            console.error("chain syncAndReturn failed", err);
+            return [];
+        }
     },
 
     async syncChains(): Promise<void> {
@@ -57,6 +62,11 @@ export const chainService = {
     async fetchDetailedChains(): Promise<ChainRow[]> {
         const network = await networkService.getNetwork();
         const base = await getAllChainsApi({ network_type: network });
+
+        if (!base || base.length === 0) {
+            console.warn("[chain] No chains returned from API");
+            return [];
+        }
 
         // ⚠️ N+1 handling simple version
         const detailed = await Promise.all(

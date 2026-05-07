@@ -81,20 +81,26 @@ export default function Navbar() {
   function handleWalletChange(newState: SignState | null) {
     // eslint-disable-next-line no-console
     console.log("[Navbar] handleWalletChange called:", newState);
-    // Sync local state with wallet adapter state
-    // This handles external disconnections (e.g., user disconnects from extension)
     if (newState === null) {
       setState(null);
+      // Auto-logout when wallet disconnects while authenticated or expired
+      const current = useAuthStore.getState().status;
+      if (current === "authenticated" || current === "expired") {
+        import("@/features/auth/logout/logout.service").then((m) =>
+          m.logoutEverywhere().catch(() => {}),
+        );
+      }
     } else {
       setState(newState);
     }
   }
 
   const authed = authStatus === "authenticated";
+  const showSigned = authed || authStatus === "expired";
 
   // Debug logging
   // eslint-disable-next-line no-console
-  console.log("[Navbar] Rendering ConnectButton with:", { authStatus, authed, signedState: authed ? state : null });
+  console.log("[Navbar] Rendering ConnectButton with:", { authStatus, authed, showSigned, signedState: showSigned ? state : null });
 
   const closeProfileModal = () => {
     const modalId = profileModalIdRef.current;
@@ -189,7 +195,7 @@ export default function Navbar() {
                     ? "authenticated"
                     : "anonymous"
               }
-              signedState={authStatus === "authenticated" ? state : null}
+              signedState={showSigned ? state : null}
               onSigned={afterSign}
               onChange={handleWalletChange}
               onClickAfterSigned={openProfileModal}

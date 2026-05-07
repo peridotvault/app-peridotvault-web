@@ -7,7 +7,7 @@ export async function getChains(params?: {
     limit?: number;
     network_type?: NetworkType;
 }): Promise<ChainDataResponse> {
-    const res = await http.get<ChainDataResponse>("/api/chains", {
+    const res = await http.get<ChainDataResponse>("/api/v1/chains", {
         params,
     });
 
