@@ -8,17 +8,9 @@ COPY package.json pnpm-lock.yaml ./
 COPY vendor ./vendor
 RUN pnpm install --frozen-lockfile
 
-FROM base AS fonts
-RUN apk add --no-cache curl fontconfig freetype ttf-dejavu
-WORKDIR /fonts
-RUN mkdir -p /usr/share/fonts/truetype && \
-    curl -L -o Geist.zip "https://fonts.google.com/download?family=Geist" 2>/dev/null || true && \
-    curl -L -o "Geist%20Mono.zip" "https://fonts.google.com/download?family=Geist%20Mono" 2>/dev/null || true || true
-
 FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
-COPY --from=fonts /fonts /fonts
 COPY . .
 
 ARG NEXT_PUBLIC_API_BASE_URL
@@ -28,6 +20,7 @@ ARG NEXT_PUBLIC_STORE_URL
 ENV NEXT_PUBLIC_API_BASE_URL=${NEXT_PUBLIC_API_BASE_URL}
 ENV API_BASE_URL=${API_BASE_URL}
 ENV NEXT_PUBLIC_STORE_URL=${NEXT_PUBLIC_STORE_URL}
+ENV NODE_OPTIONS=--max-old-space-size=4096
 
 RUN pnpm run build
 
