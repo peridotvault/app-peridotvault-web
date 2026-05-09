@@ -34,6 +34,8 @@ RUN pnpm run build
 FROM base AS runner
 WORKDIR /app
 
+RUN apk add --no-cache curl python3
+
 ARG NODE_ENV=production
 ARG PORT=3000
 ARG HOSTNAME=0.0.0.0
@@ -51,6 +53,9 @@ RUN chown nextjs:nodejs .next
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
 USER nextjs
 
 EXPOSE $PORT
@@ -58,4 +63,5 @@ EXPOSE $PORT
 ENV PORT=$PORT
 ENV HOSTNAME=$HOSTNAME
 
+ENTRYPOINT ["/entrypoint.sh"]
 CMD ["node", "server.js"]

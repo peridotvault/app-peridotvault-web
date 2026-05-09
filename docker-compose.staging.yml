@@ -1,0 +1,27 @@
+# Staging Environment - Web Service
+# Usage: docker compose -f docker-compose.staging.yml up -d
+
+services:
+  web:
+    image: ghcr.io/peridotvault/peridotvault-web:staging
+    container_name: peridotvault-web-staging
+    env_file:
+      - ../../devops/peridotvault-infra/env/.env.staging
+    environment:
+      - INFISICAL_TOKEN=${INFISICAL_TOKEN_WEB}
+      - INFISICAL_PROJECT_ID=${INFISICAL_PROJECT_ID_WEB}
+      - INFISICAL_API_URL=http://peridotvault-infisical-app:8080
+      - INFISICAL_ENV=staging
+    volumes:
+      - ../../devops/peridotvault-infra/scripts/entrypoint.sh:/entrypoint.sh:ro
+    entrypoint: ["/entrypoint.sh"]
+    ports:
+      - "3000:3000"
+    networks:
+      - peridotvault-network
+    restart: unless-stopped
+
+networks:
+  peridotvault-network:
+    name: peridotvault-network
+    external: true
