@@ -1,27 +1,83 @@
-# Staging Environment - Web Service
-# Usage: docker compose -f docker-compose.staging.yml up -d
+# Staging-like Web Compose
+#
+# Purpose:
+#   Run the frontend with staging environment values.
+#   This is useful for testing the web app against staging API/services.
+#
+# Usage:
+#   docker network create peridotvault-local-network
+#   infisical run --env=staging -- docker compose -f docker-compose.staging.yml up -d --build
+#
+# Access:
+#   Web: http://localhost:3000
 
 services:
   web:
-    image: ghcr.io/peridotvault/peridotvault-web:staging
-    container_name: peridotvault-web-staging
-    env_file:
-      - ../../devops/peridotvault-infra/env/.env.staging
-    environment:
-      - INFISICAL_TOKEN=${INFISICAL_TOKEN_WEB}
-      - INFISICAL_PROJECT_ID=${INFISICAL_PROJECT_ID_WEB}
-      - INFISICAL_API_URL=http://peridotvault-infisical-app:8080
-      - INFISICAL_ENV=staging
-    volumes:
-      - ../../devops/peridotvault-infra/scripts/entrypoint.sh:/entrypoint.sh:ro
-    entrypoint: ["/entrypoint.sh"]
+    image: ${WEB_IMAGE:-peridotvault-web:staging-local}
+
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        NODE_ENV: production
+        PORT: 3000
+        HOSTNAME: 0.0.0.0
+
+        # NEXT_PUBLIC_* values are compiled into the Next.js browser bundle.
+        NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL:-https://api.staging.peridotvault.com}
+        API_BASE_URL: ${API_BASE_URL:-https://api.staging.peridotvault.com}
+        NEXT_PUBLIC_STORE_URL: ${NEXT_PUBLIC_STORE_URL:-https://web.staging.peridotvault.com}
+
+    container_name: peridotvault-web-staging-local
+
     ports:
-      - "3000:3000"
-    networks:
-      - peridotvault-network
+      - "${PORT:-3000}:3000"
+
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      HOSTNAME: 0.0.0.0
+
+      NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL:-https://api.staging.peridotvault.com}
+      API_BASE_URL: ${API_BASE_URL:-https://api.staging.peridotvault.com}
+      NEXT_PUBLIC_STORE_URL: ${NEXT_PUBLIC_STORE_URL:-https://web.staging.peridotvault.com}
+
+      INFISICAL_API_URL: ${INFISICAL_API_URL:-https://app.infisical.com}
+      INFISICAL_ENV: ${INFISICAL_ENV:-staging}
+      INFISICAL_SECRET_PATH: ${INFISICAL_SECRET_PATH:-/}
+      INFISICAL_PROJECT_ID: ${INFISICAL_PROJECT_ID:-}
+      INFISICAL_TOKEN: ${INFISICAL_TOKEN:-}
+      INFISICAL_DISABLE_UPDATE_CHECK: "true"
+
+    command: >
+      sh -c '
+        if [ -n "$${INFISICAL_TOKEN}" ] && [ -n "$${INFISICAL_PROJECT_ID}" ]; then
+          echo "Starting web with Infisical staging secrets...";
+          infisical run
+          --projectId="$${INFISICAL_PROJECT_ID}"
+          --env="$${INFISICAL_ENV}"
+          --path="$${INFISICAL_SECRET_PATH}"
+          -- node server.js;
+        else
+          echo "Starting web without Infisical runtime secrets...";
+          node server.js;
+        fi
+      '
+
+    healthcheck:
+      test:
+        ["CMD-SHELL", "curl -fsS http://127.0.0.1:3000/ >/dev/null || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
     restart: unless-stopped
 
+    networks:
+      - peridotvault-local-network
+
 networks:
-  peridotvault-network:
-    name: peridotvault-network
+  peridotvault-local-network:
+    name: peridotvault-local-network
     external: true

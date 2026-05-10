@@ -19,6 +19,15 @@ function getPaginatedMeta<T>(res: { data?: ApiResponseWithPagination<T> }) {
   };
 }
 
+function isResponseStatus(error: unknown, status: number): boolean {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "response" in error &&
+    (error as { response?: { status?: unknown } }).response?.status === status
+  );
+}
+
 /**
  * Get user game library.
  * Supports search by game name, sort, and pagination.
@@ -56,7 +65,7 @@ export async function getLibraryGameApi(
     return res.data;
   } catch (error) {
     // Return null if 404 (not in library)
-    if ((error as any)?.response?.status === 404) {
+    if (isResponseStatus(error, 404)) {
       return null;
     }
     throw error;

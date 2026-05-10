@@ -78,15 +78,17 @@ export function SearchInput({
 
   useEffect(() => {
     if (!isOpen || !hasQuery) {
-      setResults([]);
-      setIsLoadingResults(false);
       return;
     }
 
     let cancelled = false;
-    setIsLoadingResults(true);
 
     const timeoutId = window.setTimeout(async () => {
+      if (!cancelled) {
+        setResults([]);
+        setIsLoadingResults(true);
+      }
+
       try {
         const nextResults = await getGamesApi({
           q: trimmedValue,
@@ -120,27 +122,31 @@ export function SearchInput({
     }
 
     let cancelled = false;
-    setIsLoadingPopular(true);
+    const timeoutId = window.setTimeout(() => {
+      if (cancelled) return;
+      setIsLoadingPopular(true);
 
-    void getTopGamesApi()
-      .then((items) => {
-        if (!cancelled) {
-          setPopularGames(items.slice(0, SEARCH_LIMIT));
-        }
-      })
-      .catch(() => {
-        if (!cancelled) {
-          setPopularGames([]);
-        }
-      })
-      .finally(() => {
-        if (!cancelled) {
-          setIsLoadingPopular(false);
-        }
-      });
+      void getTopGamesApi()
+        .then((items) => {
+          if (!cancelled) {
+            setPopularGames(items.slice(0, SEARCH_LIMIT));
+          }
+        })
+        .catch(() => {
+          if (!cancelled) {
+            setPopularGames([]);
+          }
+        })
+        .finally(() => {
+          if (!cancelled) {
+            setIsLoadingPopular(false);
+          }
+        });
+    }, 0);
 
     return () => {
       cancelled = true;
+      window.clearTimeout(timeoutId);
     };
   }, [hasQuery, isLoadingPopular, isOpen, popularGames.length]);
 

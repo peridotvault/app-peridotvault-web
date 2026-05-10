@@ -34,7 +34,9 @@ RUN pnpm run build
 FROM base AS runner
 WORKDIR /app
 
-RUN apk add --no-cache curl python3
+RUN apk add --no-cache bash curl python3 wget && \
+    wget -qO- 'https://artifacts-cli.infisical.com/setup.apk.sh' | sh && \
+    apk add --no-cache infisical
 
 ARG NODE_ENV=production
 ARG PORT=3000
@@ -53,9 +55,6 @@ RUN chown nextjs:nodejs .next
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
-COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
-
 USER nextjs
 
 EXPOSE $PORT
@@ -63,5 +62,4 @@ EXPOSE $PORT
 ENV PORT=$PORT
 ENV HOSTNAME=$HOSTNAME
 
-ENTRYPOINT ["/entrypoint.sh"]
 CMD ["node", "server.js"]
