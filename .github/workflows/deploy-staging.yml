@@ -28,12 +28,30 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Log in to GHCR
-        uses: docker/login-action@v4
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Install Infisical CLI
+        run: |
+          curl -1sLf "https://artifacts-cli.infisical.com/setup.deb.sh" | sudo -E bash
+          sudo apt-get update
+          sudo apt-get install -y infisical
+
+      - name: Log in to GHCR from Infisical
+        env:
+          INFISICAL_CLIENT_ID: ${{ secrets.INFISICAL_CLIENT_ID }}
+          INFISICAL_CLIENT_SECRET: ${{ secrets.INFISICAL_CLIENT_SECRET }}
+        run: |
+          if [ -z "$INFISICAL_CLIENT_ID" ]; then
+            echo "::error::Missing GitHub Actions secret: INFISICAL_CLIENT_ID"
+            exit 1
+          fi
+
+          if [ -z "$INFISICAL_CLIENT_SECRET" ]; then
+            echo "::error::Missing GitHub Actions secret: INFISICAL_CLIENT_SECRET"
+            exit 1
+          fi
+
+          INFISICAL_PROJECT_ID=$(sed -n 's/.*"workspaceId"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' .infisical.json | head -1)
+          INFISICAL_TOKEN=$(infisical login --method=universal-auth --client-id="$INFISICAL_CLIENT_ID" --client-secret="$INFISICAL_CLIENT_SECRET" --silent --plain)
+          INFISICAL_TOKEN="$INFISICAL_TOKEN" infisical run --projectId="$INFISICAL_PROJECT_ID" --env=staging --path=/infra -- sh -c 'printf "%s" "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USERNAME" --password-stdin'
 
       - name: Extract metadata
         id: meta

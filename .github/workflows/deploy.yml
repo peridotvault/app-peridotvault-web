@@ -1,4 +1,4 @@
-name: Deploy to VPS
+name: Deploy Production
 
 on:
   push:
@@ -6,59 +6,106 @@ on:
       - main
   workflow_dispatch:
 
+concurrency:
+  group: deploy-prod-web-${{ github.ref }}
+  cancel-in-progress: false
+
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository_owner }}/peridotvault-web
 
 jobs:
-  deploy:
-    name: Deploy via Docker Compose
+  build-and-push:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
 
     steps:
-      - name: Deploy to VPS
-        uses: appleboy/ssh-action@v1.0.3
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Install Infisical CLI
+        run: |
+          curl -1sLf "https://artifacts-cli.infisical.com/setup.deb.sh" | sudo -E bash
+          sudo apt-get update
+          sudo apt-get install -y infisical
+
+      - name: Log in to GHCR from Infisical
+        env:
+          INFISICAL_CLIENT_ID: ${{ secrets.INFISICAL_CLIENT_ID }}
+          INFISICAL_CLIENT_SECRET: ${{ secrets.INFISICAL_CLIENT_SECRET }}
+        run: |
+          if [ -z "$INFISICAL_CLIENT_ID" ]; then
+            echo "::error::Missing GitHub Actions secret: INFISICAL_CLIENT_ID"
+            exit 1
+          fi
+
+          if [ -z "$INFISICAL_CLIENT_SECRET" ]; then
+            echo "::error::Missing GitHub Actions secret: INFISICAL_CLIENT_SECRET"
+            exit 1
+          fi
+
+          INFISICAL_PROJECT_ID=$(sed -n 's/.*"workspaceId"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' .infisical.json | head -1)
+          INFISICAL_TOKEN=$(infisical login --method=universal-auth --client-id="$INFISICAL_CLIENT_ID" --client-secret="$INFISICAL_CLIENT_SECRET" --silent --plain)
+          INFISICAL_TOKEN="$INFISICAL_TOKEN" infisical run --projectId="$INFISICAL_PROJECT_ID" --env=prod --path=/infra -- sh -c 'printf "%s" "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USERNAME" --password-stdin'
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
         with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USERNAME }}
-          key: ${{ secrets.VPS_SSH_KEY }}
-          port: ${{ secrets.VPS_SSH_PORT }}
-          script_stop: true
-          script: |
-            set -e
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=latest
+            type=sha,prefix=prod-
 
-            APP_DIR="/home/peridot/peridotvault-web"
-            REPO_URL="https://${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            NEXT_PUBLIC_API_BASE_URL=https://api.peridotvault.com
+            API_BASE_URL=https://api.peridotvault.com
+            NEXT_PUBLIC_STORE_URL=https://peridotvault.com
 
-            # Navigate to project directory
-            echo "Changing to project directory: $APP_DIR"
-            cd "$APP_DIR" || exit 1
+  deploy:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
 
-            # Pull latest changes
-            echo "Pulling latest changes from main..."
-            git fetch origin
-            git reset --hard origin/main
-            git clean -fd
+    steps:
+      - name: Deploy to Production VPS via SSH
+        env:
+          VPS_HOST: ${{ secrets.PROD_VPS_HOST }}
+          VPS_USERNAME: ${{ secrets.PROD_VPS_USERNAME }}
+          VPS_SSH_KEY: ${{ secrets.PROD_VPS_SSH_KEY }}
+          VPS_PORT: ${{ secrets.PROD_VPS_PORT || '22' }}
+          INFISICAL_CLIENT_ID: ${{ secrets.INFISICAL_CLIENT_ID }}
+          INFISICAL_CLIENT_SECRET: ${{ secrets.INFISICAL_CLIENT_SECRET }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$VPS_SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
 
-            # Create .env file if not exists
-            if [ ! -f .env ]; then
-              echo "Creating .env file..."
-              cat <<'EOF' > .env
-            ${{ secrets.ENV_FILE }}
-            EOF
-            fi
+          ssh-keyscan -H -p "$VPS_PORT" "$VPS_HOST" >> ~/.ssh/known_hosts 2>/dev/null || true
 
-            # Deploy with Docker Compose
-            echo "Building and starting containers..."
-            docker compose down
-            docker compose build --no-cache
-            docker compose up -d
-
-            # Cleanup old images
-            echo "Cleaning up old images..."
-            docker image prune -af --filter "until=24h"
-
-            # Check status
-            echo "Container status:"
-            docker compose ps
-
-            echo "Deployment completed successfully!"
+          ssh -i ~/.ssh/deploy_key \
+              -o StrictHostKeyChecking=no \
+              -o ConnectTimeout=30 \
+              -p "$VPS_PORT" \
+              "$VPS_USERNAME@$VPS_HOST" << EOF
+            cd /home/peridot/peridotvault-infra
+            git pull
+            export INFISICAL_INFRA_TOKEN=\$(infisical login --method=universal-auth --client-id='$INFISICAL_CLIENT_ID' --client-secret='$INFISICAL_CLIENT_SECRET' --silent --plain)
+            make deploy-prod
+            make ps-prod
+          EOF
