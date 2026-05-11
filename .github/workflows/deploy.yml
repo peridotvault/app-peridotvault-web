@@ -27,7 +27,7 @@ jobs:
             set -e
 
             APP_DIR="/home/peridot/peridotvault-web"
-            REPO_URL="https://${{ secrets.GH_TOKEN }}@github.com/${{ github.repository }}.git"
+            REPO_URL="https://${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
 
             # Navigate to project directory
             echo "Changing to project directory: $APP_DIR"

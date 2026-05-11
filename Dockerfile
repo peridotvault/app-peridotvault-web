@@ -83,13 +83,8 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
-# Runtime tools:
-# - curl: healthcheck/debug
-# - wget: Infisical install script
-# - bash/python3: sometimes needed by CLI/scripts
-RUN apk add --no-cache bash curl python3 wget && \
-    wget -qO- "https://artifacts-cli.infisical.com/setup.apk.sh" | sh && \
-    apk add --no-cache infisical
+# Runtime tools for healthcheck/debug.
+RUN apk add --no-cache curl
 
 ARG PORT=3000
 ARG HOSTNAME=0.0.0.0

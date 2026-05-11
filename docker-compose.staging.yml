@@ -6,7 +6,7 @@
 #
 # Usage:
 #   docker network create peridotvault-local-network
-#   infisical run --env=staging -- docker compose -f docker-compose.staging.yml up -d --build
+#   docker compose -f docker-compose.staging.yml up -d --build
 #
 # Access:
 #   Web: http://localhost:3000
@@ -41,28 +41,6 @@ services:
       NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL:-https://api.staging.peridotvault.com}
       API_BASE_URL: ${API_BASE_URL:-https://api.staging.peridotvault.com}
       NEXT_PUBLIC_STORE_URL: ${NEXT_PUBLIC_STORE_URL:-https://web.staging.peridotvault.com}
-
-      INFISICAL_API_URL: ${INFISICAL_API_URL:-https://app.infisical.com}
-      INFISICAL_ENV: ${INFISICAL_ENV:-staging}
-      INFISICAL_SECRET_PATH: ${INFISICAL_SECRET_PATH:-/}
-      INFISICAL_PROJECT_ID: ${INFISICAL_PROJECT_ID:-}
-      INFISICAL_TOKEN: ${INFISICAL_TOKEN:-}
-      INFISICAL_DISABLE_UPDATE_CHECK: "true"
-
-    command: >
-      sh -c '
-        if [ -n "$${INFISICAL_TOKEN}" ] && [ -n "$${INFISICAL_PROJECT_ID}" ]; then
-          echo "Starting web with Infisical staging secrets...";
-          infisical run
-          --projectId="$${INFISICAL_PROJECT_ID}"
-          --env="$${INFISICAL_ENV}"
-          --path="$${INFISICAL_SECRET_PATH}"
-          -- node server.js;
-        else
-          echo "Starting web without Infisical runtime secrets...";
-          node server.js;
-        fi
-      '
 
     healthcheck:
       test:
