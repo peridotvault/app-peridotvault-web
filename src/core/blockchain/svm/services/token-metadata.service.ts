@@ -1,4 +1,4 @@
-import { Connection, PublicKey } from "@solana/web3.js";
+import { Connection, PublicKey, type ParsedAccountData } from "@solana/web3.js";
 import { getSvmConnection } from "../web3";
 
 const METAPLEX_PROGRAM_ID = new PublicKey(
@@ -32,6 +32,12 @@ function parseMetadataAccount(data: Buffer): { name: string; symbol: string; uri
     symbol: symbol.value || "???",
     uri: uri.value || "",
   };
+}
+
+function getParsedMintDecimals(data: Buffer | ParsedAccountData | undefined): number {
+  if (!data || Buffer.isBuffer(data)) return 0;
+  const decimals = data.parsed?.info?.decimals;
+  return typeof decimals === "number" ? decimals : 0;
 }
 
 export interface TokenMetadata {
@@ -78,8 +84,7 @@ export async function resolveTokenMetadata(
     validMints.map(async ({ pubkey }) => {
       try {
         const info = await conn.getParsedAccountInfo(pubkey, "confirmed");
-        const parsed = (info.value?.data as any)?.parsed;
-        return (parsed?.info?.decimals as number) ?? 0;
+        return getParsedMintDecimals(info.value?.data);
       } catch {
         return 0;
       }

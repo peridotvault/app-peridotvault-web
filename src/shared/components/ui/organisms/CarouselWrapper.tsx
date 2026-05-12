@@ -42,11 +42,8 @@ export function CarouselWrapper<T>({
   }, [isTablet, pageSize]);
 
   const totalPages = Math.ceil(safeItems.length / effectivePageSize);
-
-  // clamp page if breakpoint changes (e.g., rotate iPad)
-  React.useEffect(() => {
-    setPage((p) => Math.min(p, Math.max(0, totalPages - 1)));
-  }, [totalPages]);
+  const lastPage = Math.max(0, totalPages - 1);
+  const currentPage = Math.min(page, lastPage);
 
   /* =========================
      MOBILE: SLIDER
@@ -81,7 +78,7 @@ export function CarouselWrapper<T>({
      TABLET + DESKTOP: PAGE CAROUSEL
   ========================= */
 
-  const start = page * effectivePageSize;
+  const start = currentPage * effectivePageSize;
   const sliced = safeItems.slice(start, start + effectivePageSize);
 
   const visibleItems: (T | null)[] = [
@@ -90,11 +87,11 @@ export function CarouselWrapper<T>({
   ];
 
   const handlePrev = () => {
-    if (page > 0) setPage((p) => p - 1);
+    if (currentPage > 0) setPage((p) => Math.max(0, p - 1));
   };
 
   const handleNext = () => {
-    if (page < totalPages - 1) setPage((p) => p + 1);
+    if (currentPage < lastPage) setPage((p) => Math.min(lastPage, p + 1));
   };
 
   return (
@@ -104,14 +101,14 @@ export function CarouselWrapper<T>({
       <div className="flex items-center gap-6 w-full">
         <ButtonWithSound
           onClick={handlePrev}
-          disabled={page === 0}
+          disabled={currentPage === 0}
           className="bg-button w-12 aspect-square rounded-full flex items-center justify-center disabled:opacity-30 hover:bg-accent duration-300"
         >
           <FontAwesomeIcon icon={faAngleLeft} />
         </ButtonWithSound>
 
         <div
-          key={`${page}-${effectivePageSize}`}
+          key={`${currentPage}-${effectivePageSize}`}
           className="grid gap-4 w-full animate-fade-in"
           style={{
             gridTemplateColumns: `repeat(${effectivePageSize}, minmax(0, 1fr))`,
@@ -120,7 +117,7 @@ export function CarouselWrapper<T>({
           {visibleItems.map((item, index) => {
             if (!item) return <EmptySlot key={`empty-${index}`} />;
 
-            const globalIndex = page * effectivePageSize + index;
+            const globalIndex = currentPage * effectivePageSize + index;
             return (
               <React.Fragment key={globalIndex}>
                 {renderItem(item, globalIndex)}
@@ -131,7 +128,7 @@ export function CarouselWrapper<T>({
 
         <ButtonWithSound
           onClick={handleNext}
-          disabled={page >= totalPages - 1}
+          disabled={currentPage >= lastPage}
           className="bg-button w-12 aspect-square rounded-full flex items-center justify-center disabled:opacity-30 hover:bg-accent duration-300"
         >
           <FontAwesomeIcon icon={faAngleRight} />
@@ -146,7 +143,7 @@ export function CarouselWrapper<T>({
               onClick={() => setPage(i)}
               className={`h-2 rounded-full transition duration-300
                 ${
-                  i === page
+                  i === currentPage
                     ? "w-10 bg-highlight"
                     : "w-3 hover:w-6 bg-foreground/30 hover:bg-foreground/60"
                 }

@@ -1,21 +1,40 @@
 # Local Development Docker Compose
-# Usage: docker compose up -d
+#
+# Usage:
+#   docker network create peridotvault-local-network
+#   docker compose up -d --build
+#
+# Access:
+#   Web: http://localhost:3000
 
 services:
   web:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        NODE_ENV: development
+        PORT: 3000
+        HOSTNAME: 0.0.0.0
+        NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL:-http://localhost:4004}
+        API_BASE_URL: ${API_BASE_URL:-http://localhost:4004}
+        NEXT_PUBLIC_STORE_URL: ${NEXT_PUBLIC_STORE_URL:-http://localhost:3000}
+
+    container_name: peridotvault-web-local
+
     ports:
-      - "${PORT:-3000}:${PORT:-3000}"
-    env_file:
-      - .env
+      - "${PORT:-3000}:3000"
+
     environment:
-      - NODE_ENV=${NODE_ENV:-development}
-      - PORT=${PORT:-3000}
-      - HOSTNAME=${HOSTNAME:-0.0.0.0}
-      - NEXT_PUBLIC_API_BASE_URL=${NEXT_PUBLIC_API_BASE_URL:-http://localhost:4004}
+      NODE_ENV: ${NODE_ENV:-development}
+      PORT: 3000
+      HOSTNAME: 0.0.0.0
+      NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL:-http://localhost:4004}
+      API_BASE_URL: ${API_BASE_URL:-http://localhost:4004}
+      NEXT_PUBLIC_STORE_URL: ${NEXT_PUBLIC_STORE_URL:-http://localhost:3000}
+
     restart: unless-stopped
+
     networks:
       - peridotvault-local-network
 
