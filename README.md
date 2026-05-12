@@ -2,14 +2,8 @@
   <img src="public/brand/banner.png" alt="PeridotVault" width="100%" />
 </p>
 
-<br />
-
 <p align="center">
-  <img src="public/brand/logo-horizontal.png" alt="PeridotVault" width="480" />
-</p>
-
-<p align="center">
-  <strong>Intelligent Decentralized Gaming Platform</strong>
+  <strong>Game Distribution Platform</strong>
 </p>
 
 <p align="center">
@@ -18,6 +12,17 @@
   <a href="https://react.dev"><img src="https://img.shields.io/badge/React-19-61DAFB" alt="React 19" /></a>
   <a href="https://www.typescriptlang.org"><img src="https://img.shields.io/badge/TypeScript-5.9-3178C6" alt="TypeScript" /></a>
 </p>
+
+---
+
+## Related Repositories
+
+| Repo | Visibility | Link |
+|---|---|---|
+| Smart Contracts | Public | [peridotvault-contracts](https://github.com/peridotvault/peridotvault-contracts) |
+| API Backend | Private | [peridotvault-api](https://github.com/peridotvault/peridotvault-api) |
+| Faucet | Public | [peridotvault-faucet](https://github.com/peridotvault/peridotvault-faucet) |
+| Landing Page | Public | [peridotvault](https://github.com/peridotvault/peridotvault) |
 
 ---
 
