@@ -8,8 +8,8 @@ function getApiBaseUrl(): string {
   );
 }
 
-export function normalizeAssetUrl(url: string): string {
-  if (!url) return url;
+export function normalizeAssetUrl(url: string | null): string {
+  if (!url) return url ?? "";
   if (!url.startsWith("http://") && !url.startsWith("https://")) return url;
 
   try {
@@ -29,7 +29,8 @@ export function normalizeAssetUrl(url: string): string {
   return url;
 }
 
-export function getAssetUrl(key: string): string {
+export function getAssetUrl(key: string | null): string {
+  if (!key) return "";
   if (key.startsWith("http://") || key.startsWith("https://")) {
     return normalizeAssetUrl(key);
   }
