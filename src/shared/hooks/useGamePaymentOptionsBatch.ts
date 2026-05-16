@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { getGamePaymentOptionsApi } from "@/core/api/token-asset.api";
+import { normalizeAssetUrl } from "@/shared/utils/helper.url";
 
 export type TokenMeta = {
   symbol: string;
@@ -47,7 +48,7 @@ export function useGamePaymentOptionsBatch(gameIds: string[]) {
               symbol: td.token_asset.symbol,
               decimals: td.token_asset.decimals,
               name: td.token_asset.name,
-              iconUrl: td.token_asset.icon_url,
+              iconUrl: normalizeAssetUrl(td.token_asset.icon_url),
             });
           }
         }

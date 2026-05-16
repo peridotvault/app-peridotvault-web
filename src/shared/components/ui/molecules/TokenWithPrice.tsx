@@ -15,12 +15,13 @@ type Props = {
 };
 
 import { resolveNativeTokenInfo } from "@/shared/utils/token";
+import { normalizeAssetUrl } from "@/shared/utils/helper.url";
 
 export const TokenWithPrice = ({ chain, price, tokenMeta }: Props) => {
   const nativeInfo = resolveNativeTokenInfo(chain?.caip_2_id);
   const symbol = tokenMeta?.symbol ?? chain?.native_symbol ?? nativeInfo.symbol;
   const name = tokenMeta?.name ?? chain?.name ?? nativeInfo.name;
-  const icon = tokenMeta?.logo ?? chain?.icon_url ?? nativeInfo.logo;
+  const icon = normalizeAssetUrl(tokenMeta?.logo ?? chain?.icon_url ?? nativeInfo.logo ?? "");
 
   return (
     <section className="flex justify-between">
@@ -36,7 +37,7 @@ export const TokenWithPrice = ({ chain, price, tokenMeta }: Props) => {
           />
           {chain?.icon_url && (
             <img
-              src={chain.icon_url}
+              src={normalizeAssetUrl(chain.icon_url)}
               alt={chain.name + " Logo"}
               width={520}
               height={520}
