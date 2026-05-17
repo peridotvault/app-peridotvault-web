@@ -530,17 +530,31 @@ export default function GameDetailPage(): React.ReactElement {
             chainSupports={game?.chains}
             game_onchain_publishes={game?.game_onchain_publishes}
             price={game?.price}
-            tokenMetadataMap={new Map(
-              [...tokenMetadataMap].map(([k, v]) => [
-                k,
-                {
-                  symbol: v.symbol,
-                  name: v.name,
-                  logo: v.iconUrl,
-                  paymentOptionId: v.paymentOptionId,
-                },
-              ]),
-            )}
+            tokenMetadataMap={
+              (() => {
+                const map = new Map<
+                  string,
+                  {
+                    symbol: string;
+                    name: string;
+                    logo: string | null;
+                    paymentOptionId?: number;
+                  }
+                >();
+                for (const [k, v] of metadataMap) {
+                  map.set(k, { symbol: v.symbol, name: v.symbol, logo: null });
+                }
+                for (const [k, v] of tokenMetadataMap) {
+                  map.set(k, {
+                    symbol: v.symbol,
+                    name: v.name,
+                    logo: v.iconUrl,
+                    paymentOptionId: v.paymentOptionId,
+                  });
+                }
+                return map;
+              })()
+            }
           />
         </ModalShell>
       ));

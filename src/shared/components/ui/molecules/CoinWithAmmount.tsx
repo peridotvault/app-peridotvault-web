@@ -4,6 +4,7 @@ import {
   isZeroCoinAmount,
   resolveCoinInfo,
 } from "../../../utils/coin";
+import { normalizeAssetUrl } from "../../../utils/helper.url";
 
 type PriceCoinProps = {
   amount: number | string | bigint;
@@ -33,7 +34,7 @@ export const PriceCoin = ({
   const resolved = resolveCoinInfo(tokenCanister ?? undefined);
   const decimals = tokenDecimals ?? resolved.decimals;
   const symbol = tokenSymbol ?? resolved.symbol;
-  const logo = tokenLogo === null ? undefined : (tokenLogo ?? resolved.logo);
+  const logo = tokenLogo === null ? undefined : normalizeAssetUrl(tokenLogo ?? resolved.logo ?? "");
 
   if (isZeroCoinAmount(amount, decimals)) {
     return (
