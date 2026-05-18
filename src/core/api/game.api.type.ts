@@ -113,6 +113,17 @@ export interface GameOnChainPublish {
 
 
 /* ======================================================
+   GAME BANNER
+====================================================== */
+export interface GameBannerApi {
+    game_id: GameIdApi;
+    title: string;
+    banner_image: string;
+    description: string;
+    position: number;
+}
+
+/* ======================================================
    GAME TOP
 ====================================================== */
 export type GameTopApi = {
