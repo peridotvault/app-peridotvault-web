@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { ConnectButton, SignState } from "@antigane/wallet-adapters";
-// import { NotificationBar } from "@/shared/components/ui/molecules/NotificationBar";
+import { NotificationBar } from "@/shared/components/ui/molecules/NotificationBar";
 import { verifyAndCreateSession } from "@/features/auth/verify/verify.service";
 import { useAuthStore } from "@/features/auth/_store/auth.store";
 import { STYLE_PADDING } from "@/shared/constants/style";
@@ -158,7 +158,7 @@ export default function Navbar() {
 
   return (
     <header className="left-0 top-0 z-20 w-full flex flex-col bg-card ">
-      {/* <NotificationBar /> */}
+      <NotificationBar />
 
       <div className={STYLE_PADDING}>
         <div className="flex items-center justify-between mx-auto max-w-400 w-full z-21 py-4 ">

@@ -73,6 +73,7 @@ jobs:
             NEXT_PUBLIC_API_BASE_URL=https://api.testnet.peridotvault.com
             API_BASE_URL=https://api.testnet.peridotvault.com
             NEXT_PUBLIC_STORE_URL=https://web.testnet.peridotvault.com
+            NEXT_PUBLIC_ENVIRONMENT=testnet
 
   deploy:
     needs: build-and-push
