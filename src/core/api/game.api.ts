@@ -1,6 +1,7 @@
 import { http } from "@/shared/lib/http";
-import { GameApi, GameDetailApi, GameSortApi, GameTopApi } from "./game.api.type";
-import { ApiResponse, ApiResponseWithPagination } from "./types/response.type";
+import { GameApi, GameBannerApi, GameDetailApi, GameSortApi, GameTopApi } from "./game.api.type";
+import { ApiResponse, ApiResponseV1, ApiResponseWithPagination } from "./types/response.type";
+import type { GameBanner } from "@/features/game/types/game.type";
 
 function getPaginatedItems<T>(res: { data?: ApiResponseWithPagination<T> }): T[] {
     return (res.data?.data as unknown as T[]) ?? [];
@@ -32,12 +33,17 @@ export async function getTopGamesApi(): Promise<GameTopApi[]> {
 export async function getBannerGamesApi(params?: {
     page?: number;
     limit?: number;
-}): Promise<GameApi[]> {
-    const res = await http.get<ApiResponseWithPagination<GameApi>>("/api/v1/games/banners", {
+}): Promise<GameBanner[]> {
+    const res = await http.get<ApiResponseV1<GameBannerApi[]>>("/api/v1/games/banners", {
         params,
     });
 
-    return getPaginatedItems(res);
+    return (res.data.data ?? []).map((item) => ({
+        game_id: item.game_id,
+        name: item.title,
+        description: item.description,
+        banner_image: item.banner_image,
+    }));
 }
 
 export async function getGameMetadataApi(gameId: string, params?: {
