@@ -75,6 +75,7 @@ jobs:
             NEXT_PUBLIC_API_BASE_URL=https://api.staging.peridotvault.com
             API_BASE_URL=https://api.staging.peridotvault.com
             NEXT_PUBLIC_STORE_URL=https://web.staging.peridotvault.com
+            NEXT_PUBLIC_ENVIRONMENT=staging
 
   deploy:
     needs: build-and-push
