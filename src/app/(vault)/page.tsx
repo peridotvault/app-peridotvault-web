@@ -1,10 +1,10 @@
-/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { IMAGE_LOADING } from "@/shared/constants/image";
 import { TypographyH2 } from "@/shared/components/ui/atoms/TypographyH2";
 import { Category } from "@/features/game/types/category.type";
 import { STYLE_ROUNDED_CARD } from "@/shared/constants/style";
+import { OptimizedImage } from "@/shared/components/ui/atoms/OptimizedImage";
 
 import { VaultCarousel } from "../../features/game/components/VaultCarousel";
 import { VaultTopGames } from "../../features/game/components/VaultTopGames";
@@ -17,7 +17,6 @@ import {
   useTopGames,
 } from "@/features/game/hooks/game.hook";
 import { CarouselWrapper } from "@/shared/components/ui/organisms/CarouselWrapper";
-import { getAssetUrl } from "@/shared/utils/helper.url";
 import { sendTrackGameView } from "@/features/event/services/sendTrackGameView";
 import { useTokenMetadata } from "@/shared/hooks/useTokenMetadata";
 import { useGamePaymentOptionsBatch } from "@/shared/hooks/useGamePaymentOptionsBatch";
@@ -237,16 +236,14 @@ export default function Vault() {
             renderItem={(item) => (
               <div
                 key={item.category_id}
-                className={`w-full aspect-square ${STYLE_ROUNDED_CARD} bg-muted overflow-hidden bg-linear-to-t from-black relative duration-300 flex items-end font-medium p-6 text-xl group cursor-pointer`}
+                className={`w-full aspect-square ${STYLE_ROUNDED_CARD} bg-muted overflow-hidden relative duration-300 flex items-end font-medium p-6 text-xl group cursor-pointer`}
               >
-                <img
-                  src={
-                    item.cover_image
-                      ? getAssetUrl(item.cover_image)
-                      : IMAGE_LOADING
-                  }
+                <OptimizedImage
+                  src={item.cover_image}
                   alt={item.name + " Image"}
-                  className="w-full h-full object-cover absolute top-0 left-0 opacity-80 duration-300 group-hover:scale-105"
+                  fill
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  className="object-cover absolute top-0 left-0 opacity-80 duration-300 group-hover:scale-105"
                 />
                 <span className="z-5 bg-card/70 px-3 py-1 rounded-lg">
                   {item.name}

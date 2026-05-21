@@ -1,12 +1,11 @@
-/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { EmbedLink } from "@/features/security/embed/embed.component";
 import { PriceCoin } from "@/shared/components/ui/molecules/CoinWithAmmount";
 import { resolveGamePaymentToken, resolveNativeTokenInfo } from "@/shared/utils/token";
 import { STYLE_ROUNDED_CARD } from "@/shared/constants/style";
-import { getAssetUrl } from "@/shared/utils/helper.url";
 import { urlGameDetail } from "../../configs/url.config";
+import { OptimizedImage } from "@/shared/components/ui/atoms/OptimizedImage";
 
 import { ChainApi } from "@/core/api/chain.api.type";
 import { GameOnChainPublish } from "@/features/game/types/game.type";
@@ -53,13 +52,14 @@ export const GameHorizontalCard = ({
       onClick={onClick}
       className={`w-full group relative overflow-hidden  ${STYLE_ROUNDED_CARD}`}
     >
-      <div className="w-full aspect-video bg-muted">
-        {/* IMAGE */}
-        <img
-          src={getAssetUrl(imgUrl)}
+      <div className="w-full aspect-video bg-muted relative">
+        <OptimizedImage
+          src={imgUrl}
           alt={gameName}
+          fill
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          className="object-cover transition-transform duration-300 group-hover:scale-105"
           draggable={false}
-          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
         />
       </div>
       {/* =========================

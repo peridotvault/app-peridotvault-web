@@ -1,6 +1,5 @@
 "use client";
 
-/* eslint-disable @next/next/no-img-element */
 import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
 import { STYLE_HOVER } from "@/shared/constants/style";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -14,6 +13,7 @@ import { getGamesApi, getTopGamesApi } from "@/core/api/game.api";
 import { urlGameDetail } from "@/features/game/configs/url.config";
 import { getAssetUrl } from "@/shared/utils/helper.url";
 import { IMAGE_LOADING } from "@/shared/constants/image";
+import { OptimizedImage } from "@/shared/components/ui/atoms/OptimizedImage";
 import { useModal } from "@/core/ui-system/modal/modal.store";
 import ModalShell from "@/core/ui-system/modal/ModalShell";
 import { useClickSound } from "@/shared/hooks/useClickSound";
@@ -359,11 +359,13 @@ function SearchResultCard({
       }}
       className="flex items-center gap-4 rounded-xl p-2 transition-colors hover:bg-background/70"
     >
-      <div className="h-16 w-28 shrink-0 overflow-hidden rounded-lg bg-muted">
-        <img
+      <div className="h-16 w-28 shrink-0 overflow-hidden rounded-lg bg-muted relative">
+        <OptimizedImage
           src={resolveSearchImage(imageSrc)}
           alt={game.name}
-          className="h-full w-full object-cover"
+          fill
+          sizes="28vw"
+          className="object-cover"
         />
       </div>
 
@@ -409,11 +411,13 @@ function PopularGameCard({
       }}
       className="flex items-center gap-4 rounded-xl p-2 transition-colors hover:bg-background/70"
     >
-      <div className="h-16 w-28 shrink-0 overflow-hidden rounded-lg bg-muted">
-        <img
+      <div className="h-16 w-28 shrink-0 overflow-hidden rounded-lg bg-muted relative">
+        <OptimizedImage
           src={resolveSearchImage(imageSrc)}
           alt={game.name}
-          className="h-full w-full object-cover"
+          fill
+          sizes="28vw"
+          className="object-cover"
         />
       </div>
 

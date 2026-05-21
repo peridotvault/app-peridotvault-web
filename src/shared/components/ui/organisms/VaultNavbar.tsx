@@ -1,6 +1,5 @@
 "use client";
 
-/* eslint-disable @next/next/no-img-element */
 import { useEffect, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronDown, faStar } from "@fortawesome/free-solid-svg-icons";
@@ -14,8 +13,7 @@ import { useGetChains } from "@/features/chain/hooks/useGetChain";
 import { useNetwork } from "@/features/setting/hooks/useNetwork";
 import { useSelectedChain } from "@/features/setting/hooks/useSelectedChain";
 import { useGetCategories } from "@/features/game/hooks/category.hook";
-import { getAssetUrl } from "@/shared/utils/helper.url";
-import { IMAGE_LOADING } from "@/shared/constants/image";
+import { OptimizedImage } from "@/shared/components/ui/atoms/OptimizedImage";
 import { useModal } from "@/core/ui-system/modal/modal.store";
 import ModalShell from "@/core/ui-system/modal/ModalShell";
 import { Category } from "@/features/game/types/category.type";
@@ -383,13 +381,11 @@ function CategoryGrid({
           }}
           className="group relative flex min-h-24 overflow-hidden rounded-xl border border-border/60"
         >
-          <img
-            src={
-              category.cover_image
-                ? getAssetUrl(category.cover_image)
-                : IMAGE_LOADING
-            }
+          <OptimizedImage
+            src={category.cover_image}
             alt={category.name}
+            fill
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             className="absolute inset-0 h-full w-full object-cover opacity-70 transition-transform duration-300 group-hover:scale-105"
           />
           <div className="absolute inset-0 bg-linear-to-r from-black/80 via-black/35 to-transparent" />

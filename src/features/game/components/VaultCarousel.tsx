@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { EmbedLink } from "@/features/security/embed/embed.component";
@@ -6,8 +5,8 @@ import { ButtonWithSound } from "@/shared/components/ui/atoms/ButtonWithSound";
 import React, { useEffect } from "react";
 import { GameBanner } from "../types/game.type";
 import { urlGameDetail } from "../configs/url.config";
-import { getAssetUrl } from "@/shared/utils/helper.url";
 import { sendTrackGameView } from "@/features/event/services/sendTrackGameView";
+import { OptimizedImage } from "@/shared/components/ui/atoms/OptimizedImage";
 
 type Props = {
   items?: GameBanner[] | null;
@@ -162,22 +161,26 @@ export function VaultCarousel({
         </div>
 
         {/* RIGHT: Banner area */}
-        <div className="left-0 top-0 z-0">
+        <div className="left-0 top-0 z-0 absolute inset-0">
           {/* Layer lama */}
-          <img
+          <OptimizedImage
             key={prevIndex ?? -1}
-            src={getAssetUrl(
-              (prevIndex !== null ? safeItems[prevIndex] : active).banner_image,
-            )}
+            src={(prevIndex !== null ? safeItems[prevIndex] : active).banner_image}
             alt={(prevIndex !== null ? safeItems[prevIndex] : active).name}
-            className="absolute inset-0 w-full h-full object-cover"
+            fill
+            sizes="100vw"
+            priority
+            className="object-cover"
           />
           {/* Layer baru (fade-in) */}
-          <img
+          <OptimizedImage
             key={activeIndex}
-            src={getAssetUrl(active.banner_image)}
+            src={active.banner_image}
             alt={active.name}
-            className="absolute inset-0 w-full h-full object-cover transition-opacity"
+            fill
+            sizes="100vw"
+            priority
+            className="object-cover transition-opacity"
             style={{
               opacity: isFading ? 1 : 0,
               transitionDuration: `${fadeMs}ms`,

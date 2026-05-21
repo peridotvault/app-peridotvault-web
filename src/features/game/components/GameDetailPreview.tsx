@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
 /* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
@@ -12,6 +11,7 @@ import React, {
   useState,
 } from "react";
 import { GamePreview } from "../types/game.type";
+import { OptimizedImage } from "@/shared/components/ui/atoms/OptimizedImage";
 
 export interface GameDetailPreviewProps {
   items: GamePreview[];
@@ -183,10 +183,12 @@ export default function GameDetailPreview({
           aria-hidden={i !== index}
         >
           {it.kind === "image" ? (
-            <img
-              src={getAssetUrl(it.src)}
+            <OptimizedImage
+              src={it.src}
               alt="Game screenshot"
-              className="h-full w-full object-cover"
+              fill
+              sizes="(max-width: 768px) 100vw, 66vw"
+              className="object-cover"
               draggable={false}
             />
           ) : (
@@ -301,10 +303,12 @@ export default function GameDetailPreview({
               aria-label={`Go to media ${i + 1}`}
             >
               {it.kind === "image" ? (
-                <img
-                  src={getAssetUrl(it.src)}
+                <OptimizedImage
+                  src={it.src}
                   alt={`Media ${i + 1}`}
-                  className="h-full w-full object-cover"
+                  fill
+                  sizes="20vw"
+                  className="object-cover"
                 />
               ) : (
                 <>

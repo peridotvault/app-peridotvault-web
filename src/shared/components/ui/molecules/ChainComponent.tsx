@@ -1,5 +1,4 @@
-/* eslint-disable @next/next/no-img-element */
-import { normalizeAssetUrl } from "@/shared/utils/helper.url";
+import { OptimizedImage } from "@/shared/components/ui/atoms/OptimizedImage";
 
 type Props = {
   imgUrl: string;
@@ -9,12 +8,16 @@ type Props = {
 export const ChainComponent = ({ imgUrl, label }: Props) => {
   return (
     <div className="flex items-center gap-2">
-      <div className="h-6 w-6 aspect-square bg-foreground p-1.5 rounded-lg">
-        <img
-          src={normalizeAssetUrl(imgUrl)}
-          className="w-full h-full object-contain"
-          alt={"Image Chain " + label}
-        />
+      <div className="h-6 w-6 aspect-square bg-foreground rounded-lg relative">
+        <div className="absolute inset-1.5">
+          <OptimizedImage
+            src={imgUrl}
+            fill
+            sizes="16px"
+            className="object-contain"
+            alt={"Image Chain " + label}
+          />
+        </div>
       </div>
       {label && <span>{label}</span>}
     </div>

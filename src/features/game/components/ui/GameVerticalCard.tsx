@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { BlockchainStack } from "@/core/blockchain/__core__/components/BlockchainStack";
@@ -6,10 +5,10 @@ import { EmbedLink } from "@/features/security/embed/embed.component";
 import { PriceCoin } from "@/shared/components/ui/molecules/CoinWithAmmount";
 import { resolveGamePaymentToken } from "@/shared/utils/token";
 import { STYLE_ROUNDED_CARD } from "@/shared/constants/style";
-import { getAssetUrl } from "@/shared/utils/helper.url";
 import { urlGameDetail } from "../../configs/url.config";
 import { ChainApi } from "@/core/api/chain.api.type";
 import { GameOnChainPublish } from "@/features/game/types/game.type";
+import { OptimizedImage } from "@/shared/components/ui/atoms/OptimizedImage";
 
 export const GameVerticalCard = ({
   gameId,
@@ -49,12 +48,14 @@ export const GameVerticalCard = ({
       onClick={onClick}
       className={`w-full group relative overflow-hidden  ${STYLE_ROUNDED_CARD}`}
     >
-      <div className="w-full aspect-3/4 bg-muted">
-        <img
-          src={getAssetUrl(imgUrl)}
+      <div className="w-full aspect-3/4 bg-muted relative">
+        <OptimizedImage
+          src={imgUrl}
           alt={gameName}
+          fill
+          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, (max-width: 1280px) 25vw, 20vw"
+          className="object-cover transition-transform duration-300 group-hover:scale-105"
           draggable={false}
-          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
         />
       </div>
       <div

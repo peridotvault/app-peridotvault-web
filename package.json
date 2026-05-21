@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "dev:staging": "infisical run --env=staging --path=/apps/web -- next dev",
+    "dev:testnet": "infisical run --env=testnet --path=/apps/web -- next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"
