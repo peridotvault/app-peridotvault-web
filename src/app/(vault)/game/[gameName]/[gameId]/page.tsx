@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
@@ -22,7 +21,7 @@ import {
   STYLE_ROUNDED_BUTTON,
   BUTTON_COLOR,
 } from "@/shared/constants/style";
-import { getAssetUrl } from "@/shared/utils/helper.url";
+import { OptimizedImage } from "@/shared/components/ui/atoms/OptimizedImage";
 import {
   faShirt,
   faShare,
@@ -175,7 +174,7 @@ export default function GameDetailPage(): React.ReactElement {
           HERO — Featured & Banner Games
           ====================================================== */}
           <HeroSection
-            bannerImage={getAssetUrl(game.banner_image)}
+            bannerImage={game.banner_image}
             gameName={game.name}
             categories={game.categories ?? []}
             price={game.price}
@@ -186,7 +185,7 @@ export default function GameDetailPage(): React.ReactElement {
           SECTION — Game Glance
           ====================================================== */}
           <GameGlance
-            coverHorizontalImage={getAssetUrl(game.cover_horizontal_image)}
+            coverHorizontalImage={game.cover_horizontal_image}
             gameDescription={game.description}
             gameName={game.name}
             previews={game.previews ?? []}
@@ -320,17 +319,20 @@ export default function GameDetailPage(): React.ReactElement {
     price: number;
     tokenAddress: string | undefined;
   }) {
-    return (
-      <div className="relative w-full min-h-120 max-h-200 overflow-hidden bg-card">
-        {bannerImage ? (
-          <img
-            src={bannerImage}
-            alt={gameName}
-            className="absolute inset-0 w-full h-full object-cover opacity-60"
-          />
-        ) : (
-          <div className="absolute inset-0 w-full h-full bg-muted animate-pulse" />
-        )}
+  return (
+    <div className="relative w-full min-h-120 max-h-200 overflow-hidden bg-card">
+      {bannerImage ? (
+        <OptimizedImage
+          src={bannerImage}
+          alt={gameName}
+          fill
+          sizes="100vw"
+          priority
+          className="absolute inset-0 w-full h-full object-cover opacity-60"
+        />
+      ) : (
+        <div className="absolute inset-0 w-full h-full bg-muted animate-pulse" />
+      )}
         {/* <div className="absolute inset-0 bg-linear-to-t from-background via-background/40 to-transparent" /> */}
         <ContainerPadding className="relative z-5 flex justify-end lg:justify-between lg:items-end max-lg:flex-col gap-6 py-8 h-full duration-300">
           <div className="flex flex-col gap-4 md:w-3/5">
@@ -395,26 +397,27 @@ export default function GameDetailPage(): React.ReactElement {
               STYLE_ROUNDED_CARD
             }
           />
-          <div className="flex flex-col gap-6">
-            <>
-              {coverHorizontalImage ? (
-                <img
-                  src={coverHorizontalImage}
-                  alt={"Cover game " + gameName}
-                  className={
-                    "w-full aspect-video object-cover " + STYLE_ROUNDED_CARD
-                  }
-                />
-              ) : (
-                <div
-                  className={
-                    "w-full aspect-video bg-muted animate-pulse" +
-                    STYLE_ROUNDED_CARD
-                  }
-                />
-              )}
-            </>
-            <div className="pr-6">
+            <div className="flex flex-col gap-6">
+              <>
+                {coverHorizontalImage ? (
+                  <div className={"w-full aspect-video relative rounded-2xl overflow-hidden"}>
+                    <OptimizedImage
+                      src={coverHorizontalImage}
+                      alt={"Cover game " + gameName}
+                      fill
+                      sizes="(max-width: 768px) 100vw, 33vw"
+                      className="object-cover"
+                    />
+                  </div>
+                ) : (
+                  <div
+                    className={
+                      "w-full aspect-video bg-muted animate-pulse rounded-2xl"
+                    }
+                  />
+                )}
+              </>
+              <div className="pr-6">
               <>
                 <dt className="sr-only">Game Description</dt>
                 <dd>{gameDescription}</dd>
@@ -671,11 +674,13 @@ export default function GameDetailPage(): React.ReactElement {
           aria-label="Rating Age from Global Rating"
           className={"bg-card p-5 flex gap-4 " + STYLE_ROUNDED_CARD}
         >
-          <div className="w-18 shrink-0 ">
-            <img
+          <div className="w-18 shrink-0 relative aspect-square">
+            <OptimizedImage
               src={ageRating.imgUrl}
               alt={ageRating.title + " Image"}
-              className="w-full object-contain"
+              fill
+              sizes="72px"
+              className="object-contain"
             />
           </div>
           <div className="flex flex-col gap-2">

@@ -1,13 +1,11 @@
-/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { useWishlist } from "@/features/wishlist/hooks/useWishlist";
 import { useAuthStore } from "@/features/auth/_store/auth.store";
-import { IMAGE_LOADING } from "@/shared/constants/image";
-import { getAssetUrl } from "@/shared/utils/helper.url";
 import { STYLE_ROUNDED_CARD } from "@/shared/constants/style";
 import { urlGameDetail } from "@/features/game/configs/url.config";
 import { EmbedLink } from "@/features/security/embed/embed.component";
+import { OptimizedImage } from "@/shared/components/ui/atoms/OptimizedImage";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar as faStarOutline } from "@fortawesome/free-regular-svg-icons";
 import { faHeartCirclePlus } from "@fortawesome/free-solid-svg-icons";
@@ -90,16 +88,14 @@ export default function WishlistPage() {
                 })}
                 className={`w-full group relative overflow-hidden ${STYLE_ROUNDED_CARD}`}
               >
-                <div className="w-full aspect-3/4 bg-muted">
-                  <img
-                    src={
-                      item.cover_vertical_image
-                        ? getAssetUrl(item.cover_vertical_image)
-                        : IMAGE_LOADING
-                    }
+                <div className="w-full aspect-3/4 bg-muted relative">
+                  <OptimizedImage
+                    src={item.cover_vertical_image}
                     alt={item.name}
+                    fill
+                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                    className="object-cover transition-transform duration-300 group-hover:scale-105"
                     draggable={false}
-                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                   />
                 </div>
                 <div className="p-3">

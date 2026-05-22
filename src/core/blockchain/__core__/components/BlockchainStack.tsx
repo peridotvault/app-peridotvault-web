@@ -1,6 +1,5 @@
-/* eslint-disable @next/next/no-img-element */
 import { ChainApi } from "@/core/api/chain.api.type";
-import { normalizeAssetUrl } from "@/shared/utils/helper.url";
+import { OptimizedImage } from "@/shared/components/ui/atoms/OptimizedImage";
 
 export const BlockchainStack = ({
   chain,
@@ -16,13 +15,17 @@ export const BlockchainStack = ({
       {chain.map((item) => (
         <div
           key={item.caip_2_id}
-          className="inline-block size-7 rounded-full ring-2 ring-gray-900 outline -outline-offset-1 outline-white/10 overflow-hidden p-1.5 bg-foreground"
+          className="inline-block size-7 rounded-full ring-2 ring-gray-900 outline -outline-offset-1 outline-white/10 overflow-hidden bg-foreground relative"
         >
-          <img
-            src={normalizeAssetUrl(item.icon_url)}
-            alt={item.caip_2_id + " Image"}
-            className="w-full h-full"
-          />
+          <div className="absolute inset-1.5">
+            <OptimizedImage
+              src={item.icon_url}
+              alt={item.caip_2_id + " Image"}
+              fill
+              sizes="16px"
+              className="object-contain"
+            />
+          </div>
         </div>
       ))}
     </div>

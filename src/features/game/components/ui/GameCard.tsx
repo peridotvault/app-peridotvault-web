@@ -1,11 +1,9 @@
-/* eslint-disable @next/next/no-img-element */
 import {
   GameDistributionApi,
   ManifestApi,
   StorageRefApi,
 } from "@/core/api/game.api.type";
 import { EmbedLink } from "@/features/security/embed/embed.component";
-import { IMAGE_LOADING } from "@/shared/constants/image";
 import { getAssetUrl } from "@/shared/utils/helper.url";
 import {
   faAndroid,
@@ -18,6 +16,7 @@ import { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 import { faGlobe } from "@fortawesome/free-solid-svg-icons";
 import { urlGameDetail } from "../../configs/url.config";
 import { MyGameItem } from "../../types/my-game.type";
+import { OptimizedImage } from "@/shared/components/ui/atoms/OptimizedImage";
 
 type Props = {
   item?: MyGameItem;
@@ -149,8 +148,8 @@ export const GameCard = ({ item, loading }: Props) => {
     item?.description ?? "Your owned game metadata will appear here.";
   const coverSrc =
     item?.cover_horizontal_image || item?.cover_vertical_image
-      ? getAssetUrl(item.cover_horizontal_image || item.cover_vertical_image)
-      : IMAGE_LOADING;
+      ? (item.cover_horizontal_image || item.cover_vertical_image)!
+      : null;
 
   const releaseDate =
     item && item.release_date > 0
@@ -192,12 +191,14 @@ export const GameCard = ({ item, loading }: Props) => {
               name: item.name,
               game_id: item.game_id,
             })}
-            className="aspect-3/4 md:aspect-video h-full rounded-2xl overflow-hidden shrink-0"
+            className="aspect-3/4 md:aspect-video h-full rounded-2xl overflow-hidden shrink-0 relative"
           >
-            <img
+            <OptimizedImage
               src={coverSrc}
               alt={`${gameName} Cover`}
-              className="w-full h-full object-cover"
+              fill
+              sizes="(max-width: 768px) 33vw, 25vw"
+              className="object-cover"
             />
           </EmbedLink>
         )}
