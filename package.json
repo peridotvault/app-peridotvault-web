@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:staging": "infisical run --env=staging --path=/apps/web -- next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"

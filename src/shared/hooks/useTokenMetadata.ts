@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { resolveTokenMetadata, type TokenMetadata } from "@/core/blockchain/svm/services/token-metadata.service";
 import { getTokenAssetDeployments } from "@/core/api/token-asset.api";
 import { EVM_ZERO } from "@/shared/utils/token";
@@ -23,7 +23,7 @@ export function useTokenMetadata(
   const [isLoading, setIsLoading] = useState(false);
   const prevKey = useRef("");
 
-  useEffect(() => {
+  const tokenMints = useMemo(() => {
     const mints = new Set<string>();
     for (const publishes of publishesList) {
       const pub = publishes?.[0];
@@ -33,55 +33,65 @@ export function useTokenMetadata(
         !token ||
         token === "native" ||
         token === EVM_ZERO ||
-        token === "11111111111111111111111111111111"
+        token === NATIVE_SOL_MINT
       ) continue;
       // Only Solana tokens (base58, no 0x prefix)
       if (token.startsWith("0x")) continue;
       mints.add(token);
     }
 
-    const key = [...mints].sort().join(",");
-    if (key === prevKey.current || mints.size === 0) {
-      if (mints.size === 0) setIsLoading(false);
-      return;
-    }
-    prevKey.current = key;
-
-    let cancelled = false;
-    setIsLoading(true);
-
-    Promise.all([
-      resolveTokenMetadata([...mints]),
-      getTokenAssetDeployments().catch(() => []),
-    ]).then(([onChainMeta, apiDeployments]) => {
-      if (cancelled) return;
-      const map = new Map<string, TokenMetadata>();
-
-      // On-chain metadata first
-      for (const [mint, meta] of onChainMeta) {
-        map.set(mint, meta);
-      }
-
-      // API deployments as fallback for EVM or unknown mints
-      for (const d of apiDeployments) {
-        const addr = d.address.toLowerCase();
-        if (!map.has(addr)) {
-          map.set(addr, {
-            symbol: d.token_asset.symbol,
-            name: d.token_asset.name,
-            decimals: d.token_asset.decimals,
-          });
-        }
-      }
-
-      setMetadataMap(map);
-      setIsLoading(false);
-    }).catch(() => {
-      if (!cancelled) setIsLoading(false);
-    });
-
-    return () => { cancelled = true; };
+    return [...mints].sort();
   }, [publishesList]);
 
-  return { metadataMap, isLoading };
+  const tokenKey = tokenMints.join(",");
+
+  useEffect(() => {
+    if (tokenKey === prevKey.current || tokenMints.length === 0) {
+      return;
+    }
+    prevKey.current = tokenKey;
+
+    let cancelled = false;
+
+    async function loadMetadata() {
+      setIsLoading(true);
+
+      try {
+        const [onChainMeta, apiDeployments] = await Promise.all([
+          resolveTokenMetadata(tokenMints),
+          getTokenAssetDeployments().catch(() => []),
+        ]);
+        if (cancelled) return;
+
+        const map = new Map<string, TokenMetadata>();
+
+        // On-chain metadata first
+        for (const [mint, meta] of onChainMeta) {
+          map.set(mint, meta);
+        }
+
+        // API deployments as fallback for EVM or unknown mints
+        for (const d of apiDeployments) {
+          const addr = d.address.toLowerCase();
+          if (!map.has(addr)) {
+            map.set(addr, {
+              symbol: d.token_asset.symbol,
+              name: d.token_asset.name,
+              decimals: d.token_asset.decimals,
+            });
+          }
+        }
+
+        setMetadataMap(map);
+      } finally {
+        if (!cancelled) setIsLoading(false);
+      }
+    }
+
+    void loadMetadata();
+
+    return () => { cancelled = true; };
+  }, [tokenKey, tokenMints]);
+
+  return { metadataMap, isLoading: tokenMints.length > 0 && isLoading };
 }

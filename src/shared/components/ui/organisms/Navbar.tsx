@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { ConnectButton, SignState } from "@antigane/wallet-adapters";
-// import { NotificationBar } from "@/shared/components/ui/molecules/NotificationBar";
+import { NotificationBar } from "@/shared/components/ui/molecules/NotificationBar";
 import { verifyAndCreateSession } from "@/features/auth/verify/verify.service";
 import { useAuthStore } from "@/features/auth/_store/auth.store";
 import { STYLE_PADDING } from "@/shared/constants/style";
@@ -81,20 +81,26 @@ export default function Navbar() {
   function handleWalletChange(newState: SignState | null) {
     // eslint-disable-next-line no-console
     console.log("[Navbar] handleWalletChange called:", newState);
-    // Sync local state with wallet adapter state
-    // This handles external disconnections (e.g., user disconnects from extension)
     if (newState === null) {
       setState(null);
+      // Auto-logout when wallet disconnects while authenticated or expired
+      const current = useAuthStore.getState().status;
+      if (current === "authenticated" || current === "expired") {
+        import("@/features/auth/logout/logout.service").then((m) =>
+          m.logoutEverywhere().catch(() => {}),
+        );
+      }
     } else {
       setState(newState);
     }
   }
 
   const authed = authStatus === "authenticated";
+  const showSigned = authed || authStatus === "expired";
 
   // Debug logging
   // eslint-disable-next-line no-console
-  console.log("[Navbar] Rendering ConnectButton with:", { authStatus, authed, signedState: authed ? state : null });
+  console.log("[Navbar] Rendering ConnectButton with:", { authStatus, authed, showSigned, signedState: showSigned ? state : null });
 
   const closeProfileModal = () => {
     const modalId = profileModalIdRef.current;
@@ -152,7 +158,7 @@ export default function Navbar() {
 
   return (
     <header className="left-0 top-0 z-20 w-full flex flex-col bg-card ">
-      {/* <NotificationBar /> */}
+      <NotificationBar />
 
       <div className={STYLE_PADDING}>
         <div className="flex items-center justify-between mx-auto max-w-400 w-full z-21 py-4 ">
@@ -189,7 +195,7 @@ export default function Navbar() {
                     ? "authenticated"
                     : "anonymous"
               }
-              signedState={authStatus === "authenticated" ? state : null}
+              signedState={showSigned ? state : null}
               onSigned={afterSign}
               onChange={handleWalletChange}
               onClickAfterSigned={openProfileModal}

@@ -7,6 +7,7 @@ import { EmbedLayout } from "@/features/security/embed/embed.component";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import { ToasterComponent } from "@/core/ui-system/toast/ToastComponent";
 import ModalRoot from "@/core/ui-system/modal/ModalRoot";
+import MainnetUnderDevelopmentOverlay from "@/shared/components/ui/organisms/MainnetUnderDevelopmentOverlay";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -38,6 +39,9 @@ export default async function RootLayout({
       >
         <ModalRoot />
         <ToasterComponent />
+        {process.env.NEXT_PUBLIC_ENVIRONMENT === "mainnet" && (
+          <MainnetUnderDevelopmentOverlay />
+        )}
         <Suspense fallback={null}>
           <EmbedLayout>{children}</EmbedLayout>
         </Suspense>

@@ -5,6 +5,7 @@ import {
   getGamePaymentOptionsApi,
   GamePaymentOption,
 } from "@/core/api/token-asset.api";
+import { normalizeAssetUrl } from "@/shared/utils/helper.url";
 
 export function useGamePaymentOptions(gameId: string | undefined) {
   const [options, setOptions] = useState<GamePaymentOption[]>([]);
@@ -50,7 +51,7 @@ export function useGamePaymentOptions(gameId: string | undefined) {
           symbol: td.token_asset.symbol,
           decimals: td.token_asset.decimals,
           name: td.token_asset.name,
-          iconUrl: td.token_asset.icon_url,
+          iconUrl: normalizeAssetUrl(td.token_asset.icon_url),
           paymentOptionId: opt.id,
         });
       }

@@ -18,6 +18,11 @@ import { ButtonWithSound } from "@/shared/components/ui/atoms/ButtonWithSound";
 import { SwitchButton } from "@/shared/components/ui/molecules/SwitchButton";
 import { short } from "@/shared/utils/customAccountId";
 
+const STUDIO_HOST =
+  typeof window !== "undefined"
+    ? window.location.hostname.replace(/^web\./, "studio.")
+    : "studio.peridotvault.com";
+
 type Props = {
   onClose: () => void;
   accountId: string;
@@ -84,7 +89,7 @@ export const ModalProfile = ({ onClose, accountId }: Props) => {
         </EmbedLink>
       </div>
       <Link
-        href={"https://studio.peridotvault.com"}
+        href={`https://${STUDIO_HOST}`}
         onClick={onClose}
         className="ring ring-white/20 w-full rounded-full flex gap-1 items-center justify-center p-2 hover:bg-white/10 duration-300"
       >

@@ -1,6 +1,11 @@
 import { http } from "@/shared/lib/http";
 import { ChainApi, ChainDetailsApi, NetworkTypeApi } from "./chain.api.type";
 import { ApiResponse, ApiResponseWithPagination } from "./types/response.type";
+import { normalizeAssetUrl } from "@/shared/utils/helper.url";
+
+function normalizeChain<T extends ChainApi>(chain: T): T {
+  return { ...chain, icon_url: normalizeAssetUrl(chain.icon_url) };
+}
 
 export async function getAllChainsApi(params?: {
     page?: number;
@@ -11,7 +16,7 @@ export async function getAllChainsApi(params?: {
         params,
     });
 
-    return res.data?.data?.data ?? [];
+    return (res.data?.data?.data ?? []).map(normalizeChain);
 }
 
 export async function getChainDetailsApi(params: {
@@ -19,5 +24,5 @@ export async function getChainDetailsApi(params: {
 }): Promise<ChainDetailsApi> {
     const res = await http.get<ApiResponse<ChainDetailsApi>>(`/api/v1/chains/${params.caip_2_id}`);
 
-    return res.data.data;
+    return normalizeChain(res.data.data);
 }
