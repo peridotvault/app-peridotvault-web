@@ -7,7 +7,7 @@ import { toastService } from "@/core/ui-system/toast/toast.service";
 import { useModal } from "@/core/ui-system/modal/modal.store";
 import { getFiatQuoteApi } from "@/core/api/fiat.api";
 import type { FiatQuote } from "@/core/api/fiat.api.type";
-import { isFiatBlocked } from "@/core/api/fiat.api.type";
+import { isFiatBlocked, resolveQuoteListPrice } from "@/core/api/fiat.api.type";
 import { FiatCheckoutService } from "../services/fiat-checkout.service";
 import { authRepo } from "@/core/db/repositories/auth.repo";
 import { hasPurchasedGameApi } from "@/core/api/purchase.api";
@@ -77,6 +77,9 @@ export function FiatCheckoutPanel({
   }, [loadQuote]);
 
   const { blocked, reason } = isFiatBlocked(quote);
+  // Policy ANT-519 §1.3: grossIdr is the game list price; send it back as
+  // netAmountIdr (backend corroborates against the stored fiat price).
+  const listPriceIdr = resolveQuoteListPrice(quote);
 
   const handleCheckout = async () => {
     if (isProcessing || !quote || blocked) return;
@@ -107,7 +110,7 @@ export function FiatCheckoutPanel({
       await FiatCheckoutService.startCheckout(
         {
           gameId,
-          netAmountIdr: quote.amountIdr,
+          netAmountIdr: listPriceIdr,
           paymentMethod: selectedMethod,
           peridotAppClientId,
         },
@@ -167,8 +170,8 @@ export function FiatCheckoutPanel({
         <>
           <dl className="rounded-xl border border-border divide-y divide-border">
             <div className="flex justify-between px-4 py-2 text-sm">
-              <dt className="text-muted-foreground">Game price (net)</dt>
-              <dd className="font-medium">{formatIdr(quote.amountIdr)} {quote.currency}</dd>
+              <dt className="text-muted-foreground">Game price</dt>
+              <dd className="font-medium">{formatIdr(listPriceIdr)} {quote.currency}</dd>
             </div>
             <div className="flex justify-between px-4 py-2 text-sm">
               <dt className="text-muted-foreground">Transfer fee</dt>
@@ -183,6 +186,14 @@ export function FiatCheckoutPanel({
               <dd>{formatIdr(quote.totalIdr)} {quote.currency}</dd>
             </div>
           </dl>
+
+          {quote.developerNetIdr && quote.vaultCutIdr && (
+            <p className="text-xs text-muted-foreground" role="note">
+              Developer receives {formatIdr(quote.developerNetIdr)} after the 10% marketplace
+              fee ({formatIdr(quote.vaultCutIdr)}). You are never charged the marketplace fee.
+              {quote.policyRevision ? ` Policy ${quote.policyRevision}.` : ""}
+            </p>
+          )}
 
           {quote.paymentMethods.length > 0 ? (
             <div className="flex flex-col gap-2">
