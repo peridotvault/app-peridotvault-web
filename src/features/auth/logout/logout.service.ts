@@ -2,9 +2,12 @@ import { logoutApi } from "./logout.api";
 import { useAuthStore } from "../_store/auth.store";
 import { authRepo } from "@/core/db/repositories/auth.repo";
 
-export async function logoutEverywhere() {
+export async function logoutEverywhere(opts?: { allDevices?: boolean }) {
     // eslint-disable-next-line no-console
-    console.log("[logout] Starting logout process...");
+    console.log("[logout] Starting logout process...", opts?.allDevices ? "(all devices)" : "");
+    // A deliberate logout clears any pending "signed out for security" flag —
+    // the user has seen (or superseded) the security notice by acting.
+    useAuthStore.getState().setRevokedReason(null);
 
     // 1) ambil refreshToken dari Dexie
     const session = await authRepo.getSession();
@@ -15,7 +18,10 @@ export async function logoutEverywhere() {
     if (session?.refresh_token) {
         try {
             // Add timeout to prevent hanging
-            const logoutPromise = logoutApi({ refreshToken: session.refresh_token });
+            const logoutPromise = logoutApi({
+                refreshToken: session.refresh_token,
+                ...(opts?.allDevices ? { allDevices: true as const } : {}),
+            });
             const timeoutPromise = new Promise((_, reject) =>
                 setTimeout(() => reject(new Error("Logout API timeout")), 5000)
             );

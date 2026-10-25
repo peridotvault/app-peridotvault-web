@@ -14,3 +14,8 @@ export async function logoutApi(payload: LogoutRequest) {
     });
     return res.data;
 }
+
+/** Convenience wrapper for the "sign out all devices" profile control. */
+export async function logoutAllDevicesApi(refreshToken: string) {
+    return logoutApi({ refreshToken, allDevices: true });
+}
