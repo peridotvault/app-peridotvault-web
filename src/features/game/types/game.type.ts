@@ -1,4 +1,5 @@
 import { Category } from "./category.type";
+import type { Web2GameFields } from "./web2.type";
 export type Timestamp = string;
 
 export interface Game {
@@ -21,6 +22,14 @@ export interface Game {
     distributions: GameDistribution[],
     chains?: Array<ChainType>;
     game_onchain_publishes?: Array<GameOnChainPublish>;
+    website_url?: string;
+    /**
+     * Web2 mode fields (spec ANT-511 §5). Optional until the API ships
+     * `distribution_mode`; absent => onchain (backward compatible).
+     */
+    distribution_mode?: Web2GameFields["distribution_mode"];
+    fiat_price_idr?: string;
+    peridot_app_client_id?: string;
 }
 
 export type GameDistribution =

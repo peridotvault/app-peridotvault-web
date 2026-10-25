@@ -8,12 +8,21 @@ export type CreatePurchaseRequest = {
   paymentToken: string;
   paymentTokenId?: number;
   transactionHash?: string;
+  /**
+   * Web2 mode fields (spec ANT-511 §5). Optional until the API ships them.
+   * `payment_mode: 'fiat'` rows use `payment_ref` (Peridot ID intent /
+   * providerRef) instead of an onchain `transactionHash`.
+   */
+  payment_mode?: "onchain" | "fiat";
+  payment_ref?: string;
 };
 
 export type CompletePurchaseRequest = {
   gameId: string;
   transactionHash: string;
   pendingTransactionHash: string;
+  payment_mode?: "onchain" | "fiat";
+  payment_ref?: string;
 };
 
 export type Purchase = {
@@ -29,6 +38,13 @@ export type Purchase = {
   completedAt: string | null;
   createdAt: string;
   updatedAt: string;
+  /**
+   * Web2 mode fields (spec ANT-511 §5). Optional until the API ships them;
+   * absent => onchain row (`paymentToken`/`transactionHash` remain the anchor).
+   */
+  payment_mode?: "onchain" | "fiat";
+  payment_ref?: string | null;
+  fiat_status?: string | null;
 };
 
 export type PurchaseStats = {

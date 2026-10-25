@@ -44,6 +44,13 @@ import ModalShell from "@/core/ui-system/modal/ModalShell";
 import clsx from "clsx";
 import { Share } from "@/shared/components/ui/organisms/Share";
 import { SelectPaymentToken } from "@/features/game/components/SelectPaymentToken";
+import { FiatCheckoutPanel } from "@/features/fiat/components/FiatCheckoutPanel";
+import { DistributionModeBadge } from "@/features/fiat/components/DistributionModeBadge";
+import { resolveDistributionMode } from "@/features/game/types/web2.type";
+import {
+  isPeridotLoginConfigured,
+  startPeridotLogin,
+} from "@/features/auth/peridot/peridot-session";
 import { resolveGamePaymentToken } from "@/shared/utils/token";
 import { ChainApi } from "@/core/api/chain.api.type";
 import { hasPurchasedGameApi } from "@/core/api/purchase.api";
@@ -509,16 +516,114 @@ export default function GameDetailPage(): React.ReactElement {
               <div className="flex flex-col gap-2">
                 <h2 className="text-xl font-semibold">Login Required</h2>
                 <p className="text-muted-foreground">
-                  Please connect your wallet to purchase this game. Use the
+                  Please connect your wallet
+                  {isPeridotLoginConfigured()
+                    ? " or log in with Peridot ID "
+                    : " "}
+                  to purchase this game. Use the
                   Connect button in the top right corner.
                 </p>
               </div>
+              {isPeridotLoginConfigured() && (
+                <ButtonWithSound
+                  onClick={() => {
+                    useModal.getState().close(id);
+                    startPeridotLogin();
+                  }}
+                  className={
+                    "w-full cursor-pointer " +
+                    BUTTON_HIGHLIGHT_COLOR +
+                    STYLE_ROUNDED_BUTTON
+                  }
+                >
+                  Log in with Peridot ID
+                </ButtonWithSound>
+              )}
             </div>
           </ModalShell>
         ));
         return;
       }
 
+      // Web2 mode: the fulfillment rail comes from `distribution_mode`
+      // (spec ANT-511 §3.2, default onchain for backward compatibility).
+      const mode = resolveDistributionMode(game?.distribution_mode);
+
+      if (mode === "web2") {
+        openFiatCheckoutModal();
+        return;
+      }
+
+      if (mode === "both") {
+        useModal.getState().open((id) => (
+          <ModalShell id={id}>
+            <div className="w-110 max-w-full flex flex-col gap-3 p-4">
+              <h2 className="text-lg pl-2 pt-2">Choose how to pay</h2>
+              <p className="text-sm text-muted-foreground pl-2">
+                This game supports both rails. Onchain mints a license;
+                fiat grants a Web2 entitlement.
+              </p>
+              <ButtonWithSound
+                onClick={() => {
+                  useModal.getState().close(id);
+                  openOnchainBuyModal();
+                }}
+                className="w-full cursor-pointer rounded-xl bg-foreground/10 px-4 py-2.5 text-sm font-medium"
+              >
+                Pay onchain (wallet)
+              </ButtonWithSound>
+              <ButtonWithSound
+                onClick={() => {
+                  useModal.getState().close(id);
+                  openFiatCheckoutModal();
+                }}
+                className={
+                  "w-full cursor-pointer " +
+                  BUTTON_HIGHLIGHT_COLOR +
+                  STYLE_ROUNDED_BUTTON
+                }
+              >
+                Pay with fiat (IDR)
+              </ButtonWithSound>
+            </div>
+          </ModalShell>
+        ));
+        return;
+      }
+
+      openOnchainBuyModal();
+    };
+
+    const openFiatCheckoutModal = () => {
+      const fiatPriceIdr = game?.fiat_price_idr;
+      if (!fiatPriceIdr) {
+        useModal.getState().open((id) => (
+          <ModalShell id={id}>
+            <div className="w-110 max-w-full flex flex-col gap-2 p-8 text-center">
+              <h2 className="text-xl font-semibold">Fiat checkout unavailable</h2>
+              <p className="text-muted-foreground">
+                This game is listed for Web2 sale but has no IDR price
+                configured yet. Please try again later or contact the developer.
+              </p>
+            </div>
+          </ModalShell>
+        ));
+        return;
+      }
+
+      useModal.getState().open((id) => (
+        <ModalShell id={id}>
+          <FiatCheckoutPanel
+            modalId={id}
+            gameId={gameId}
+            gameName={game?.name ?? "this game"}
+            peridotAppClientId={game?.peridot_app_client_id}
+          />
+        </ModalShell>
+      ));
+    };
+
+    const openOnchainBuyModal = () => {
       useModal.getState().open((id) => (
         <ModalShell id={id}>
           <SelectPaymentToken
@@ -576,6 +681,16 @@ export default function GameDetailPage(): React.ReactElement {
               />
             );
           })()}
+          <div className="flex flex-wrap items-center gap-2">
+            <DistributionModeBadge
+              mode={resolveDistributionMode(game?.distribution_mode)}
+            />
+            {game?.fiat_price_idr && (
+              <span className="text-sm text-muted-foreground">
+                Fiat: Rp{Number(game.fiat_price_idr).toLocaleString("id-ID")} IDR
+              </span>
+            )}
+          </div>
           {purchaseState ? (
             <span
               className={`text-sm font-medium ${
