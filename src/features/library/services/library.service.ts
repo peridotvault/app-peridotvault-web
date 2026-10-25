@@ -317,7 +317,36 @@ function convertLibraryGameToMyGameItem(libraryGame: LibraryGameApi): MyGameItem
         createdAt: BigInt(new Date(libraryGame.purchasedAt).getTime()),
         active: libraryGame.purchaseStatus === "completed",
         metadataUri: null, // Not available from API
+        // Web2 mode: carry the fulfillment rail (spec ANT-511 §3.1/ANT-513).
+        // Fiat rows carry no transaction hash by design — see isEntitledRow.
+        payment_mode: libraryGame.payment_mode ?? "onchain",
+        payment_ref: libraryGame.payment_ref ?? null,
     };
+}
+
+/**
+ * Mode-aware library/download gating (spec ANT-511 §3.1, ANT-513 storefront).
+ * A backend-confirmed `completed` purchase entitles the buyer regardless of
+ * rail. Web2 (fiat) rows must NOT require `transactionHash` — the DB
+ * entitlement is the trust anchor for that rail. Onchain rows keep their
+ * existing wallet-proof path (`getMyGames` enumeration) as the session
+ * fallback in `getMyGamesForSession`.
+ */
+export function isLibraryItemEntitled(item: {
+    purchaseStatus?: string;
+    status?: string;
+    active?: boolean;
+    transactionHash?: string | null;
+    payment_mode?: "onchain" | "fiat";
+    payment_ref?: string | null;
+}): boolean {
+    const completed =
+        item.purchaseStatus === "completed" ||
+        item.status === "completed" ||
+        item.active === true;
+    if (!completed) return false;
+    if (item.payment_mode === "fiat") return true;
+    return true; // API-sourced rows are already purchase-gated; onchain proof stays on the chain path
 }
 
 /**

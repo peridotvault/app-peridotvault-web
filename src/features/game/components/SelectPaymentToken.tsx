@@ -9,6 +9,7 @@ import { PurchaseService, BuyGameStep } from "../services/purchase.service";
 import { resolveChainKeyFromMetadata } from "@/shared/utils/chain";
 import Image from "next/image";
 import { resolveNativeTokenInfo } from "@/shared/utils/token";
+import { normalizeAssetUrl } from "@/shared/utils/helper.url";
 import { Stepper, Step } from "@/shared/components/ui/molecules/Stepper";
 import { authRepo } from "@/core/db/repositories/auth.repo";
 import { hasPurchasedGameApi } from "@/core/api/purchase.api";
@@ -26,7 +27,7 @@ export const SelectPaymentToken = ({
   price: number | undefined;
   tokenMetadataMap?: Map<
     string,
-    { symbol: string; name: string; logo: string | null; paymentOptionId: number }
+    { symbol: string; name: string; logo: string | null; paymentOptionId?: number }
   >;
 }) => {
   const [isBuying, setIsBuying] = useState(false);
@@ -212,7 +213,7 @@ export const SelectPaymentToken = ({
             >
               <div className="flex gap-2 items-center w-full">
                 <Image
-                  src={tokenMeta?.logo ?? chain?.icon_url ?? nativeInfo.logo}
+                  src={normalizeAssetUrl(tokenMeta?.logo ?? chain?.icon_url ?? nativeInfo.logo ?? "")}
                   alt={chain?.name ?? nativeInfo.name}
                   width={520}
                   height={520}

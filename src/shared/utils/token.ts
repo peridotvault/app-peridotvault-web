@@ -82,21 +82,21 @@ export function resolveGamePaymentToken(
   if (tokenLookup) {
     const match = tokenLookup.get(paymentToken);
     if (match) {
-      const fallbackLogo = resolveNativeTokenInfo(publish.caip_2_id ?? chainCaip2Id).logo;
       return {
         symbol: match.symbol,
         decimals: match.decimals,
-        logo: fallbackLogo,
+        logo: "",
         name: match.symbol.toLowerCase(),
       };
     }
   }
 
-  const native = resolveNativeTokenInfo(publish.caip_2_id ?? chainCaip2Id);
   return {
-    ...native,
     symbol: paymentToken.length > 12
       ? `${paymentToken.slice(0, 4)}...${paymentToken.slice(-4)}`
       : paymentToken.toUpperCase(),
+    logo: "",
+    name: "unknown",
+    decimals: 9,
   };
 }

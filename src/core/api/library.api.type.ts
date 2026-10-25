@@ -11,6 +11,13 @@ export interface LibraryGameApi {
   paymentToken: string;
   transactionHash: string | null;
   purchasedAt: string;
+  /**
+   * Web2 mode fields (spec ANT-511 §5). Optional until the API ships them;
+   * absent => onchain row. Fiat rows carry no `transactionHash` by design.
+   */
+  payment_mode?: "onchain" | "fiat";
+  payment_ref?: string | null;
+  fiat_status?: string | null;
 }
 
 export interface GetLibraryQuery {

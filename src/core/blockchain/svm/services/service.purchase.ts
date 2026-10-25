@@ -3,6 +3,7 @@ import {
   Transaction,
   SystemProgram,
   type SendOptions,
+  type ParsedAccountData,
 } from "@solana/web3.js";
 import { BuyGameInput } from "@/core/blockchain/__core__/types/purchase.type";
 import { getSvmProgramId } from "../contracts/program.registry";
@@ -17,6 +18,12 @@ import {
 import {
   findAssociatedTokenAddress,
 } from "../contracts/pda";
+
+function getParsedMintDecimals(data: Buffer | ParsedAccountData | undefined, fallback: number | string) {
+  if (!data || Buffer.isBuffer(data)) return fallback;
+  const decimals = data.parsed?.info?.decimals;
+  return typeof decimals === "number" ? decimals : fallback;
+}
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type SolanaProvider = any;
@@ -194,7 +201,7 @@ export class SvmPurchaseService {
             
             if (balance < finalPrice) {
               const mintInfo = await connection.getParsedAccountInfo(context.accounts.paymentMint);
-              const decimals = (mintInfo.value?.data as any)?.parsed?.info?.decimals ?? 6;
+              const decimals = getParsedMintDecimals(mintInfo.value?.data, 6) as number;
               const balanceFormatted = (balance / Math.pow(10, decimals)).toFixed(decimals);
               const requiredFormatted = (finalPrice / Math.pow(10, decimals)).toFixed(decimals);
               throw new Error(`Insufficient token balance. You have ${balanceFormatted}, need ${requiredFormatted}`);
@@ -220,7 +227,7 @@ export class SvmPurchaseService {
       const mintInfo = await connection.getAccountInfo(context.accounts.paymentMint);
       const mintOwner = mintInfo ? new PublicKey(mintInfo.owner.toBase58()).toBase58() : "unknown";
       const mintParsed = await connection.getParsedAccountInfo(context.accounts.paymentMint);
-      const decimals = (mintParsed?.value?.data as any)?.parsed?.info?.decimals ?? "N/A";
+      const decimals = getParsedMintDecimals(mintParsed?.value?.data, "N/A");
       console.log(`[SVM-PURCHASE-V2] Mint owner: ${mintOwner} | decimals: ${decimals} | Mint: ${context.accounts.paymentMint.toBase58()}`);
 
       if (context.gamePaymentOption) {

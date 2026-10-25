@@ -6,5 +6,10 @@ README.md
 .next
 .git
 *.md
+*.jsonl
 .gitignore
-.env*.local
+.env
+.env.*
+!.env.example
+.infisical.json
+docker-compose*.yml

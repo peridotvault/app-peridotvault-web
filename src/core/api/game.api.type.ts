@@ -1,6 +1,7 @@
 import { Timestamp } from "@/shared/types/time.type";
 import { CategoryApi } from "./category.api.type";
 import { ChainApi } from "./chain.api.type";
+import type { Web2GameFields } from "@/features/game/types/web2.type";
 
 export type GameIdApi = string;
 export type GameSortApi = "latest" | "price_asc" | "price_desc" | null | undefined;
@@ -32,6 +33,13 @@ export interface GameApi {
     categories: CategoryApi[],
     chains?: Array<ChainApi>;
     game_onchain_publishes?: Array<GameOnChainPublish>;
+    /**
+     * Web2 mode fields (spec ANT-511 §5). Optional until the API ships
+     * `distribution_mode`; absent => onchain (backward compatible).
+     */
+    distribution_mode?: Web2GameFields["distribution_mode"];
+    fiat_price_idr?: string;
+    peridot_app_client_id?: string;
 }
 
 /* ======================================================

@@ -47,36 +47,55 @@ function cancelProactiveRefresh() {
 }
 
 // ─── Session hydration on app init ─────────────────────────────────
+const HYDRATION_TIMEOUT = 5_000;
 let hydrated = false;
 
 async function hydrateSession() {
     if (hydrated) return;
     hydrated = true;
 
-    const session = await authRepo.getSession();
-    if (!session?.token || !session?.refresh_token) {
-        useAuthStore.getState().setStatus("anonymous");
-        return;
-    }
-
-    const expiresAt = session.expires_at ? new Date(session.expires_at).getTime() : 0;
-
-    if (expiresAt && expiresAt < Date.now()) {
-        // Token expired — try refresh immediately
-        try {
-            await refreshTokenSingleFlight();
-        } catch {
-            useAuthStore.getState().setStatus("expired");
+    try {
+        const session = await authRepo.getSession();
+        if (!session?.token || !session?.refresh_token) {
+            useAuthStore.getState().setStatus("anonymous");
+            return;
         }
-        return;
-    }
 
-    useAuthStore.getState().setToken(session.token);
-    useAuthStore.getState().setStatus("authenticated");
+        const expiresAt = session.expires_at ? new Date(session.expires_at).getTime() : 0;
 
-    if (session.expires_at) {
-        scheduleProactiveRefresh(session.expires_at);
+        if (expiresAt && expiresAt < Date.now()) {
+            // Token expired — try refresh immediately
+            try {
+                await refreshTokenSingleFlight();
+            } catch {
+                useAuthStore.getState().setStatus("expired");
+            }
+            return;
+        }
+
+        useAuthStore.getState().setToken(session.token);
+        useAuthStore.getState().setStatus("authenticated");
+
+        if (session.expires_at) {
+            scheduleProactiveRefresh(session.expires_at);
+        }
+    } catch {
+        // Dexie or other unexpected error — fall back to anonymous
+        useAuthStore.getState().setStatus("anonymous");
     }
+}
+
+// Eagerly trigger hydration on module load (client-side only).
+// Falls back to "anonymous" after HYDRATION_TIMEOUT if it hangs.
+if (typeof window !== "undefined") {
+    Promise.race([
+        hydrateSession(),
+        new Promise<void>((resolve) => setTimeout(resolve, HYDRATION_TIMEOUT)),
+    ]).then(() => {
+        if (useAuthStore.getState().status === "loading") {
+            useAuthStore.getState().setStatus("anonymous");
+        }
+    });
 }
 
 // ─── REQUEST: attach Authorization + hydrate ────────────────────────
