@@ -51,10 +51,21 @@ export default function Navbar() {
     }
 
     if (authStatus === "expired") {
-      // Keep wallet address visible but prompt re-login
-      toastService.error("Session Expired", {
-        desc: "Please connect your wallet again to refresh your session.",
-      });
+      // Family-revoked (reuse detected) is a security event: say so
+      // explicitly instead of the generic "expired" copy. Consume the flag
+      // so the notice fires once per revocation.
+      const revoked = useAuthStore.getState().revokedReason === "family-revoked";
+      if (revoked) {
+        useAuthStore.getState().setRevokedReason(null);
+        toastService.error("Signed out for security", {
+          desc: "We detected unusual activity on your account and signed you out everywhere. Please connect your wallet again to sign back in.",
+        });
+      } else {
+        // Keep wallet address visible but prompt re-login
+        toastService.error("Session Expired", {
+          desc: "Please connect your wallet again to refresh your session.",
+        });
+      }
     }
   }, [authStatus, closeModal]);
 

@@ -1,6 +1,7 @@
 import { authRepo } from "@/core/db/repositories/auth.repo";
 import { useAuthStore } from "@/features/auth/_store/auth.store";
 import { refreshApi } from "@/features/auth/refresh/refresh.api";
+import { isFamilyRevokedError } from "@/features/auth/session/session-code";
 import { toastService } from "@/core/ui-system/toast/toast.service";
 import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
 
@@ -44,6 +45,23 @@ function cancelProactiveRefresh() {
         clearTimeout(refreshTimer);
         refreshTimer = null;
     }
+}
+
+// ─── Family-revoked logout (ANT-531 / ANT-530) ─────────────────────
+// Server detected refresh-token reuse and revoked the whole token family.
+// Unlike a plain expiry this is a security event: drop the local session
+// entirely (no silent re-login context kept) and flag the reason so the
+// login surface can show "signed out for security" copy.
+async function handleFamilyRevoked() {
+    cancelProactiveRefresh();
+    try {
+        await authRepo.clearSession();
+    } catch {
+        // Dexie failure must not leave a half-logged-in state
+    }
+    useAuthStore.getState().setToken(null);
+    useAuthStore.getState().setRevokedReason("family-revoked");
+    useAuthStore.getState().setStatus("expired");
 }
 
 // ─── Session hydration on app init ─────────────────────────────────
@@ -127,9 +145,20 @@ async function refreshTokenSingleFlight(): Promise<string> {
         const session = await authRepo.getSession();
         if (!session?.refresh_token) throw new Error("NO_REFRESH_TOKEN");
 
-        const refreshed = await refreshApi({ refreshToken: session.refresh_token });
+        let refreshed;
+        try {
+            refreshed = await refreshApi({ refreshToken: session.refresh_token });
+        } catch (err) {
+            // Reuse detected server-side (family revoked) — security logout,
+            // never retry: the whole family is dead, not just this token.
+            if (isFamilyRevokedError(err)) {
+                await handleFamilyRevoked();
+            }
+            throw err;
+        }
         await authRepo.updateToken(refreshed.token, refreshed.expiresAt);
         useAuthStore.getState().setToken(refreshed.token);
+        useAuthStore.getState().setRevokedReason(null);
         useAuthStore.getState().setStatus("authenticated");
 
         // Schedule next proactive refresh
@@ -152,6 +181,24 @@ http.interceptors.response.use(
         const original = error.config as (InternalAxiosRequestConfig & { _retry?: boolean }) | undefined;
 
         if (status !== 401 || !original) {
+            return Promise.reject(error);
+        }
+
+        // Family-revoked code on ANY 401 (refresh or resource call):
+        // security logout, never attempt a refresh of a dead family.
+        if (isFamilyRevokedError(error)) {
+            await handleFamilyRevoked();
+            return Promise.reject(error);
+        }
+
+        // Never refresh-on-refresh: a 401 from the refresh endpoint itself
+        // means the refresh token is dead — expire gracefully instead of
+        // looping another refresh attempt against the same endpoint.
+        const isRefreshCall = (original.url ?? "").includes("/auth/refresh");
+        if (isRefreshCall) {
+            cancelProactiveRefresh();
+            useAuthStore.getState().setToken(null);
+            useAuthStore.getState().setStatus("expired");
             return Promise.reject(error);
         }
 
